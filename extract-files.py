@@ -18,7 +18,7 @@ def lib_fixup_odm_suffix(lib, partition, *args, **kwargs):
     return f'{lib}_odm' if partition == 'odm' else None
 
 
-def lib_fixup_sensorservice_compat(lib, partition, *args, **kwargs):
+def lib_fixup_stock_compat(lib, partition, *args, **kwargs):
     return f'{lib}_vendorcompat' if partition in ['vendor', 'odm'] else None
 
 
@@ -26,8 +26,9 @@ def lib_fixup_sensorservice_compat(lib, partition, *args, **kwargs):
 # modules without changing filenames, SONAMEs or the stock runtime layout.
 lib_fixups = {
     **default_lib_fixups,
-    ('android.frameworks.sensorservice-V1-ndk', 'libsensorndkbridge'):
-        lib_fixup_sensorservice_compat,
+    ('android.frameworks.sensorservice-V1-ndk', 'libsensorndkbridge',
+     'lib_android_keymaster_keymint_utils'):
+        lib_fixup_stock_compat,
     ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper'):
         lib_fixup_odm_suffix,
 }
