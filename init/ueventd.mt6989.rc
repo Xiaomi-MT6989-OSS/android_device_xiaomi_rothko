@@ -6,8 +6,6 @@
 /dev/misc-sd                                     0660    root    system
 
 # UFS only
-/dev/block/sda                                   0660    root    system
-/dev/block/sdb                                   0660    root    system
 /dev/block/sdc                                   0660    root    system
 
 # eMMC/UFS common
@@ -30,7 +28,6 @@
 /dev/block/by-name/modem_a  0640    root    system
 /dev/block/by-name/modem_b  0640    root    system
 /dev/block/by-name/md1dsp    0660    root    system
-/dev/block/by-name/boot_para 0640    root    system
 
 # OTP
 /dev/otp                  0660   system     system

@@ -23,5 +23,5 @@ PRODUCT_MODEL := 2407FRK8EC
 PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    BuildDesc="rothko-user 15 AP3A.240617.008 OS2.0.208.0.VNNCNXM release-keys" \
-    BuildFingerprint=Redmi/rothko/rothko:15/AP3A.240617.008/OS2.0.208.0.VNNCNXM:user/release-keys
+    BuildDesc="rothko-user 16 BP2A.250605.031.A3 OS3.0.307.0.WNNCNXM release-keys" \
+    BuildFingerprint=Redmi/rothko/rothko:16/BP2A.250605.031.A3/OS3.0.307.0.WNNCNXM:user/release-keys

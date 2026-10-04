@@ -44,9 +44,7 @@ PRODUCT_PACKAGES += \
     checkpoint_gc \
     otapreopt_script
 
-PRODUCT_PACKAGES += \
-    create_pl_dev \
-    create_pl_dev.recovery
+# LK/preloader zero-touch: never install create_pl_dev in system or recovery.
 
 # Audio
 PRODUCT_PACKAGES += \

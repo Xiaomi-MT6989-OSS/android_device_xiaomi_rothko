@@ -770,8 +770,6 @@ on post-fs-data
     chmod 0640 /mtd@sec_ro
     chown root system /mtd@sec_ro
 
-    chmod 0640 /mtd@preloader
-    chown root system /mtd@preloader
 
     chmod 0660 /mtd@pro_info
     chown root system /mtd@pro_info
