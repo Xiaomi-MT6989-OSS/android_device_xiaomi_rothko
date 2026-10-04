@@ -18,10 +18,15 @@ def lib_fixup_odm_suffix(lib, partition, *args, **kwargs):
     return f'{lib}_odm' if partition == 'odm' else None
 
 
+def lib_fixup_sensorservice_compat(lib, partition, *args, **kwargs):
+    return f'{lib}_vendorcompat' if partition in ['vendor', 'odm'] else None
+
+
 # These stock names are present in both partitions. Match the separate Soong
 # modules without changing filenames, SONAMEs or the stock runtime layout.
 lib_fixups = {
     **default_lib_fixups,
+    'android.frameworks.sensorservice-V1-ndk': lib_fixup_sensorservice_compat,
     ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper'):
         lib_fixup_odm_suffix,
 }
