@@ -6,7 +6,6 @@ vendor/lib64/libaedv.so
 
 # Audio
 odm/etc/audio/misoundsa_spk_config.bin
-vendor/lib64/libaudioclient_aidl_conversion.so
 vendor/lib64/libaudiocloudctrl.so
 vendor/lib64/libaudiocompensationfilterc.so
 vendor/lib64/libaudiocompensationfilter_vendor.so
@@ -16,12 +15,10 @@ vendor/lib64/libaudiocustparam_vendor.so
 vendor/lib64/libaudiodatabase.so
 vendor/lib64/libaudiodcrflt_vendor.so
 vendor/lib64/libaudiofmtconv.so
-vendor/lib64/libaudiofoundation.so
 vendor/lib64/libaudioloudc.so
 vendor/lib64/libaudioprimarydevicehalifclient.so
 vendor/lib64/libaudiosmartpamtk.so
 vendor/lib64/libaudiotoolkit_vendor.so
-vendor/lib64/libaudio_aidl_conversion_common_ndk.so
 vendor/lib64/libaudio_param_parser-vnd.so
 vendor/lib64/libtinycompress.so
 vendor/lib64/hw/audio.primary.mediatek.so;SYMLINK=vendor/lib64/hw/audio.primary.mt6989.so
@@ -2699,8 +2696,6 @@ vendor/lib64/hw/android.hardware.soundtrigger3-impl.so
 vendor/lib64/hw/vendor.mediatek.hardware.audio-impl.so
 vendor/lib64/android.hardware.bluetooth.audio-impl-mediatek.so
 vendor/lib64/libbluetooth_audio_session_aidl_mtk.so
-vendor/lib64/libshmemcompat.so
-vendor/lib64/libshmemutil.so
 vendor/lib64/libmisight.so
 vendor/bin/hw/android.hardware.sensors-service.multihal
 vendor/etc/init/android.hardware.sensors-service-multihal.rc
