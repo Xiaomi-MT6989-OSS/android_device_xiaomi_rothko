@@ -70,7 +70,6 @@ DEVICE_MANIFEST_FILE += $(DEVICE_PATH)/manifest.xml
 # radio/secure-element overrides as the ODM base for this single-device tree.
 ODM_MANIFEST_FILES += $(DEVICE_PATH)/manifest_odm.xml
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
-    vendor/lineage/config/device_framework_matrix.xml \
     hardware/mediatek/vintf/mediatek_framework_compatibility_matrix.xml \
     hardware/xiaomi/vintf/xiaomi_framework_compatibility_matrix.xml
 
