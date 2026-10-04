@@ -1,8 +1,5 @@
 #change partition permission
 # eMMC only
-/dev/block/mmcblk0                               0660    root    system
-/dev/block/mmcblk0boot0                          0660    root    system
-/dev/block/mmcblk0boot1                          0660    root    system
 /dev/misc-sd                                     0660    root    system
 
 # UFS only

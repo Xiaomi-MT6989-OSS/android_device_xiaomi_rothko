@@ -41,9 +41,7 @@ on init
 
     mkdir /mnt/cd-rom 0000 system system
 
-# change lk_env permission
-    chown root system /proc/lk_env
-    chmod 0660 /proc/lk_env
+# LK zero-touch: do not expose the bootloader environment interface.
 
 # increase sysctl_rmem_max and sysctl_wmem_max values to 2M
     write /proc/sys/net/core/wmem_max 8388608
