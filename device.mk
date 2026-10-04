@@ -69,6 +69,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.bluetooth.audio-impl
 
+# Chip information: pinned source script is byte-identical to stock.
+PRODUCT_PACKAGES += \
+    chipinfo
+
 # ConsumerIR
 PRODUCT_PACKAGES += \
     android.hardware.ir-service.example

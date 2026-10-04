@@ -1305,8 +1305,6 @@ vendor/firmware/txpowerctrl.cfg
 vendor/lib64/hw/consumerir.common.so
 
 # Chipinfo
-vendor/bin/chipinfo;MODULE_SUFFIX=_rothko
-vendor/etc/init/chipinfo_init.rc
 
 # Display
 vendor/bin/hw/mt6989/android.hardware.graphics.allocator-V2-service-mediatek.mt6989;SYMLINK=vendor/bin/hw/android.hardware.graphics.allocator-V2-service-mediatek
@@ -1444,6 +1442,7 @@ vendor/firmware/vib_173/168_fingerprintRecord_RTP.bin
 vendor/firmware/vib_173/210_FingerprintUnlock_RTP.bin
 odm/firmware/Conf_MultipleTest.ini
 odm/firmware/Conf_MultipleTest_Weijing.ini
+odm/firmware/fastboot.bin
 odm/firmware/film_model.tflite
 odm/firmware/focaltech_ts_fw_rothko.bin
 odm/firmware/focaltech_ts_fw_rothko_weijing.bin
