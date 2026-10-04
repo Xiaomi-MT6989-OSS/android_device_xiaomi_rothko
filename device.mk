@@ -194,7 +194,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/thermal/thermal_info_config.json:$(TARGET_COPY_OUT_VENDOR)/etc/thermal_info_config.json
 
 # USB
-$(call soong_config_set,mediatek_gadget,use_custom_usb_gadget_rc,true)
 $(call soong_config_set,android_hardware_mediatek_usb,audio_accessory_supported,true)
 
 PRODUCT_PACKAGES += \
@@ -217,6 +216,7 @@ PRODUCT_PACKAGES += \
     init.modem.rc \
     init.mt6989.rc \
     init.mt6989.usb.rc \
+    init.rothko.usb.rc \
     init.mtkgki.rc \
     init.sensor_2_0.rc \
     ueventd.mt6989.rc

@@ -1,0 +1,5 @@
+# Stock rothko controller verified through sys.usb.controller and /sys/class/udc.
+# The shared MTK AIDL gadget service supplies the matching configfs actions.
+on early-init
+    setprop vendor.usb.controller 11201000.usb0
+    setprop vendor.usb.vid 0x2717

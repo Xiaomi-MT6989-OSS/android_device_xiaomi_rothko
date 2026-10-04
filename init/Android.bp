@@ -47,8 +47,8 @@ prebuilt_etc {
 }
 
 prebuilt_etc {
-    name: "init.mt6989.usb.rc",
-    src: "init.mt6989.usb.rc",
+    name: "init.rothko.usb.rc",
+    src: "init.rothko.usb.rc",
     sub_dir: "init/hw",
     vendor: true,
 }
