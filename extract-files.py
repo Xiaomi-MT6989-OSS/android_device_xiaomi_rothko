@@ -36,7 +36,7 @@ lib_fixups = {
      'libaudioclient_aidl_conversion', 'libaudio_aidl_conversion_common_ndk',
      'libmediautils_vendor', 'libshmemcompat', 'libshmemutil',
      'av-types-aidl-cpp', 'audioclient-types-aidl-cpp',
-     'libstagefright_foundation', 'libgralloctypes', 'libui',
+     'libgralloctypes', 'libui',
      'libcodec2_soft_common', 'libcodec2_vndk', 'libsfplugin_ccodec_utils',
      'libstagefright_aidl_bufferpool2',
      'libcamera2ndk_vendor',
@@ -54,6 +54,33 @@ lib_fixups = {
 # Current ELF evidence does not justify the old KeyMint/composer interface
 # replacements or speculative shim additions.
 blob_fixups: blob_fixups_user_type = {
+    # The API 34 foundation must coexist with the current source vendor library.
+    # This list comes from rothko DT_NEEDED, including the extracted VNDK helper.
+    (
+        'vendor/lib64/hw/sensors.mediatek.V2.0.so',
+        'vendor/lib64/libaudio_aidl_conversion_common_ndk.so',
+        'vendor/lib64/libaudioclient_aidl_conversion.so',
+        'vendor/lib64/libcamera2ndk_vendor.so',
+        'vendor/lib64/libcodec2_mtk_c2store.so',
+        'vendor/lib64/libcodec2_mtk_vdec.so',
+        'vendor/lib64/libcodec2_mtk_venc.so',
+        'vendor/lib64/libcodec2_soft_common.so',
+        'vendor/lib64/libcodec2_soft_mtk_alacdec.so',
+        'vendor/lib64/libcodec2_soft_mtk_imaadpcmdec.so',
+        'vendor/lib64/libcodec2_soft_mtk_mp3dec.so',
+        'vendor/lib64/libcodec2_soft_mtk_msadpcmdec.so',
+        'vendor/lib64/libcodec2_vndk.so',
+        'vendor/lib64/libcodec2_vpp_AIMEMC_plugin.so',
+        'vendor/lib64/libcodec2_vpp_AISR_plugin.so',
+        'vendor/lib64/libcodec2_vpp_fa_plugin.so',
+        'vendor/lib64/libcodec2_vpp_frc_plugin.so',
+        'vendor/lib64/libcodec2_vpp_qt_plugin.so',
+        'vendor/lib64/libcodec2_vpp_rs_plugin.so',
+        'vendor/lib64/libmisoundfx_ext.so',
+        'vendor/lib64/libsfplugin_ccodec_utils.so',
+        'vendor/lib64/libstagefright_bufferqueue_helper.so',
+    ): blob_fixup()
+        .replace_needed('libstagefright_foundation.so', 'libstagefright_foundation-v34.so'),
     'vendor/lib64/hw/audio.primary.mediatek.so': blob_fixup()
         .replace_needed('libalsautils.so', 'libalsautils-v34.so'),
 }

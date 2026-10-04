@@ -2857,3 +2857,5 @@ vendor/lib64/libcodec2_hidl@1.1.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libcodec2_hidl@1.2.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libcodec2_hidl_plugin.so;MODULE_SUFFIX=_vendorcompat
 odm/lib64/libomp.so;MODULE_SUFFIX=_vendorcompat
+apex/com.android.vndk.v34/lib64/libstagefright_foundation.so:vendor/lib64/libstagefright_foundation-v34.so;FIX_SONAME;TRYSRCFIRST
+apex/com.android.vndk.v34/lib64/libstagefright_bufferqueue_helper.so:vendor/lib64/libstagefright_bufferqueue_helper.so;MODULE_SUFFIX=_vendorcompat;TRYSRCFIRST

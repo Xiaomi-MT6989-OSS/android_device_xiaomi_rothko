@@ -27,26 +27,6 @@ cc_prebuilt_library_shared {
     ],
 }
 
-// The pinned arm64 VNDK 34 snapshot is byte-identical to stock's VNDK APEX.
-// Source consumers retain the current foundation library; BSP clients use this
-// original API 34 implementation without importing current AV header types.
-cc_prebuilt_library_shared {
-    name: "libstagefright_foundation_vendorcompat",
-    stem: "libstagefright_foundation",
-    srcs: [":libstagefright_foundation.vndk.34.arm64"],
-    compile_multilib: "64",
-    vendor: true,
-    strip: {
-        none: true,
-    },
-    shared_libs: [
-        "libutils",
-        "libcutils",
-        "liblog",
-        "libc++",
-    ],
-}
-
 // Stock-identical API 34 snapshot; preserve the original BSP dependency contract.
 cc_prebuilt_library_shared {
     name: "android.hardware.graphics.allocator-V2-ndk_vendorcompat",
@@ -94,35 +74,6 @@ cc_prebuilt_library_shared {
         "libsync",
         "libutils",
         "liblog",
-        "libvndksupport",
-        "libc++",
-    ],
-}
-
-// The BSP helper is byte-identical to the pinned VNDK 34 snapshot.
-cc_prebuilt_library_shared {
-    name: "libstagefright_bufferqueue_helper_vendorcompat",
-    stem: "libstagefright_bufferqueue_helper",
-    srcs: [":libstagefright_bufferqueue_helper.vndk.34.arm64"],
-    compile_multilib: "64",
-    vendor: true,
-    strip: {
-        none: true,
-    },
-    shared_libs: [
-        "libbase",
-        "libcutils",
-        "libhidlbase",
-        "libhidlmemory",
-        "liblog",
-        "libstagefright_foundation_vendorcompat",
-        "libui_vendorcompat",
-        "libutils",
-        "android.hardware.graphics.bufferqueue@1.0",
-        "android.hardware.graphics.bufferqueue@2.0",
-        "android.hidl.token@1.0-utils",
-        "libEGL",
-        "libnativewindow",
         "libvndksupport",
         "libc++",
     ],
