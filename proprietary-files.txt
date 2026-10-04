@@ -2687,7 +2687,7 @@ vendor/mitee/ta/e97c270e-a5c4-4c58-bcd3384a2fa2539e.ta
 # WIFI
 vendor/bin/wlan_assistant
 vendor/etc/init/init.wlan_drv.rc
-vendor/etc/init/wlan_assistant.rc
+vendor/etc/init/wlan_assistant.rc:vendor/etc/init/wlan_assistant-rothko.rc
 vendor/lib64/libwifi-hal.so:vendor/lib64/libwifi-hal-mtk.so;FIX_SONAME
 
 # Current stock HALs and reviewed dependency additions
