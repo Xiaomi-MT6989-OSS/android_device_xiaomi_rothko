@@ -33,7 +33,7 @@ lib_fixups = {
      'libaudioclient_aidl_conversion', 'libaudio_aidl_conversion_common_ndk',
      'libmediautils_vendor', 'libshmemcompat', 'libshmemutil',
      'av-types-aidl-cpp', 'audioclient-types-aidl-cpp',
-     'libstagefright_foundation'):
+     'libstagefright_foundation', 'libgralloctypes'):
         lib_fixup_stock_compat,
     ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper'):
         lib_fixup_odm_suffix,
