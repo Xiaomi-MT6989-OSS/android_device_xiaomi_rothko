@@ -2856,3 +2856,4 @@ vendor/lib64/libcodec2_hidl@1.0.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libcodec2_hidl@1.1.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libcodec2_hidl@1.2.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libcodec2_hidl_plugin.so;MODULE_SUFFIX=_vendorcompat
+odm/lib64/libomp.so;MODULE_SUFFIX=_vendorcompat

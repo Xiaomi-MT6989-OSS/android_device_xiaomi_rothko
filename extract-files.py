@@ -42,6 +42,7 @@ lib_fixups = {
      'libcamera2ndk_vendor',
      'libcodec2_hidl@1.0', 'libcodec2_hidl@1.1', 'libcodec2_hidl@1.2',
      'libcodec2_hidl_plugin', 'libstagefright_bufferqueue_helper',
+     'libomp',
      'android.hardware.graphics.allocator-V2-ndk'):
         lib_fixup_stock_compat,
     ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper'):
