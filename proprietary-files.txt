@@ -2844,3 +2844,4 @@ vendor/lib64/av-types-aidl-cpp.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/audioclient-types-aidl-cpp.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libkeymint_support.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libkeymint_remote_prov_support.so;MODULE_SUFFIX=_vendorcompat
+vendor/lib64/android.hardware.bluetooth.audio-V3-ndk.so;MODULE_SUFFIX=_vendorcompat
