@@ -6,8 +6,6 @@
 
 DEVICE_PATH := device/xiaomi/rothko
 
-BUILD_BROKEN_DUP_RULES := true
-
 # A/B
 AB_OTA_UPDATER := true
 
@@ -31,7 +29,8 @@ AB_OTA_PARTITIONS += \
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv9-a
 TARGET_CPU_ABI := arm64-v8a
-TARGET_CPU_VARIANT := cortex-a76
+# No stock CPU tuning property is available; use the toolchain's generic target.
+TARGET_CPU_VARIANT := generic
 
 # Boot Image
 BOARD_KERNEL_BASE         := 0x3fff8000
@@ -67,6 +66,9 @@ TARGET_SCREEN_DENSITY := 520
 
 # HIDL
 DEVICE_MANIFEST_FILE += $(DEVICE_PATH)/manifest.xml
+# The connected CN device reports hardware SKU rothko. Preserve its stock
+# radio/secure-element overrides as the ODM base for this single-device tree.
+ODM_MANIFEST_FILES += $(DEVICE_PATH)/manifest_odm.xml
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
     vendor/lineage/config/device_framework_matrix.xml \
     hardware/mediatek/vintf/mediatek_framework_compatibility_matrix.xml \
@@ -82,6 +84,10 @@ BOARD_PREBUILT_DTBIMAGE_DIR := $(KERNEL_PREBUILTS_DIR)/dtb/
 BOARD_PREBUILT_DTBOIMAGE := $(KERNEL_PREBUILTS_DIR)/dtbo.img
 
 # Kernel modules
+# Preserve stock module bytes/signatures; depmod may regenerate text metadata.
+BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
+BOARD_DO_NOT_STRIP_VENDOR_RAMDISK_MODULES := true
+
 BOARD_SYSTEM_KERNEL_MODULES_LOAD := $(strip $(shell cat $(KERNEL_PREBUILTS_DIR)/system_dlkm/modules.load))
 BOARD_SYSTEM_KERNEL_MODULES := $(wildcard $(KERNEL_PREBUILTS_DIR)/system_dlkm/*.ko)
 
@@ -167,19 +173,21 @@ BOARD_AVB_ALGORITHM := SHA256_RSA2048
 
 BOARD_AVB_BOOT_ALGORITHM := SHA256_RSA2048
 BOARD_AVB_BOOT_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_BOOT_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+# Stock AVB descriptors use index 0. Do not derive an increased bootloader
+# rollback index from the independently built framework's patch timestamp.
+BOARD_AVB_BOOT_ROLLBACK_INDEX := 0
 BOARD_AVB_BOOT_ROLLBACK_INDEX_LOCATION := 3
 
 BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
 BOARD_AVB_VBMETA_SYSTEM := product system system_ext
 BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := 0
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
 
 BOARD_AVB_VBMETA_VENDOR_ALGORITHM := SHA256_RSA2048
 BOARD_AVB_VBMETA_VENDOR := vendor
 BOARD_AVB_VBMETA_VENDOR_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_VBMETA_VENDOR_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+BOARD_AVB_VBMETA_VENDOR_ROLLBACK_INDEX := 0
 BOARD_AVB_VBMETA_VENDOR_ROLLBACK_INDEX_LOCATION := 4
 
 # Using sha256 for dm-verity partitions.

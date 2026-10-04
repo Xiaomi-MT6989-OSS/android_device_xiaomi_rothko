@@ -4,18 +4,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-from extract_utils.fixups_blob import (
-    blob_fixup,
-    blob_fixups_user_type,
-)
-from extract_utils.fixups_lib import (
-    lib_fixups,
-    lib_fixups_user_type,
-)
-from extract_utils.main import (
-    ExtractUtils,
-    ExtractUtilsModule,
-)
+from extract_utils.fixups_blob import blob_fixup, blob_fixups_user_type
+from extract_utils.fixups_lib import lib_fixups
+from extract_utils.main import ExtractUtils, ExtractUtilsModule
 
 namespace_imports = [
     'device/xiaomi/rothko',
@@ -23,50 +14,17 @@ namespace_imports = [
     'hardware/xiaomi',
 ]
 
-lib_fixups: lib_fixups_user_type = {
-    **lib_fixups,
+# The stock audio primary imports libalsautils.so. Preserve the original
+# device-tree isolation of this stock library from the AOSP implementation.
+# Current ELF evidence does not justify the old KeyMint/composer interface
+# replacements or speculative shim additions.
+blob_fixups: blob_fixups_user_type = {
+    'vendor/lib64/hw/audio.primary.mediatek.so': blob_fixup()
+        .replace_needed('libalsautils.so', 'libalsautils-v34.so'),
 }
 
-blob_fixups: blob_fixups_user_type = {
-    'odm/lib64/libmt_mitee.so': blob_fixup()
-        .replace_needed('android.hardware.security.keymint-V2-ndk.so', 'android.hardware.security.keymint-V4-ndk.so'),
-    'vendor/etc/init/android.hardware.neuralnetworks-shim-service-mtk.rc': blob_fixup()
-        .regex_replace('start', 'enable'),
-    'vendor/bin/hw/android.hardware.graphics.composer@3.2-service': blob_fixup()
-        .replace_needed('android.hardware.graphics.composer@2.1-resources.so', 'android.hardware.graphics.composer@2.1-resources-v34.so'),
-    'vendor/bin/hw/android.hardware.security.keymint@3.0-service.mitee': blob_fixup()
-        .replace_needed('android.hardware.security.keymint-V2-ndk.so', 'android.hardware.security.keymint-V4-ndk.so')
-        .add_needed('android.hardware.security.rkp-V3-ndk.so'),
-    'vendor/firmware/txpowerctrl.cfg': blob_fixup()
-        .regex_replace('\t', ''),
-    'vendor/lib64/hw/audio.primary.mediatek.so': blob_fixup()
-        .add_needed('libstagefright_foundation-v34.so')
-        .replace_needed('libalsautils.so', 'libalsautils-v34.so'),
-    'vendor/bin/hw/android.hardware.media.c2@1.2-mediatek-64b': blob_fixup()
-        .add_needed('libstagefright_foundation-v34.so'),
-    ('vendor/bin/mnld', 'vendor/lib64/mt6989/libaalservice.so', 'vendor/lib64/mt6989/libpqconfig.so', 'vendor/lib64/librgbwlightsensor.so'): blob_fixup()
-        .replace_needed('libsensorndkbridge.so', 'android.hardware.sensors@1.0-convert-shared.so'),
-    ('vendor/lib64/hw/hwcomposer.mtk_common.so', 'vendor/lib64/libmialgoengine.so', 'vendor/lib64/mt6989/lib3a.af.assist.so', 'vendor/lib64/mt6989/libcam.hal3a.so', 'vendor/lib64/mt6989/libcam.hal3a.ctrl.so', 'vendor/lib64/mt6989/libmtkcam_request_requlator.so'): blob_fixup()
-        .add_needed('libprocessgroup_shim.so'),
-    'vendor/lib64/mt6989/libneuralnetworks_sl_driver_mtk_prebuilt.so': blob_fixup()
-         .clear_symbol_version('AHardwareBuffer_allocate')
-         .clear_symbol_version('AHardwareBuffer_createFromHandle')
-         .clear_symbol_version('AHardwareBuffer_describe')
-         .clear_symbol_version('AHardwareBuffer_getNativeHandle')
-         .clear_symbol_version('AHardwareBuffer_lock')
-         .clear_symbol_version('AHardwareBuffer_release')
-         .clear_symbol_version('AHardwareBuffer_unlock'),
-    ('vendor/lib64/libcodec2_vpp_AIMEMC_plugin.so', 'vendor/lib64/libcodec2_vpp_AISR_plugin.so'): blob_fixup()
-        .replace_needed('android.hardware.graphics.allocator-V1-ndk.so', 'android.hardware.graphics.allocator-V2-ndk.so')
-        .replace_needed('android.hardware.graphics.common-V3-ndk.so', 'android.hardware.graphics.common-V6-ndk.so'),
-    ('vendor/lib64/vendor.mediatek.hardware.pq_aidl-V2-ndk.so', 'vendor/lib64/vendor.mediatek.hardware.pq_aidl-V4-ndk.so', 'vendor/lib64/vendor.mediatek.hardware.pq_aidl-V7-ndk.so'): blob_fixup()
-        .replace_needed('android.hardware.graphics.common-V3-ndk.so', 'android.hardware.graphics.common-V6-ndk.so'),
-    ('vendor/bin/hw/android.hardware.neuralnetworks-shim-service-mtk', 'vendor/lib64/libnvram.so', 'vendor/lib64/libtflite_mtk.so'): blob_fixup()
-        .add_needed('libbase_shim.so'),
-}  # fmt: skip
-
 module = ExtractUtilsModule(
-    'corot',
+    'rothko',
     'xiaomi',
     blob_fixups=blob_fixups,
     lib_fixups=lib_fixups,
@@ -74,5 +32,4 @@ module = ExtractUtilsModule(
 )
 
 if __name__ == '__main__':
-    utils = ExtractUtils.device(module)
-    utils.run()
+    ExtractUtils.device(module).run()

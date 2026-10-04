@@ -48,10 +48,8 @@ PRODUCT_PACKAGES += \
 
 # Audio
 PRODUCT_PACKAGES += \
-    android.hardware.audio.service \
-    android.hardware.audio@7.1-impl \
-    android.hardware.audio.effect@7.0-impl \
-    android.hardware.soundtrigger@2.3-impl
+    android.hardware.audio.service.mediatek \
+    android.hardware.audio.effect@7.0-impl
 
 PRODUCT_PACKAGES += \
     audio.primary.default \
@@ -62,7 +60,6 @@ PRODUCT_COPY_FILES += \
     $(call find-copy-subdir-files,*,$(LOCAL_PATH)/configs/audio/,$(TARGET_COPY_OUT_VENDOR)/etc)
 
 PRODUCT_COPY_FILES += \
-    frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
     frameworks/av/services/audiopolicy/config/bluetooth_audio_policy_configuration_7_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
@@ -90,6 +87,11 @@ PRODUCT_USE_DYNAMIC_PARTITIONS := true
 PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.1-impl.custom \
     fastbootd
+
+# Health
+PRODUCT_PACKAGES += \
+    android.hardware.health-service.mediatek \
+    android.hardware.health-service.mediatek-recovery
 
 # IFAA manager
 PRODUCT_PACKAGES += \
@@ -162,16 +164,10 @@ PRODUCT_COPY_FILES += \
     $(call find-copy-subdir-files,*,$(LOCAL_PATH)/configs/seccomp,$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy) \
     $(call find-copy-subdir-files,*,$(LOCAL_PATH)/configs/media,$(TARGET_COPY_OUT_VENDOR)/etc)
 
-# Sensors
-PRODUCT_PACKAGES += \
-    android.hardware.sensors@2.X-subhal \
-    android.hardware.sensors-service.xiaomi-multihal
+# Sensors: retain the verified stock AIDL multihal and MTK subHAL as prebuilts.
 
 PRODUCT_PACKAGES += \
     sensors.dynamic_sensor_hal
-
-PRODUCT_COPY_FILES += \
-   $(LOCAL_PATH)/configs/hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf
 
 # Shipping API level
 PRODUCT_SHIPPING_API_LEVEL := 34
@@ -204,14 +200,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     vndservicemanager
 
-# Vibrator
-$(call soong_config_set, vibrator, vibratortargets, vibratoraidlV2target)
-
-PRODUCT_PACKAGES += \
-    vendor.qti.hardware.vibrator.service
-
-PRODUCT_COPY_FILES += \
-    vendor/qcom/opensource/vibrator/excluded-input-devices.xml:$(TARGET_COPY_OUT_VENDOR)/etc/excluded-input-devices.xml
+# Vibrator: use the verified stock ODM Xiaomi vibratorfeature service.
 
 # Rootdir
 PRODUCT_PACKAGES += \
@@ -219,15 +208,18 @@ PRODUCT_PACKAGES += \
     fstab.mt6989.vendor_ramdisk \
     init.batterysecret.rc \
     init.connectivity.rc \
-    init.fingerprint.rc \
     init.mi_thermald.rc \
     init.modem.rc \
     init.mt6989.rc \
-    init.mt6989.power.rc \
     init.mt6989.usb.rc \
     init.mtkgki.rc \
     init.sensor_2_0.rc \
     ueventd.mt6989.rc
+
+# The reused module-loading service must have its script and configuration.
+PRODUCT_PACKAGES += \
+    init.insmod.sh \
+    init.insmod.mt6989.cfg
 
 # Wi-Fi
 PRODUCT_PACKAGES += \
