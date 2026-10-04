@@ -563,7 +563,7 @@ vendor/lib64/mt6989/libmtkcam_tuning_utils.so;SYMLINK=vendor/lib64/libmtkcam_tun
 vendor/lib64/mt6989/libmtkcam_ulog.so;SYMLINK=vendor/lib64/libmtkcam_ulog.so
 vendor/lib64/mt6989/libmtkcam_zsl_customselector.so;SYMLINK=vendor/lib64/libmtkcam_zsl_customselector.so
 vendor/lib64/mt6989/libSonyIMX519PdafWrapper.so;SYMLINK=vendor/lib64/libSonyIMX519PdafWrapper.so
-vendor/lib64/temp/mt6989/libmtkcam_ulog.so;SYMLINK=vendor/lib64/temp/libmtkcam_ulog.so
+vendor/lib64/temp/mt6989/libmtkcam_ulog.so;MODULE_SUFFIX=_temp;SYMLINK=vendor/lib64/temp/libmtkcam_ulog.so
 vendor/lib64/mt6989/libimgstream-custom.so;SYMLINK=vendor/lib64/libimgstream-custom.so
 vendor/lib64/mt6989/libimgstream-drv.so;SYMLINK=vendor/lib64/libimgstream-drv.so
 vendor/lib64/mt6989/libimgstream-guard.so;SYMLINK=vendor/lib64/libimgstream-guard.so
@@ -611,16 +611,16 @@ odm/lib64/libcamera_scene.so
 odm/lib64/libclient2slpi.notifier.so
 odm/lib64/libcolortempmode.so
 odm/lib64/libmialgo_ainr_v1.so
-odm/lib64/libmialgo_aio_seg.so
+odm/lib64/libmialgo_aio_seg.so;MODULE_SUFFIX=_odm
 odm/lib64/libmialgo_depth.so
 odm/lib64/libmialgo_ds_nn.so
 odm/lib64/libmialgo_ellc.so
 odm/lib64/libmialgo_ie_capture.so
 odm/lib64/libmialgo_sd.so
-odm/lib64/libmialgo_utils.so
+odm/lib64/libmialgo_utils.so;MODULE_SUFFIX=_odm
 odm/lib64/libmpbase.so
 odm/lib64/libremosaiclib.so
-odm/lib64/libremosaic_wrapper.so
+odm/lib64/libremosaic_wrapper.so;MODULE_SUFFIX=_odm
 
 # Camera Config
 odm/etc/camera/110_BlackGold.png

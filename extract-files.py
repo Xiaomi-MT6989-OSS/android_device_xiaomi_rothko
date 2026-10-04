@@ -5,7 +5,7 @@
 #
 
 from extract_utils.fixups_blob import blob_fixup, blob_fixups_user_type
-from extract_utils.fixups_lib import lib_fixups
+from extract_utils.fixups_lib import lib_fixups as default_lib_fixups
 from extract_utils.main import ExtractUtils, ExtractUtilsModule
 
 namespace_imports = [
@@ -13,6 +13,18 @@ namespace_imports = [
     'hardware/mediatek',
     'hardware/xiaomi',
 ]
+
+def lib_fixup_odm_suffix(lib, partition, *args, **kwargs):
+    return f'{lib}_odm' if partition == 'odm' else None
+
+
+# These stock names are present in both partitions. Match the separate Soong
+# modules without changing filenames, SONAMEs or the stock runtime layout.
+lib_fixups = {
+    **default_lib_fixups,
+    ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper'):
+        lib_fixup_odm_suffix,
+}
 
 # The stock audio primary imports libalsautils.so. Preserve the original
 # device-tree isolation of this stock library from the AOSP implementation.
