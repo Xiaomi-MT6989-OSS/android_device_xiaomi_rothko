@@ -1177,7 +1177,7 @@ vendor/etc/camera/af_detect_3rd.dla
 vendor/etc/camera/af_saliency.dla
 vendor/etc/camera/af_track_backbone.dla
 vendor/etc/camera/af_track_head.dla
-vendor/etc/camera/beauty/libTrueSight.so
+-vendor/etc/camera/beauty/libTrueSight.so
 vendor/etc/camera/bokehParams.json
 vendor/etc/camera/IntellFocus_class_all.dla
 vendor/etc/camera/IntellFocus_class_human.dla
@@ -1185,7 +1185,7 @@ vendor/etc/camera/IntellFocus_detect_1st.dla
 vendor/etc/camera/IntellFocus_saliency.dla
 vendor/etc/camera/IntellFocus_track_backbone.dla
 vendor/etc/camera/IntellFocus_track_head.dla
-vendor/etc/camera/ldc/libwa_widelens_undistort.so
+-vendor/etc/camera/ldc/libwa_widelens_undistort.so
 vendor/etc/camera/mimotion_c1b.bin
 vendor/etc/camera/mimotion_c1w.bin
 vendor/etc/camera/mimotion_f3b.bin
@@ -2820,3 +2820,13 @@ vendor/lib64/vendor.xiaomi.hardware.aidlbgservice-V1-impl.so
 vendor/lib64/vendor.xiaomi.hardware.aidlbgservice-V1-ndk.so
 vendor/lib64/vendor.xiaomi.hardware.bgservice@1.0-impl.so
 vendor/lib64/vendor.xiaomi.hardware.bgservice@1.0.so
+odm/lib64/libTrueSight.so
+odm/lib64/libwa_widelens_undistort.so
+vendor/lib64/vendor.mediatek.hardware.apuware.utils-V1-ndk.so
+vendor/lib64/hw/vendor.mediatek.hardware.gnss-impl.so
+vendor/lib64/vendor.mediatek.hardware.netdagent-V1-ndk.so
+vendor/lib64/vendor.xiaomi.hardware.aidl.mtdservice-V1-ndk.so
+vendor/lib64/vendor.xiaomi.hardware.fx.tunnel-V1-ndk.so
+vendor/lib64/vendor.xiaomi.hardware.mlipay-V1-ndk.so
+vendor/lib64/vendor.xiaomi.hardware.quickcamera-V1-ndk.so
+vendor/lib64/vendor.xiaomi.hardware.soterservice-V1-ndk.so
