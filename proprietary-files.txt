@@ -2836,3 +2836,4 @@ vendor/lib64/vendor.xiaomi.hardware.soterservice-V1-ndk.so
 vendor/lib64/vendor.mediatek.hardware.gnss-V1-ndk.so
 vendor/lib64/android.frameworks.sensorservice-V1-ndk.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/lib_android_keymaster_keymint_utils.so;MODULE_SUFFIX=_vendorcompat
+vendor/lib64/libkeymint.so;MODULE_SUFFIX=_vendorcompat
