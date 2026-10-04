@@ -1,0 +1,65 @@
+{
+  "scope": "Per-file fixes justified by completed normal ELF checks and verified providers; no new shim source or implementation patch. Runtime and C++ layout remain unverified.",
+  "references": [
+    "https://github.com/mt6897-devs/device_xiaomi_duchamp/blob/lineage-23.2/extract-files.py",
+    "https://github.com/degas-developers/android_device_xiaomi_degas/blob/lineage-23.2/extract-files.py"
+  ],
+  "files": {
+    "vendor/lib64/mt6989/lib3a.ae.stat.so": {
+      "add_needed": [
+        "liblog.so"
+      ],
+      "reason": "Unresolved __android_log_vprint, exported by current liblog; stock DT_NEEDED omits liblog. Same dependency correction is used by duchamp/degas."
+    },
+    "vendor/lib64/libMiPhotoFilter.so": {
+      "clear_symbol_versions": [
+        "AHardwareBuffer_allocate",
+        "AHardwareBuffer_describe",
+        "AHardwareBuffer_isSupported",
+        "AHardwareBuffer_lockPlanes",
+        "AHardwareBuffer_release",
+        "AHardwareBuffer_unlock"
+      ],
+      "reason": "Exact observed LIBNATIVEWINDOW imports; current LLNDK vendor stub exports these same names unversioned. Use the established duchamp/degas extract-utils method, limited to rothko failures."
+    },
+    "vendor/lib64/libaaa_afassist_V2.so": {
+      "add_needed": [
+        "libc++_shared.so"
+      ],
+      "reason": "Unresolved std::__ndk1 chrono imports are present in the already selected original ODM libc++_shared.so, not platform std::__1 libc++. Add the actual provider explicitly."
+    },
+    "vendor/lib64/libaaa_afassistctrl.so": {
+      "add_needed": [
+        "libc++_shared.so"
+      ],
+      "reason": "Unresolved std::__ndk1 chrono imports are present in the already selected original ODM libc++_shared.so, not platform std::__1 libc++. Add the actual provider explicitly."
+    },
+    "vendor/lib64/libcameraopt.so": {
+      "add_needed": [
+        "libprocessgroup_shim.so"
+      ],
+      "reason": "The original VNDK34 processgroup exports the plain-C SetTaskProfiles; current source uses the C++ entry. Reuse the existing Lineage compat forwarding shim, also used by degas 23.2."
+    },
+    "odm/lib64/libwa_widelens_undistort.so": {
+      "clear_symbol_versions": [
+        "AHardwareBuffer_allocate",
+        "AHardwareBuffer_describe",
+        "AHardwareBuffer_lock",
+        "AHardwareBuffer_release",
+        "AHardwareBuffer_unlock"
+      ],
+      "reason": "Exact observed LIBNATIVEWINDOW imports; current LLNDK vendor stub exports these same names unversioned. Use the established duchamp/degas extract-utils method, limited to rothko failures."
+    },
+    "odm/lib64/libTrueSight.so": {
+      "clear_symbol_versions": [
+        "AHardwareBuffer_allocate",
+        "AHardwareBuffer_describe",
+        "AHardwareBuffer_lock",
+        "AHardwareBuffer_lockPlanes",
+        "AHardwareBuffer_release",
+        "AHardwareBuffer_unlock"
+      ],
+      "reason": "Exact observed LIBNATIVEWINDOW imports; current LLNDK vendor stub exports these same names unversioned. Use the established duchamp/degas extract-utils method, limited to rothko failures."
+    }
+  }
+}

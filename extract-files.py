@@ -116,6 +116,16 @@ for target, replacements in runtime_compat['consumers'].items():
     fixup = separate_fixups.setdefault(target, blob_fixup())
     for old, new in replacements.items():
         fixup.replace_needed(old, new)
+# Apply only the symbol/dependency corrections observed in normal ELF checks.
+symbol_compat = json.loads(
+    Path(__file__).with_name('stock-symbol-compat.json').read_text()
+)
+for target, changes in symbol_compat['files'].items():
+    fixup = separate_fixups.setdefault(target, blob_fixup())
+    for library in changes.get('add_needed', []):
+        fixup.add_needed(library)
+    for symbol in changes.get('clear_symbol_versions', []):
+        fixup.clear_symbol_version(symbol)
 separate_fixups[
     'vendor/etc/init/android.hardware.sensors-service-multihal-rothko.rc'
 ] = blob_fixup().regex_replace(

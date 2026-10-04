@@ -1,5 +1,5 @@
 {
-  "scope": "Device runtime filenames and direct DT_NEEDED replacements derived from completed retry-42 install rules and exact stock ELF index. Does not establish dlopen, namespaces or runtime ABI compatibility.",
+  "scope": "Reviewed device runtime aliases and per-file direct DT_NEEDED replacements. Initial retry42 collisions plus actual retry01 native symbol failures; libbase binding is restricted to KeyMint. Does not prove dlopen, namespaces or object layout.",
   "graph_trial": 42,
   "libraries": [
     {
@@ -793,6 +793,87 @@
         "libm.so",
         "libdl.so"
       ]
+    },
+    {
+      "old_soname": "libbase.so",
+      "new_soname": "libbase-rothko-v34.so",
+      "module": "libbase_stockcompat",
+      "old_destination": "vendor/lib64/libbase.so",
+      "destination": "vendor/lib64/libbase-rothko-v34.so",
+      "source": "apex/com.android.vndk.v34/lib64/libbase.so",
+      "stock_sha256": "1726ee324728b50e7a672681dc08c82aa6a1608dd282eddcc0595ab3a68a8e40",
+      "new_selection": "apex/com.android.vndk.v34/lib64/libbase.so:vendor/lib64/libbase-rothko-v34.so;MODULE=libbase_stockcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": true,
+      "needed": [
+        "liblog.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libultrahdr.so",
+      "new_soname": "libultrahdr-rothko-v34.so",
+      "module": "libultrahdr_stockcompat",
+      "old_destination": "vendor/lib64/libultrahdr.so",
+      "destination": "vendor/lib64/libultrahdr-rothko-v34.so",
+      "source": "vendor/lib64/libultrahdr.so",
+      "stock_sha256": "2a82c8dec0de6f51b3b697baa1e4ae94c292dba906f37d13e80e3bfdfb6b7af8",
+      "new_selection": "vendor/lib64/libultrahdr.so:vendor/lib64/libultrahdr-rothko-v34.so;MODULE=libultrahdr_stockcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libimage_io.so",
+        "libjpeg.so",
+        "libjpegencoder.so",
+        "libjpegdecoder.so",
+        "liblog.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libjpegencoder.so",
+      "new_soname": "libjpegencoder-rothko-v34.so",
+      "module": "libjpegencoder_stockcompat",
+      "old_destination": "vendor/lib64/libjpegencoder.so",
+      "destination": "vendor/lib64/libjpegencoder-rothko-v34.so",
+      "source": "vendor/lib64/libjpegencoder.so",
+      "stock_sha256": "5b4231188a485f7ece429809c197f5ee2583447f2a2bc83ff872d42f8e7cf430",
+      "new_selection": "vendor/lib64/libjpegencoder.so:vendor/lib64/libjpegencoder-rothko-v34.so;MODULE=libjpegencoder_stockcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libjpeg.so",
+        "liblog.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libjpegdecoder.so",
+      "new_soname": "libjpegdecoder-rothko-v34.so",
+      "module": "libjpegdecoder_stockcompat",
+      "old_destination": "vendor/lib64/libjpegdecoder.so",
+      "destination": "vendor/lib64/libjpegdecoder-rothko-v34.so",
+      "source": "vendor/lib64/libjpegdecoder.so",
+      "stock_sha256": "917edb7fa1166a7a52775d5c5a1dd0987ed03b35aa8446f3de45b79b9af26f54",
+      "new_selection": "vendor/lib64/libjpegdecoder.so:vendor/lib64/libjpegdecoder-rothko-v34.so;MODULE=libjpegdecoder_stockcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libjpeg.so",
+        "liblog.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
     }
   ],
   "consumers": {
@@ -1089,6 +1170,22 @@
     "vendor/lib64/mt6989/libpqconfig.so": {
       "android.frameworks.sensorservice-V1-ndk.so": "android.frameworks.sensorservice-V1-ndk-rothko.so",
       "libsensorndkbridge.so": "libsensorndkbridge-rothko.so"
+    },
+    "vendor/lib64/libkeymint_remote_prov_support-rothko.so": {
+      "libbase.so": "libbase-rothko-v34.so"
+    },
+    "odm/lib64/camera/plugins/com.xiaomi.plugin.gainmap.so": {
+      "libultrahdr.so": "libultrahdr-rothko-v34.so"
+    },
+    "odm/lib64/camera/plugins/com.xiaomi.plugin.jpegrAggr.so": {
+      "libultrahdr.so": "libultrahdr-rothko-v34.so"
+    },
+    "vendor/lib64/mt6989/libmtkcam_hwnode.jpegnode.so": {
+      "libultrahdr.so": "libultrahdr-rothko-v34.so"
+    },
+    "vendor/lib64/libultrahdr-rothko-v34.so": {
+      "libjpegencoder.so": "libjpegencoder-rothko-v34.so",
+      "libjpegdecoder.so": "libjpegdecoder-rothko-v34.so"
     }
   },
   "limits": [
