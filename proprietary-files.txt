@@ -2846,3 +2846,5 @@ vendor/lib64/libkeymint_support.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libkeymint_remote_prov_support.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/android.hardware.bluetooth.audio-V3-ndk.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/android.hardware.graphics.composer3-V2-ndk.so;MODULE_SUFFIX=_vendorcompat
+vendor/lib64/android.hardware.camera.device-V2-ndk.so;MODULE_SUFFIX=_vendorcompat
+vendor/lib64/android.hardware.camera.provider-V2-ndk.so;MODULE_SUFFIX=_vendorcompat
