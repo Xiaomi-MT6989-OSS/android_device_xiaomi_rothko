@@ -2830,3 +2830,4 @@ vendor/lib64/vendor.xiaomi.hardware.fx.tunnel-V1-ndk.so
 vendor/lib64/vendor.xiaomi.hardware.mlipay-V1-ndk.so
 vendor/lib64/vendor.xiaomi.hardware.quickcamera-V1-ndk.so
 vendor/lib64/vendor.xiaomi.hardware.soterservice-V1-ndk.so
+vendor/lib64/vendor.mediatek.hardware.gnss-V1-ndk.so
