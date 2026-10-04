@@ -6,6 +6,7 @@ vendor/lib64/libaedv.so
 
 # Audio
 odm/etc/audio/misoundsa_spk_config.bin
+vendor/lib64/libaudioclient_aidl_conversion.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libaudiocloudctrl.so
 vendor/lib64/libaudiocompensationfilterc.so
 vendor/lib64/libaudiocompensationfilter_vendor.so
@@ -15,10 +16,12 @@ vendor/lib64/libaudiocustparam_vendor.so
 vendor/lib64/libaudiodatabase.so
 vendor/lib64/libaudiodcrflt_vendor.so
 vendor/lib64/libaudiofmtconv.so
+vendor/lib64/libaudiofoundation.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libaudioloudc.so
 vendor/lib64/libaudioprimarydevicehalifclient.so
 vendor/lib64/libaudiosmartpamtk.so
 vendor/lib64/libaudiotoolkit_vendor.so
+vendor/lib64/libaudio_aidl_conversion_common_ndk.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libaudio_param_parser-vnd.so
 vendor/lib64/libtinycompress.so
 vendor/lib64/hw/audio.primary.mediatek.so;SYMLINK=vendor/lib64/hw/audio.primary.mt6989.so
@@ -2690,12 +2693,12 @@ vendor/lib64/libwifi-hal.so:vendor/lib64/libwifi-hal-mtk.so;FIX_SONAME
 # Current stock HALs and reviewed dependency additions
 vendor/etc/vintf/manifest/gnss-mtk.xml
 vendor/lib64/hw/android.hardware.audio@7.1-impl-mediatek.so
-vendor/lib64/hw/android.hardware.soundtrigger3-impl.so
+vendor/lib64/hw/android.hardware.soundtrigger3-impl.so;MODULE_SUFFIX=_rothko
 vendor/lib64/hw/vendor.mediatek.hardware.audio-impl.so
 vendor/lib64/android.hardware.bluetooth.audio-impl-mediatek.so
 vendor/lib64/libbluetooth_audio_session_aidl_mtk.so
 vendor/lib64/libmisight.so
-vendor/bin/hw/android.hardware.sensors-service.multihal
+vendor/bin/hw/android.hardware.sensors-service.multihal;MODULE_SUFFIX=_rothko
 vendor/etc/init/android.hardware.sensors-service-multihal.rc
 vendor/etc/vintf/manifest/android.hardware.sensors-multihal.xml
 vendor/lib64/hw/android.hardware.sensors@2.X-subhal-mediatek.so
