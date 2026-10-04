@@ -2719,3 +2719,5 @@ vendor/lib64/libteecli.so
 vendor/etc/vintf/manifest/manifest_media_c2_V1_2_default.xml
 odm/etc/thermal-per-normal.conf
 odm/lib64/libc++_shared.so
+odm/lib64/libarc.ion.so
+odm/lib64/libdlrmsc.so
