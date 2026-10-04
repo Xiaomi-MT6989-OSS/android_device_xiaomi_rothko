@@ -6,7 +6,7 @@
 /dev/misc-sd                                     0660    root    system
 
 # UFS only
-/dev/block/sdc                                   0660    root    system
+# LK is on sdc36/sdc69. Keep ueventd's root-only default for the whole UFS LUN.
 
 # eMMC/UFS common
 /dev/block/by-name/misc2     0660    root    system
