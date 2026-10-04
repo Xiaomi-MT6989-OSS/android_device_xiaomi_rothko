@@ -2861,4 +2861,4 @@ apex/com.android.vndk.v34/lib64/libstagefright_foundation.so:vendor/lib64/libsta
 apex/com.android.vndk.v34/lib64/libstagefright_bufferqueue_helper.so:vendor/lib64/libstagefright_bufferqueue_helper-rothko.so;MODULE=libstagefright_bufferqueue_helper_vendorcompat;FIX_SONAME;TRYSRCFIRST
 apex/com.android.vndk.v34/lib64/android.hardware.graphics.allocator-V2-ndk.so:vendor/lib64/android.hardware.graphics.allocator-V2-ndk-v34.so;MODULE=android.hardware.graphics.allocator-V2-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
 apex/com.android.vndk.v34/lib64/libgralloctypes.so:vendor/lib64/libgralloctypes-v34.so;MODULE=libgralloctypes_vendorcompat;FIX_SONAME;TRYSRCFIRST
-apex/com.android.vndk.v34/lib64/libui.so:vendor/lib64/libui-v34.so;MODULE=libui_vendorcompat;FIX_SONAME;TRYSRCFIRST
+apex/com.android.vndk.v34/lib64/libui.so:vendor/lib64/libui-rothko-v34.so;MODULE=libui_vendorcompat;FIX_SONAME;TRYSRCFIRST

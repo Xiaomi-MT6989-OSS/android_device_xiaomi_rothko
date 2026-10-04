@@ -760,13 +760,13 @@
     },
     {
       "old_soname": "libui.so",
-      "new_soname": "libui-v34.so",
+      "new_soname": "libui-rothko-v34.so",
       "module": "libui_vendorcompat",
       "old_destination": "vendor/lib64/libui.so",
-      "destination": "vendor/lib64/libui-v34.so",
+      "destination": "vendor/lib64/libui-rothko-v34.so",
       "source": "apex/com.android.vndk.v34/lib64/libui.so",
       "stock_sha256": "60f82af247d3b081c0435b40bd95f19a35183bb0c08b7a313b681f47502440d4",
-      "new_selection": "apex/com.android.vndk.v34/lib64/libui.so:vendor/lib64/libui-v34.so;MODULE=libui_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "new_selection": "apex/com.android.vndk.v34/lib64/libui.so:vendor/lib64/libui-rothko-v34.so;MODULE=libui_vendorcompat;FIX_SONAME;TRYSRCFIRST",
       "from_stock_apex": true,
       "needed": [
         "android.hardware.graphics.common-V4-ndk.so",
@@ -797,13 +797,13 @@
   ],
   "consumers": {
     "odm/lib64/camera/plugins/com.xiaomi.plugin.beautydeformation.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "odm/lib64/camera/plugins/com.xiaomi.plugin.filter.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "odm/lib64/camera/plugins/com.xiaomi.plugin.videofilter.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "odm/lib64/libmt_mitee.so": {
       "lib_android_keymaster_keymint_utils.so": "lib_android_keymaster_keymint_utils-rothko.so",
@@ -869,7 +869,7 @@
       "libgralloctypes.so": "libgralloctypes-v34.so"
     },
     "vendor/lib64/hw/mt6989/vendor.mediatek.hardware.pq_aidl-impl.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/hw/vendor.mediatek.hardware.audio-impl.so": {
       "libmediautils_vendor.so": "libmediautils_vendor-rothko.so"
@@ -892,18 +892,18 @@
     "vendor/lib64/libcodec2_fsr.so": {
       "libgralloctypes.so": "libgralloctypes-v34.so",
       "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so",
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libcodec2_hidl@1.0-rothko.so": {
       "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
-      "libui.so": "libui-v34.so",
+      "libui.so": "libui-rothko-v34.so",
       "libstagefright_bufferqueue_helper.so": "libstagefright_bufferqueue_helper-rothko.so",
       "libcodec2_hidl_plugin.so": "libcodec2_hidl_plugin-rothko.so"
     },
     "vendor/lib64/libcodec2_hidl@1.1-rothko.so": {
       "libcodec2_hidl@1.0.so": "libcodec2_hidl@1.0-rothko.so",
       "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
-      "libui.so": "libui-v34.so",
+      "libui.so": "libui-rothko-v34.so",
       "libstagefright_bufferqueue_helper.so": "libstagefright_bufferqueue_helper-rothko.so",
       "libcodec2_hidl_plugin.so": "libcodec2_hidl_plugin-rothko.so"
     },
@@ -911,7 +911,7 @@
       "libcodec2_hidl@1.0.so": "libcodec2_hidl@1.0-rothko.so",
       "libcodec2_hidl@1.1.so": "libcodec2_hidl@1.1-rothko.so",
       "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
-      "libui.so": "libui-v34.so",
+      "libui.so": "libui-rothko-v34.so",
       "libstagefright_bufferqueue_helper.so": "libstagefright_bufferqueue_helper-rothko.so",
       "libcodec2_hidl_plugin.so": "libcodec2_hidl_plugin-rothko.so"
     },
@@ -924,13 +924,13 @@
       "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
     },
     "vendor/lib64/libcodec2_mtk_vdec.so": {
-      "libui.so": "libui-v34.so",
+      "libui.so": "libui-rothko-v34.so",
       "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
       "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
       "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
     },
     "vendor/lib64/libcodec2_mtk_venc.so": {
-      "libui.so": "libui-v34.so",
+      "libui.so": "libui-rothko-v34.so",
       "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
       "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
       "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
@@ -958,13 +958,13 @@
     "vendor/lib64/libcodec2_vndk-rothko.so": {
       "libgralloctypes.so": "libgralloctypes-v34.so",
       "libstagefright_aidl_bufferpool2.so": "libstagefright_aidl_bufferpool2-rothko.so",
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libcodec2_vpp_AIMEMC_plugin.so": {
       "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
       "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
       "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
-      "libui.so": "libui-v34.so",
+      "libui.so": "libui-rothko-v34.so",
       "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so",
       "libgralloctypes.so": "libgralloctypes-v34.so"
     },
@@ -972,7 +972,7 @@
       "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
       "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
       "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
-      "libui.so": "libui-v34.so",
+      "libui.so": "libui-rothko-v34.so",
       "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so",
       "libgralloctypes.so": "libgralloctypes-v34.so"
     },
@@ -997,19 +997,19 @@
       "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
     },
     "vendor/lib64/libcom.xiaomi.ecoenginemonitor.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libcom.xiaomi.grallocutils.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libcom.xiaomi.ionutils.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libcom.xiaomi.pluginutils.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libcom.xiaomi.sensorpolicy.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libgpu_aux.so": {
       "libgralloctypes.so": "libgralloctypes-v34.so"
@@ -1021,7 +1021,7 @@
       "lib_android_keymaster_keymint_utils.so": "lib_android_keymaster_keymint_utils-rothko.so"
     },
     "vendor/lib64/libmialgoengine.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libmicamera_adapter.so": {
       "libgralloctypes.so": "libgralloctypes-v34.so"
@@ -1042,20 +1042,20 @@
       "android.hardware.camera.provider-V2-ndk.so": "android.hardware.camera.provider-V2-ndk-rothko.so"
     },
     "vendor/lib64/libmicamera_hal_core.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libmtkcam_grallocutils_aidlv1helper.so": {
-      "libui.so": "libui-v34.so",
+      "libui.so": "libui-rothko-v34.so",
       "libgralloctypes.so": "libgralloctypes-v34.so"
     },
     "vendor/lib64/libmtkisp_metadata_v2.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libnpagent.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libnpagent_server.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/libsensorndkbridge-rothko.so": {
       "android.frameworks.sensorservice-V1-ndk.so": "android.frameworks.sensorservice-V1-ndk-rothko.so"
@@ -1067,9 +1067,9 @@
       "libshmemutil.so": "libshmemutil-rothko.so"
     },
     "vendor/lib64/libstagefright_bufferqueue_helper-rothko.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
-    "vendor/lib64/libui-v34.so": {
+    "vendor/lib64/libui-rothko-v34.so": {
       "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so",
       "libgralloctypes.so": "libgralloctypes-v34.so"
     },
@@ -1077,14 +1077,14 @@
       "libsensorndkbridge.so": "libsensorndkbridge-rothko.so"
     },
     "vendor/lib64/mt6989/libmtkcam_grallocutils.so": {
-      "libui.so": "libui-v34.so",
+      "libui.so": "libui-rothko-v34.so",
       "libgralloctypes.so": "libgralloctypes-v34.so"
     },
     "vendor/lib64/mt6989/libmtkcam_hal_hidl_provider.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/mt6989/libmtkcam_thirdparty.customer.so": {
-      "libui.so": "libui-v34.so"
+      "libui.so": "libui-rothko-v34.so"
     },
     "vendor/lib64/mt6989/libpqconfig.so": {
       "android.frameworks.sensorservice-V1-ndk.so": "android.frameworks.sensorservice-V1-ndk-rothko.so",
