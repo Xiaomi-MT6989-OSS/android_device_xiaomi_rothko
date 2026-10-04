@@ -1,0 +1,1099 @@
+{
+  "scope": "Device runtime filenames and direct DT_NEEDED replacements derived from completed retry-42 install rules and exact stock ELF index. Does not establish dlopen, namespaces or runtime ABI compatibility.",
+  "graph_trial": 42,
+  "libraries": [
+    {
+      "old_soname": "android.frameworks.sensorservice-V1-ndk.so",
+      "new_soname": "android.frameworks.sensorservice-V1-ndk-rothko.so",
+      "module": "android.frameworks.sensorservice-V1-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.frameworks.sensorservice-V1-ndk.so",
+      "destination": "vendor/lib64/android.frameworks.sensorservice-V1-ndk-rothko.so",
+      "source": "vendor/lib64/android.frameworks.sensorservice-V1-ndk.so",
+      "stock_sha256": "b51a264c103dcbb406aad408f1aaa0f2a79663933b983e0047e8df41cfee8c43",
+      "new_selection": "vendor/lib64/android.frameworks.sensorservice-V1-ndk.so:vendor/lib64/android.frameworks.sensorservice-V1-ndk-rothko.so;MODULE=android.frameworks.sensorservice-V1-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.sensors-V2-ndk.so",
+        "android.hardware.common-V2-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "android.hardware.bluetooth.audio-V3-ndk.so",
+      "new_soname": "android.hardware.bluetooth.audio-V3-ndk-rothko.so",
+      "module": "android.hardware.bluetooth.audio-V3-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.bluetooth.audio-V3-ndk.so",
+      "destination": "vendor/lib64/android.hardware.bluetooth.audio-V3-ndk-rothko.so",
+      "source": "vendor/lib64/android.hardware.bluetooth.audio-V3-ndk.so",
+      "stock_sha256": "a3d737af7a2b08737438e95c3cf2bfcfa683f23ca06e27cb1c694d5daa1ba585",
+      "new_selection": "vendor/lib64/android.hardware.bluetooth.audio-V3-ndk.so:vendor/lib64/android.hardware.bluetooth.audio-V3-ndk-rothko.so;MODULE=android.hardware.bluetooth.audio-V3-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.common-V2-ndk.so",
+        "android.hardware.common.fmq-V1-ndk.so",
+        "android.hardware.audio.common-V1-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "android.hardware.camera.device-V2-ndk.so",
+      "new_soname": "android.hardware.camera.device-V2-ndk-rothko.so",
+      "module": "android.hardware.camera.device-V2-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.camera.device-V2-ndk.so",
+      "destination": "vendor/lib64/android.hardware.camera.device-V2-ndk-rothko.so",
+      "source": "vendor/lib64/android.hardware.camera.device-V2-ndk.so",
+      "stock_sha256": "9c8f0b539fa3df64a4c8c399185d5d48cfdbc876d64732063a0b6a78895644e1",
+      "new_selection": "vendor/lib64/android.hardware.camera.device-V2-ndk.so:vendor/lib64/android.hardware.camera.device-V2-ndk-rothko.so;MODULE=android.hardware.camera.device-V2-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.common-V2-ndk.so",
+        "android.hardware.common.fmq-V1-ndk.so",
+        "android.hardware.camera.common-V1-ndk.so",
+        "android.hardware.camera.metadata-V2-ndk.so",
+        "android.hardware.graphics.common-V4-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "android.hardware.camera.provider-V2-ndk.so",
+      "new_soname": "android.hardware.camera.provider-V2-ndk-rothko.so",
+      "module": "android.hardware.camera.provider-V2-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.camera.provider-V2-ndk.so",
+      "destination": "vendor/lib64/android.hardware.camera.provider-V2-ndk-rothko.so",
+      "source": "vendor/lib64/android.hardware.camera.provider-V2-ndk.so",
+      "stock_sha256": "7eb2b0242c7c35ec95bc666ba18c5e1e5f0cdd5d51773a7feb1ac4d9c17bed81",
+      "new_selection": "vendor/lib64/android.hardware.camera.provider-V2-ndk.so:vendor/lib64/android.hardware.camera.provider-V2-ndk-rothko.so;MODULE=android.hardware.camera.provider-V2-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.camera.device-V2-ndk.so",
+        "android.hardware.camera.common-V1-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "android.hardware.graphics.allocator-V2-ndk.so",
+      "new_soname": "android.hardware.graphics.allocator-V2-ndk-v34.so",
+      "module": "android.hardware.graphics.allocator-V2-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.graphics.allocator-V2-ndk.so",
+      "destination": "vendor/lib64/android.hardware.graphics.allocator-V2-ndk-v34.so",
+      "source": "apex/com.android.vndk.v34/lib64/android.hardware.graphics.allocator-V2-ndk.so",
+      "stock_sha256": "05636a80e1879926b5d4f5c4fce1b9690e25282bfdcf1e25b6ff60e5a7bf4d7c",
+      "new_selection": "apex/com.android.vndk.v34/lib64/android.hardware.graphics.allocator-V2-ndk.so:vendor/lib64/android.hardware.graphics.allocator-V2-ndk-v34.so;MODULE=android.hardware.graphics.allocator-V2-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": true,
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.common-V2-ndk.so",
+        "android.hardware.graphics.common-V4-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "android.hardware.graphics.composer3-V2-ndk.so",
+      "new_soname": "android.hardware.graphics.composer3-V2-ndk-rothko.so",
+      "module": "android.hardware.graphics.composer3-V2-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.graphics.composer3-V2-ndk.so",
+      "destination": "vendor/lib64/android.hardware.graphics.composer3-V2-ndk-rothko.so",
+      "source": "vendor/lib64/android.hardware.graphics.composer3-V2-ndk.so",
+      "stock_sha256": "0f4ca5343db82974f17d2644fddc45d1441c6438e0f7b3af51e855402e4b09c6",
+      "new_selection": "vendor/lib64/android.hardware.graphics.composer3-V2-ndk.so:vendor/lib64/android.hardware.graphics.composer3-V2-ndk-rothko.so;MODULE=android.hardware.graphics.composer3-V2-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.graphics.common-V4-ndk.so",
+        "android.hardware.common-V2-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "audioclient-types-aidl-cpp.so",
+      "new_soname": "audioclient-types-aidl-cpp-rothko.so",
+      "module": "audioclient-types-aidl-cpp_vendorcompat",
+      "old_destination": "vendor/lib64/audioclient-types-aidl-cpp.so",
+      "destination": "vendor/lib64/audioclient-types-aidl-cpp-rothko.so",
+      "source": "vendor/lib64/audioclient-types-aidl-cpp.so",
+      "stock_sha256": "44e6e434c6c4738d5227feb65ee9d804f7f89f16644b559f82d38b0ba56e206d",
+      "new_selection": "vendor/lib64/audioclient-types-aidl-cpp.so:vendor/lib64/audioclient-types-aidl-cpp-rothko.so;MODULE=audioclient-types-aidl-cpp_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder.so",
+        "libutils.so",
+        "libcutils.so",
+        "android.media.audio.common.types-V2-cpp.so",
+        "framework-permission-aidl-cpp.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "av-types-aidl-cpp.so",
+      "new_soname": "av-types-aidl-cpp-rothko.so",
+      "module": "av-types-aidl-cpp_vendorcompat",
+      "old_destination": "vendor/lib64/av-types-aidl-cpp.so",
+      "destination": "vendor/lib64/av-types-aidl-cpp-rothko.so",
+      "source": "vendor/lib64/av-types-aidl-cpp.so",
+      "stock_sha256": "def4183355a4d93dea19c0993d09759aadcf3d5b4aa2ca60bfca83530c57e1e9",
+      "new_selection": "vendor/lib64/av-types-aidl-cpp.so:vendor/lib64/av-types-aidl-cpp-rothko.so;MODULE=av-types-aidl-cpp_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder.so",
+        "libutils.so",
+        "libcutils.so",
+        "android.media.audio.common.types-V2-cpp.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "lib_android_keymaster_keymint_utils.so",
+      "new_soname": "lib_android_keymaster_keymint_utils-rothko.so",
+      "module": "lib_android_keymaster_keymint_utils_vendorcompat",
+      "old_destination": "vendor/lib64/lib_android_keymaster_keymint_utils.so",
+      "destination": "vendor/lib64/lib_android_keymaster_keymint_utils-rothko.so",
+      "source": "vendor/lib64/lib_android_keymaster_keymint_utils.so",
+      "stock_sha256": "5bdfa553a960d60afc1115f4d1fc362a3c41ebdbe14ab610ae929caa6e02f60f",
+      "new_selection": "vendor/lib64/lib_android_keymaster_keymint_utils.so:vendor/lib64/lib_android_keymaster_keymint_utils-rothko.so;MODULE=lib_android_keymaster_keymint_utils_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.hardware.security.keymint-V3-ndk.so",
+        "libbase.so",
+        "libhardware.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libaudio_aidl_conversion_common_ndk.so",
+      "new_soname": "libaudio_aidl_conversion_common_ndk-rothko.so",
+      "module": "libaudio_aidl_conversion_common_ndk_vendorcompat",
+      "old_destination": "vendor/lib64/libaudio_aidl_conversion_common_ndk.so",
+      "destination": "vendor/lib64/libaudio_aidl_conversion_common_ndk-rothko.so",
+      "source": "vendor/lib64/libaudio_aidl_conversion_common_ndk.so",
+      "stock_sha256": "a26cf24edfb8036b994086940408c818db8bd77c2de9e8ec305656d5030af305",
+      "new_selection": "vendor/lib64/libaudio_aidl_conversion_common_ndk.so:vendor/lib64/libaudio_aidl_conversion_common_ndk-rothko.so;MODULE=libaudio_aidl_conversion_common_ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.media.audio.common.types-V2-ndk.so",
+        "android.hardware.audio.common-V2-ndk.so",
+        "libbinder.so",
+        "liblog.so",
+        "libshmemcompat.so",
+        "libstagefright_foundation.so",
+        "libutils.so",
+        "shared-file-region-aidl-cpp.so",
+        "framework-permission-aidl-cpp.so",
+        "libbinder_ndk.so",
+        "libbase.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libaudioclient_aidl_conversion.so",
+      "new_soname": "libaudioclient_aidl_conversion-rothko.so",
+      "module": "libaudioclient_aidl_conversion_vendorcompat",
+      "old_destination": "vendor/lib64/libaudioclient_aidl_conversion.so",
+      "destination": "vendor/lib64/libaudioclient_aidl_conversion-rothko.so",
+      "source": "vendor/lib64/libaudioclient_aidl_conversion.so",
+      "stock_sha256": "5fe95f33ceed56d8aa6acc3b6e03337b39cbe419c187dd724a9a4b42dbc2a15f",
+      "new_selection": "vendor/lib64/libaudioclient_aidl_conversion.so:vendor/lib64/libaudioclient_aidl_conversion-rothko.so;MODULE=libaudioclient_aidl_conversion_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.media.audio.common.types-V2-cpp.so",
+        "libbase.so",
+        "libbinder.so",
+        "liblog.so",
+        "libshmemcompat.so",
+        "libstagefright_foundation.so",
+        "libutils.so",
+        "shared-file-region-aidl-cpp.so",
+        "framework-permission-aidl-cpp.so",
+        "audioclient-types-aidl-cpp.so",
+        "av-types-aidl-cpp.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libaudiofoundation.so",
+      "new_soname": "libaudiofoundation-rothko.so",
+      "module": "libaudiofoundation_vendorcompat",
+      "old_destination": "vendor/lib64/libaudiofoundation.so",
+      "destination": "vendor/lib64/libaudiofoundation-rothko.so",
+      "source": "vendor/lib64/libaudiofoundation.so",
+      "stock_sha256": "826ca9543052369f5bd834ccf9e71d06b937fac93419f63fd1d2af0361be0e8c",
+      "new_selection": "vendor/lib64/libaudiofoundation.so:vendor/lib64/libaudiofoundation-rothko.so;MODULE=libaudiofoundation_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.media.audio.common.types-V2-cpp.so",
+        "audioclient-types-aidl-cpp.so",
+        "libaudioclient_aidl_conversion.so",
+        "libaudioutils.so",
+        "libbase.so",
+        "libbinder.so",
+        "liblog.so",
+        "libmedia_helper.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libcamera2ndk_vendor.so",
+      "new_soname": "libcamera2ndk_vendor-rothko.so",
+      "module": "libcamera2ndk_vendor_vendorcompat",
+      "old_destination": "vendor/lib64/libcamera2ndk_vendor.so",
+      "destination": "vendor/lib64/libcamera2ndk_vendor-rothko.so",
+      "source": "vendor/lib64/libcamera2ndk_vendor.so",
+      "stock_sha256": "b3cfb8e7a9ab3ee4cf97e6a12ca3e02a3360f5df01f1e9e65d911ab6681b3ccc",
+      "new_selection": "vendor/lib64/libcamera2ndk_vendor.so:vendor/lib64/libcamera2ndk_vendor-rothko.so;MODULE=libcamera2ndk_vendor_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "libfmq.so",
+        "libhidlbase.so",
+        "libhardware.so",
+        "libnativewindow.so",
+        "liblog.so",
+        "libutils.so",
+        "libstagefright_foundation.so",
+        "libcutils.so",
+        "libcamera_metadata.so",
+        "libmediandk.so",
+        "android.frameworks.cameraservice.common-V1-ndk.so",
+        "android.frameworks.cameraservice.device-V1-ndk.so",
+        "android.frameworks.cameraservice.service-V1-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libcodec2_hidl@1.0.so",
+      "new_soname": "libcodec2_hidl@1.0-rothko.so",
+      "module": "libcodec2_hidl@1.0_vendorcompat",
+      "old_destination": "vendor/lib64/libcodec2_hidl@1.0.so",
+      "destination": "vendor/lib64/libcodec2_hidl@1.0-rothko.so",
+      "source": "vendor/lib64/libcodec2_hidl@1.0.so",
+      "stock_sha256": "dc686f3d79c1a7b2c554b88eb1496835faa5ec438763b9e7f59dfb34d28420c3",
+      "new_selection": "vendor/lib64/libcodec2_hidl@1.0.so:vendor/lib64/libcodec2_hidl@1.0-rothko.so;MODULE=libcodec2_hidl@1.0_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.hardware.graphics.bufferqueue@1.0.so",
+        "android.hardware.graphics.bufferqueue@2.0.so",
+        "android.hardware.graphics.common@1.0.so",
+        "android.hardware.media@1.0.so",
+        "android.hardware.media.bufferpool@2.0.so",
+        "android.hardware.media.c2@1.0.so",
+        "android.hardware.media.omx@1.0.so",
+        "libbase.so",
+        "libcodec2.so",
+        "libcodec2_vndk.so",
+        "libcutils.so",
+        "libhidlbase.so",
+        "liblog.so",
+        "libstagefright_bufferpool@2.0.1.so",
+        "libui.so",
+        "libutils.so",
+        "libstagefright_bufferqueue_helper.so",
+        "libcodec2_hidl_plugin.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libcodec2_hidl@1.1.so",
+      "new_soname": "libcodec2_hidl@1.1-rothko.so",
+      "module": "libcodec2_hidl@1.1_vendorcompat",
+      "old_destination": "vendor/lib64/libcodec2_hidl@1.1.so",
+      "destination": "vendor/lib64/libcodec2_hidl@1.1-rothko.so",
+      "source": "vendor/lib64/libcodec2_hidl@1.1.so",
+      "stock_sha256": "85a9e2422b80bd8109a49746fbfa76d8b2032491e10d7156dbb13b47b8f1e538",
+      "new_selection": "vendor/lib64/libcodec2_hidl@1.1.so:vendor/lib64/libcodec2_hidl@1.1-rothko.so;MODULE=libcodec2_hidl@1.1_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.hardware.graphics.bufferqueue@1.0.so",
+        "android.hardware.graphics.bufferqueue@2.0.so",
+        "android.hardware.graphics.common@1.0.so",
+        "android.hardware.media@1.0.so",
+        "android.hardware.media.bufferpool@2.0.so",
+        "android.hardware.media.c2@1.0.so",
+        "android.hardware.media.c2@1.1.so",
+        "android.hardware.media.omx@1.0.so",
+        "libbase.so",
+        "libcodec2.so",
+        "libcodec2_hidl@1.0.so",
+        "libcodec2_vndk.so",
+        "libcutils.so",
+        "libhidlbase.so",
+        "liblog.so",
+        "libstagefright_bufferpool@2.0.1.so",
+        "libui.so",
+        "libutils.so",
+        "libstagefright_bufferqueue_helper.so",
+        "libcodec2_hidl_plugin.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libcodec2_hidl@1.2.so",
+      "new_soname": "libcodec2_hidl@1.2-rothko.so",
+      "module": "libcodec2_hidl@1.2_vendorcompat",
+      "old_destination": "vendor/lib64/libcodec2_hidl@1.2.so",
+      "destination": "vendor/lib64/libcodec2_hidl@1.2-rothko.so",
+      "source": "vendor/lib64/libcodec2_hidl@1.2.so",
+      "stock_sha256": "349b4fb6cc3bf4bd1e617bf8eca9f374d94d9f6f6302d3fdcb31b193c7c16e4a",
+      "new_selection": "vendor/lib64/libcodec2_hidl@1.2.so:vendor/lib64/libcodec2_hidl@1.2-rothko.so;MODULE=libcodec2_hidl@1.2_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.hardware.graphics.bufferqueue@1.0.so",
+        "android.hardware.graphics.bufferqueue@2.0.so",
+        "android.hardware.graphics.common@1.0.so",
+        "android.hardware.media@1.0.so",
+        "android.hardware.media.bufferpool@2.0.so",
+        "android.hardware.media.c2@1.0.so",
+        "android.hardware.media.c2@1.1.so",
+        "android.hardware.media.c2@1.2.so",
+        "android.hardware.media.omx@1.0.so",
+        "libbase.so",
+        "libcodec2.so",
+        "libcodec2_hidl@1.0.so",
+        "libcodec2_hidl@1.1.so",
+        "libcodec2_vndk.so",
+        "libcutils.so",
+        "libhidlbase.so",
+        "liblog.so",
+        "libstagefright_bufferpool@2.0.1.so",
+        "libui.so",
+        "libutils.so",
+        "libstagefright_bufferqueue_helper.so",
+        "libcodec2_hidl_plugin.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libcodec2_hidl_plugin.so",
+      "new_soname": "libcodec2_hidl_plugin-rothko.so",
+      "module": "libcodec2_hidl_plugin_vendorcompat",
+      "old_destination": "vendor/lib64/libcodec2_hidl_plugin.so",
+      "destination": "vendor/lib64/libcodec2_hidl_plugin-rothko.so",
+      "source": "vendor/lib64/libcodec2_hidl_plugin.so",
+      "stock_sha256": "7a514281691668560a2870df3a1b4cf3d88a890e34cf575dd431f9c0aa2f9ce5",
+      "new_selection": "vendor/lib64/libcodec2_hidl_plugin.so:vendor/lib64/libcodec2_hidl_plugin-rothko.so;MODULE=libcodec2_hidl_plugin_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbase.so",
+        "libcodec2.so",
+        "libcodec2_vndk.so",
+        "liblog.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libcodec2_soft_common.so",
+      "new_soname": "libcodec2_soft_common-rothko.so",
+      "module": "libcodec2_soft_common_vendorcompat",
+      "old_destination": "vendor/lib64/libcodec2_soft_common.so",
+      "destination": "vendor/lib64/libcodec2_soft_common-rothko.so",
+      "source": "vendor/lib64/libcodec2_soft_common.so",
+      "stock_sha256": "5b911e63174486d030649d0fa26b4ebc2d076cff3737328b88cbf53195366110",
+      "new_selection": "vendor/lib64/libcodec2_soft_common.so:vendor/lib64/libcodec2_soft_common-rothko.so;MODULE=libcodec2_soft_common_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbase.so",
+        "libcodec2.so",
+        "libcodec2_vndk.so",
+        "libutils.so",
+        "libcutils.so",
+        "liblog.so",
+        "libsfplugin_ccodec_utils.so",
+        "libstagefright_foundation.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libcodec2_vndk.so",
+      "new_soname": "libcodec2_vndk-rothko.so",
+      "module": "libcodec2_vndk_vendorcompat",
+      "old_destination": "vendor/lib64/libcodec2_vndk.so",
+      "destination": "vendor/lib64/libcodec2_vndk-rothko.so",
+      "source": "vendor/lib64/libcodec2_vndk.so",
+      "stock_sha256": "0d7fe2174e8e3041ded37ed0ea4615f94e5a768c9974fa2e14632d3dca119ccb",
+      "new_selection": "vendor/lib64/libcodec2_vndk.so:vendor/lib64/libcodec2_vndk-rothko.so;MODULE=libcodec2_vndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.hardware.graphics.bufferqueue@2.0.so",
+        "android.hardware.graphics.common@1.2.so",
+        "android.hardware.common-V2-ndk.so",
+        "android.hardware.common.fmq-V1-ndk.so",
+        "android.hardware.media.bufferpool@2.0.so",
+        "android.hardware.media.bufferpool2-V1-ndk.so",
+        "libbase.so",
+        "libbinder_ndk.so",
+        "libcutils.so",
+        "libdmabufheap.so",
+        "libfmq.so",
+        "libgralloctypes.so",
+        "libhidlbase.so",
+        "libion.so",
+        "liblog.so",
+        "libnativewindow.so",
+        "libstagefright_foundation.so",
+        "libstagefright_bufferpool@2.0.1.so",
+        "libstagefright_aidl_bufferpool2.so",
+        "libui.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libgralloctypes.so",
+      "new_soname": "libgralloctypes-v34.so",
+      "module": "libgralloctypes_vendorcompat",
+      "old_destination": "vendor/lib64/libgralloctypes.so",
+      "destination": "vendor/lib64/libgralloctypes-v34.so",
+      "source": "apex/com.android.vndk.v34/lib64/libgralloctypes.so",
+      "stock_sha256": "6d4abaaf1bfdec0ff4b2c2d4382d7584b9de21c9b84fdad84774e131aa6520f7",
+      "new_selection": "apex/com.android.vndk.v34/lib64/libgralloctypes.so:vendor/lib64/libgralloctypes-v34.so;MODULE=libgralloctypes_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": true,
+      "needed": [
+        "android.hardware.graphics.common-V4-ndk.so",
+        "android.hardware.graphics.mapper@4.0.so",
+        "libhidlbase.so",
+        "liblog.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libkeymint.so",
+      "new_soname": "libkeymint-rothko.so",
+      "module": "libkeymint_vendorcompat",
+      "old_destination": "vendor/lib64/libkeymint.so",
+      "destination": "vendor/lib64/libkeymint-rothko.so",
+      "source": "vendor/lib64/libkeymint.so",
+      "stock_sha256": "c9a293a7b222558c91c4ce76545f823b612d58a842e49a43f9b051b3a9b97248",
+      "new_selection": "vendor/lib64/libkeymint.so:vendor/lib64/libkeymint-rothko.so;MODULE=libkeymint_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.hardware.security.keymint-V3-ndk.so",
+        "libhidlbase.so",
+        "android.hardware.security.rkp-V3-ndk.so",
+        "android.hardware.security.secureclock-V1-ndk.so",
+        "android.hardware.security.sharedsecret-V1-ndk.so",
+        "lib_android_keymaster_keymint_utils.so",
+        "libbase.so",
+        "libbinder_ndk.so",
+        "libcppbor_external.so",
+        "libcrypto.so",
+        "libcutils.so",
+        "libkeymaster_messages.so",
+        "libkeymaster_portable.so",
+        "liblog.so",
+        "libpuresoftkeymasterdevice.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libkeymint_remote_prov_support.so",
+      "new_soname": "libkeymint_remote_prov_support-rothko.so",
+      "module": "libkeymint_remote_prov_support_vendorcompat",
+      "old_destination": "vendor/lib64/libkeymint_remote_prov_support.so",
+      "destination": "vendor/lib64/libkeymint_remote_prov_support-rothko.so",
+      "source": "vendor/lib64/libkeymint_remote_prov_support.so",
+      "stock_sha256": "94e99bc082d369bc308ddb99c8628b5e462ac46a147ea953be91483503b32c3f",
+      "new_selection": "vendor/lib64/libkeymint_remote_prov_support.so:vendor/lib64/libkeymint_remote_prov_support-rothko.so;MODULE=libkeymint_remote_prov_support_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.hardware.security.keymint-V3-ndk.so",
+        "libbase.so",
+        "libbinder_ndk.so",
+        "libcppbor_external.so",
+        "libcppcose_rkp.so",
+        "libcrypto.so",
+        "libkeymaster_portable.so",
+        "libjsoncpp.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libkeymint_support.so",
+      "new_soname": "libkeymint_support-rothko.so",
+      "module": "libkeymint_support_vendorcompat",
+      "old_destination": "vendor/lib64/libkeymint_support.so",
+      "destination": "vendor/lib64/libkeymint_support-rothko.so",
+      "source": "vendor/lib64/libkeymint_support.so",
+      "stock_sha256": "d54c3d5da4938f46bc5301f2466f43d713f168130db50be29ad2e3f07b62c6b9",
+      "new_selection": "vendor/lib64/libkeymint_support.so:vendor/lib64/libkeymint_support-rothko.so;MODULE=libkeymint_support_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "android.hardware.security.keymint-V3-ndk.so",
+        "libbase.so",
+        "libcrypto.so",
+        "libutils.so",
+        "libhardware.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libmediautils_vendor.so",
+      "new_soname": "libmediautils_vendor-rothko.so",
+      "module": "libmediautils_vendor_vendorcompat",
+      "old_destination": "vendor/lib64/libmediautils_vendor.so",
+      "destination": "vendor/lib64/libmediautils_vendor-rothko.so",
+      "source": "vendor/lib64/libmediautils_vendor.so",
+      "stock_sha256": "413ea17f07f53b9f0fedf5fe6c25387b96d7d63127d3a3d6bcea9291ed23e16c",
+      "new_selection": "vendor/lib64/libmediautils_vendor.so:vendor/lib64/libmediautils_vendor-rothko.so;MODULE=libmediautils_vendor_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "liblog.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libsensorndkbridge.so",
+      "new_soname": "libsensorndkbridge-rothko.so",
+      "module": "libsensorndkbridge_vendorcompat",
+      "old_destination": "vendor/lib64/libsensorndkbridge.so",
+      "destination": "vendor/lib64/libsensorndkbridge-rothko.so",
+      "source": "vendor/lib64/libsensorndkbridge.so",
+      "stock_sha256": "919ae3deade748fde0c5e8103575cf597a5a52cbe955921ee543b3d230a7b811",
+      "new_selection": "vendor/lib64/libsensorndkbridge.so:vendor/lib64/libsensorndkbridge-rothko.so;MODULE=libsensorndkbridge_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbase.so",
+        "libbinder_ndk.so",
+        "libutils.so",
+        "android.frameworks.sensorservice-V1-ndk.so",
+        "android.hardware.sensors-V2-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libsfplugin_ccodec_utils.so",
+      "new_soname": "libsfplugin_ccodec_utils-rothko.so",
+      "module": "libsfplugin_ccodec_utils_vendorcompat",
+      "old_destination": "vendor/lib64/libsfplugin_ccodec_utils.so",
+      "destination": "vendor/lib64/libsfplugin_ccodec_utils-rothko.so",
+      "source": "vendor/lib64/libsfplugin_ccodec_utils.so",
+      "stock_sha256": "e461238dbdb7331c0c8a755e82e0d7cad05d24957339bca9d4b987b466309143",
+      "new_selection": "vendor/lib64/libsfplugin_ccodec_utils.so:vendor/lib64/libsfplugin_ccodec_utils-rothko.so;MODULE=libsfplugin_ccodec_utils_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbase.so",
+        "libcodec2.so",
+        "libcodec2_vndk.so",
+        "libcutils.so",
+        "liblog.so",
+        "libnativewindow.so",
+        "libstagefright_foundation.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libshmemcompat.so",
+      "new_soname": "libshmemcompat-rothko.so",
+      "module": "libshmemcompat_vendorcompat",
+      "old_destination": "vendor/lib64/libshmemcompat.so",
+      "destination": "vendor/lib64/libshmemcompat-rothko.so",
+      "source": "vendor/lib64/libshmemcompat.so",
+      "stock_sha256": "cd941f0768099175eb648aa2a6c8560f6a971eae930d6bd666dbe84f9daffbd4",
+      "new_selection": "vendor/lib64/libshmemcompat.so:vendor/lib64/libshmemcompat-rothko.so;MODULE=libshmemcompat_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder.so",
+        "libshmemutil.so",
+        "libutils.so",
+        "shared-file-region-aidl-cpp.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libshmemutil.so",
+      "new_soname": "libshmemutil-rothko.so",
+      "module": "libshmemutil_vendorcompat",
+      "old_destination": "vendor/lib64/libshmemutil.so",
+      "destination": "vendor/lib64/libshmemutil-rothko.so",
+      "source": "vendor/lib64/libshmemutil.so",
+      "stock_sha256": "2342a7588bab9bd9e52b5f4b0547cd6168d1fe8885f1301f3f7be7e3e5507ec1",
+      "new_selection": "vendor/lib64/libshmemutil.so:vendor/lib64/libshmemutil-rothko.so;MODULE=libshmemutil_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "shared-file-region-aidl-cpp.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libstagefright_aidl_bufferpool2.so",
+      "new_soname": "libstagefright_aidl_bufferpool2-rothko.so",
+      "module": "libstagefright_aidl_bufferpool2_vendorcompat",
+      "old_destination": "vendor/lib64/libstagefright_aidl_bufferpool2.so",
+      "destination": "vendor/lib64/libstagefright_aidl_bufferpool2-rothko.so",
+      "source": "vendor/lib64/libstagefright_aidl_bufferpool2.so",
+      "stock_sha256": "d9f82a31d64dfe3cfe4f3a60b5a74fefd073dc3b1c9d622b02ceb0410cb8b121",
+      "new_selection": "vendor/lib64/libstagefright_aidl_bufferpool2.so:vendor/lib64/libstagefright_aidl_bufferpool2-rothko.so;MODULE=libstagefright_aidl_bufferpool2_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "libcutils.so",
+        "libfmq.so",
+        "liblog.so",
+        "libutils.so",
+        "android.hardware.media.bufferpool2-V1-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libstagefright_bufferqueue_helper.so",
+      "new_soname": "libstagefright_bufferqueue_helper-rothko.so",
+      "module": "libstagefright_bufferqueue_helper_vendorcompat",
+      "old_destination": "vendor/lib64/libstagefright_bufferqueue_helper.so",
+      "destination": "vendor/lib64/libstagefright_bufferqueue_helper-rothko.so",
+      "source": "apex/com.android.vndk.v34/lib64/libstagefright_bufferqueue_helper.so",
+      "stock_sha256": "e85ed3a58a3957905e276fc8efeaf42cc9da755b54ec5854e1dd548b8a22f745",
+      "new_selection": "apex/com.android.vndk.v34/lib64/libstagefright_bufferqueue_helper.so:vendor/lib64/libstagefright_bufferqueue_helper-rothko.so;MODULE=libstagefright_bufferqueue_helper_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbase.so",
+        "libcutils.so",
+        "libhidlbase.so",
+        "libhidlmemory.so",
+        "liblog.so",
+        "libstagefright_foundation.so",
+        "libui.so",
+        "libutils.so",
+        "android.hardware.graphics.bufferqueue@1.0.so",
+        "android.hardware.graphics.bufferqueue@2.0.so",
+        "android.hidl.token@1.0-utils.so",
+        "libEGL.so",
+        "libnativewindow.so",
+        "libvndksupport.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libui.so",
+      "new_soname": "libui-v34.so",
+      "module": "libui_vendorcompat",
+      "old_destination": "vendor/lib64/libui.so",
+      "destination": "vendor/lib64/libui-v34.so",
+      "source": "apex/com.android.vndk.v34/lib64/libui.so",
+      "stock_sha256": "60f82af247d3b081c0435b40bd95f19a35183bb0c08b7a313b681f47502440d4",
+      "new_selection": "apex/com.android.vndk.v34/lib64/libui.so:vendor/lib64/libui-v34.so;MODULE=libui_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": true,
+      "needed": [
+        "android.hardware.graphics.common-V4-ndk.so",
+        "android.hardware.graphics.allocator-V2-ndk.so",
+        "android.hardware.graphics.allocator@2.0.so",
+        "android.hardware.graphics.allocator@3.0.so",
+        "android.hardware.graphics.allocator@4.0.so",
+        "android.hardware.graphics.common@1.2.so",
+        "android.hardware.graphics.mapper@2.0.so",
+        "android.hardware.graphics.mapper@2.1.so",
+        "android.hardware.graphics.mapper@3.0.so",
+        "android.hardware.graphics.mapper@4.0.so",
+        "libbase.so",
+        "libbinder_ndk.so",
+        "libcutils.so",
+        "libgralloctypes.so",
+        "libhidlbase.so",
+        "libsync.so",
+        "libutils.so",
+        "liblog.so",
+        "libvndksupport.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    }
+  ],
+  "consumers": {
+    "odm/lib64/camera/plugins/com.xiaomi.plugin.beautydeformation.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "odm/lib64/camera/plugins/com.xiaomi.plugin.filter.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "odm/lib64/camera/plugins/com.xiaomi.plugin.videofilter.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "odm/lib64/libmt_mitee.so": {
+      "lib_android_keymaster_keymint_utils.so": "lib_android_keymaster_keymint_utils-rothko.so",
+      "libkeymint.so": "libkeymint-rothko.so",
+      "libkeymint_support.so": "libkeymint_support-rothko.so",
+      "libkeymint_remote_prov_support.so": "libkeymint_remote_prov_support-rothko.so"
+    },
+    "vendor/bin/hw/android.hardware.graphics.composer@3.2-service": {
+      "android.hardware.graphics.composer3-V2-ndk.so": "android.hardware.graphics.composer3-V2-ndk-rothko.so"
+    },
+    "vendor/bin/hw/android.hardware.media.c2@1.2-mediatek-64b": {
+      "libcodec2_hidl@1.0.so": "libcodec2_hidl@1.0-rothko.so",
+      "libcodec2_hidl@1.1.so": "libcodec2_hidl@1.1-rothko.so",
+      "libcodec2_hidl@1.2.so": "libcodec2_hidl@1.2-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/bin/hw/android.hardware.security.keymint@3.0-service.mitee": {
+      "lib_android_keymaster_keymint_utils.so": "lib_android_keymaster_keymint_utils-rothko.so",
+      "libkeymint.so": "libkeymint-rothko.so"
+    },
+    "vendor/bin/hw/mt6989/android.hardware.graphics.allocator-V2-service-mediatek.mt6989": {
+      "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so"
+    },
+    "vendor/bin/hw/mt6989/camerahalserver": {
+      "android.hardware.camera.provider-V2-ndk.so": "android.hardware.camera.provider-V2-ndk-rothko.so"
+    },
+    "vendor/bin/mnld": {
+      "libsensorndkbridge.so": "libsensorndkbridge-rothko.so"
+    },
+    "vendor/lib64/android.hardware.bluetooth.audio-impl-mediatek.so": {
+      "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so"
+    },
+    "vendor/lib64/android.hardware.camera.provider-V2-ndk-rothko.so": {
+      "android.hardware.camera.device-V2-ndk.so": "android.hardware.camera.device-V2-ndk-rothko.so"
+    },
+    "vendor/lib64/egl/mt6989/libGLES_mali.so": {
+      "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so",
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/hw/android.hardware.audio@7.1-impl-mediatek.so": {
+      "libaudiofoundation.so": "libaudiofoundation-rothko.so",
+      "libmediautils_vendor.so": "libmediautils_vendor-rothko.so"
+    },
+    "vendor/lib64/hw/android.hardware.soundtrigger3-impl.so": {
+      "libaudio_aidl_conversion_common_ndk.so": "libaudio_aidl_conversion_common_ndk-rothko.so"
+    },
+    "vendor/lib64/hw/audio.primary.mediatek.so": {
+      "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so"
+    },
+    "vendor/lib64/hw/hwcomposer.mtk_common.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so",
+      "android.hardware.graphics.composer3-V2-ndk.so": "android.hardware.graphics.composer3-V2-ndk-rothko.so",
+      "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so"
+    },
+    "vendor/lib64/hw/mt6989/android.hardware.graphics.allocator-V2-mediatek.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so",
+      "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so"
+    },
+    "vendor/lib64/hw/mt6989/android.hardware.graphics.mapper@4.0-impl-mediatek.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/hw/mt6989/mapper.mediatek.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/hw/mt6989/vendor.mediatek.hardware.pq_aidl-impl.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/hw/vendor.mediatek.hardware.audio-impl.so": {
+      "libmediautils_vendor.so": "libmediautils_vendor-rothko.so"
+    },
+    "vendor/lib64/libaudio_aidl_conversion_common_ndk-rothko.so": {
+      "libshmemcompat.so": "libshmemcompat-rothko.so"
+    },
+    "vendor/lib64/libaudioclient_aidl_conversion-rothko.so": {
+      "libshmemcompat.so": "libshmemcompat-rothko.so",
+      "audioclient-types-aidl-cpp.so": "audioclient-types-aidl-cpp-rothko.so",
+      "av-types-aidl-cpp.so": "av-types-aidl-cpp-rothko.so"
+    },
+    "vendor/lib64/libaudiofoundation-rothko.so": {
+      "audioclient-types-aidl-cpp.so": "audioclient-types-aidl-cpp-rothko.so",
+      "libaudioclient_aidl_conversion.so": "libaudioclient_aidl_conversion-rothko.so"
+    },
+    "vendor/lib64/libbluetooth_audio_session_aidl_mtk.so": {
+      "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_fsr.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so",
+      "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so",
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libcodec2_hidl@1.0-rothko.so": {
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
+      "libui.so": "libui-v34.so",
+      "libstagefright_bufferqueue_helper.so": "libstagefright_bufferqueue_helper-rothko.so",
+      "libcodec2_hidl_plugin.so": "libcodec2_hidl_plugin-rothko.so"
+    },
+    "vendor/lib64/libcodec2_hidl@1.1-rothko.so": {
+      "libcodec2_hidl@1.0.so": "libcodec2_hidl@1.0-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
+      "libui.so": "libui-v34.so",
+      "libstagefright_bufferqueue_helper.so": "libstagefright_bufferqueue_helper-rothko.so",
+      "libcodec2_hidl_plugin.so": "libcodec2_hidl_plugin-rothko.so"
+    },
+    "vendor/lib64/libcodec2_hidl@1.2-rothko.so": {
+      "libcodec2_hidl@1.0.so": "libcodec2_hidl@1.0-rothko.so",
+      "libcodec2_hidl@1.1.so": "libcodec2_hidl@1.1-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
+      "libui.so": "libui-v34.so",
+      "libstagefright_bufferqueue_helper.so": "libstagefright_bufferqueue_helper-rothko.so",
+      "libcodec2_hidl_plugin.so": "libcodec2_hidl_plugin-rothko.so"
+    },
+    "vendor/lib64/libcodec2_hidl_plugin-rothko.so": {
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_mtk_c2store.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_mtk_vdec.so": {
+      "libui.so": "libui-v34.so",
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_mtk_venc.so": {
+      "libui.so": "libui-v34.so",
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_soft_common-rothko.so": {
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so"
+    },
+    "vendor/lib64/libcodec2_soft_mtk_alacdec.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_soft_mtk_imaadpcmdec.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_soft_mtk_mp3dec.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_soft_mtk_msadpcmdec.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_vndk-rothko.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so",
+      "libstagefright_aidl_bufferpool2.so": "libstagefright_aidl_bufferpool2-rothko.so",
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libcodec2_vpp_AIMEMC_plugin.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
+      "libui.so": "libui-v34.so",
+      "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so",
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/libcodec2_vpp_AISR_plugin.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
+      "libui.so": "libui-v34.so",
+      "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so",
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/libcodec2_vpp_fa_plugin.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_vpp_frc_plugin.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_vpp_qt_plugin.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcodec2_vpp_rs_plugin.so": {
+      "libcodec2_soft_common.so": "libcodec2_soft_common-rothko.so",
+      "libsfplugin_ccodec_utils.so": "libsfplugin_ccodec_utils-rothko.so",
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libcom.xiaomi.ecoenginemonitor.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libcom.xiaomi.grallocutils.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libcom.xiaomi.ionutils.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libcom.xiaomi.pluginutils.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libcom.xiaomi.sensorpolicy.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libgpu_aux.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/libgpud.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/libkeymint-rothko.so": {
+      "lib_android_keymaster_keymint_utils.so": "lib_android_keymaster_keymint_utils-rothko.so"
+    },
+    "vendor/lib64/libmialgoengine.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libmicamera_adapter.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/libmicamera_aidl_device.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so",
+      "android.hardware.camera.device-V2-ndk.so": "android.hardware.camera.device-V2-ndk-rothko.so",
+      "android.hardware.camera.provider-V2-ndk.so": "android.hardware.camera.provider-V2-ndk-rothko.so"
+    },
+    "vendor/lib64/libmicamera_aidl_provider.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so",
+      "android.hardware.camera.device-V2-ndk.so": "android.hardware.camera.device-V2-ndk-rothko.so",
+      "android.hardware.camera.provider-V2-ndk.so": "android.hardware.camera.provider-V2-ndk-rothko.so"
+    },
+    "vendor/lib64/libmicamera_aidl_utils.so": {
+      "libgralloctypes.so": "libgralloctypes-v34.so",
+      "android.hardware.camera.device-V2-ndk.so": "android.hardware.camera.device-V2-ndk-rothko.so",
+      "android.hardware.camera.provider-V2-ndk.so": "android.hardware.camera.provider-V2-ndk-rothko.so"
+    },
+    "vendor/lib64/libmicamera_hal_core.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libmtkcam_grallocutils_aidlv1helper.so": {
+      "libui.so": "libui-v34.so",
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/libmtkisp_metadata_v2.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libnpagent.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libnpagent_server.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libsensorndkbridge-rothko.so": {
+      "android.frameworks.sensorservice-V1-ndk.so": "android.frameworks.sensorservice-V1-ndk-rothko.so"
+    },
+    "vendor/lib64/libsfplugin_ccodec_utils-rothko.so": {
+      "libcodec2_vndk.so": "libcodec2_vndk-rothko.so"
+    },
+    "vendor/lib64/libshmemcompat-rothko.so": {
+      "libshmemutil.so": "libshmemutil-rothko.so"
+    },
+    "vendor/lib64/libstagefright_bufferqueue_helper-rothko.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/libui-v34.so": {
+      "android.hardware.graphics.allocator-V2-ndk.so": "android.hardware.graphics.allocator-V2-ndk-v34.so",
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/mt6989/libaalservice.so": {
+      "libsensorndkbridge.so": "libsensorndkbridge-rothko.so"
+    },
+    "vendor/lib64/mt6989/libmtkcam_grallocutils.so": {
+      "libui.so": "libui-v34.so",
+      "libgralloctypes.so": "libgralloctypes-v34.so"
+    },
+    "vendor/lib64/mt6989/libmtkcam_hal_hidl_provider.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/mt6989/libmtkcam_thirdparty.customer.so": {
+      "libui.so": "libui-v34.so"
+    },
+    "vendor/lib64/mt6989/libpqconfig.so": {
+      "android.frameworks.sensorservice-V1-ndk.so": "android.frameworks.sensorservice-V1-ndk-rothko.so",
+      "libsensorndkbridge.so": "libsensorndkbridge-rothko.so"
+    }
+  },
+  "limits": [
+    "dlopen names and final namespaces need separate audit",
+    "old/new C++ symbol interposition and layout in one process require runtime verification",
+    "Sensors binary/init/XML naming and SELinux label must be updated together"
+  ]
+}

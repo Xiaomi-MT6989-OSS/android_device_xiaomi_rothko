@@ -4,6 +4,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+from copy import deepcopy
+import json
+from pathlib import Path
+
 from extract_utils.fixups_blob import blob_fixup, blob_fixups_user_type
 from extract_utils.fixups_lib import lib_fixups as default_lib_fixups
 from extract_utils.main import ExtractUtils, ExtractUtilsModule
@@ -22,8 +26,7 @@ def lib_fixup_stock_compat(lib, partition, *args, **kwargs):
     return f'{lib}_vendorcompat' if partition in ['vendor', 'odm'] else None
 
 
-# These stock names are present in both partitions. Match the separate Soong
-# modules without changing filenames, SONAMEs or the stock runtime layout.
+# Preserve the reviewed build module IDs; runtime aliases are applied below.
 lib_fixups = {
     **default_lib_fixups,
     ('android.frameworks.sensorservice-V1-ndk', 'libsensorndkbridge',
@@ -84,6 +87,42 @@ blob_fixups: blob_fixups_user_type = {
     'vendor/lib64/hw/audio.primary.mediatek.so': blob_fixup()
         .replace_needed('libalsautils.so', 'libalsautils-v34.so'),
 }
+
+# Keep stock and current source providers at distinct install paths. The map
+# records rothko's own direct ELF consumers, not another device's library list.
+runtime_compat = json.loads(
+    Path(__file__).with_name('stock-runtime-compat.json').read_text()
+)
+runtime_destinations = {
+    row['old_destination']: row['destination']
+    for row in runtime_compat['libraries']
+}
+runtime_modules = {
+    row['new_soname'][:-3]: row['module']
+    for row in runtime_compat['libraries']
+}
+
+
+def lib_fixup_runtime_compat(lib, partition, *args, **kwargs):
+    return runtime_modules[lib] if partition in ['vendor', 'odm'] else None
+
+
+lib_fixups[tuple(runtime_modules)] = lib_fixup_runtime_compat
+separate_fixups = {}
+for paths, fixup in blob_fixups.items():
+    for target in (paths if isinstance(paths, tuple) else (paths,)):
+        separate_fixups[runtime_destinations.get(target, target)] = deepcopy(fixup)
+for target, replacements in runtime_compat['consumers'].items():
+    fixup = separate_fixups.setdefault(target, blob_fixup())
+    for old, new in replacements.items():
+        fixup.replace_needed(old, new)
+separate_fixups[
+    'vendor/etc/init/android.hardware.sensors-service-multihal-rothko.rc'
+] = blob_fixup().regex_replace(
+    r'/vendor/bin/hw/android\.hardware\.sensors-service\.multihal(?=\s|$)',
+    '/vendor/bin/hw/android.hardware.sensors-service.multihal-rothko',
+)
+blob_fixups = separate_fixups
 
 module = ExtractUtilsModule(
     'rothko',
