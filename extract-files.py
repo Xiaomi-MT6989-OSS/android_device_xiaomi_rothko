@@ -39,6 +39,7 @@ lib_fixups = {
      'libstagefright_foundation', 'libgralloctypes', 'libui',
      'libcodec2_soft_common', 'libcodec2_vndk', 'libsfplugin_ccodec_utils',
      'libstagefright_aidl_bufferpool2',
+     'libcamera2ndk_vendor',
      'android.hardware.graphics.allocator-V2-ndk'):
         lib_fixup_stock_compat,
     ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper'):

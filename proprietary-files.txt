@@ -249,7 +249,7 @@ vendor/lib64/libcamalgo.utility.so
 vendor/lib64/libcamalgo.vsdofUtil.so
 vendor/lib64/libcamalgo.warp.so
 vendor/lib64/libcamalgo.WarpMapResizer.so
-vendor/lib64/libcamera2ndk_vendor.so
+vendor/lib64/libcamera2ndk_vendor.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libcameraloadcalibrationfiles.so
 vendor/lib64/libcameraopt.so
 vendor/lib64/libcameraplatforminfoxiaomi.so
