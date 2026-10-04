@@ -2852,3 +2852,7 @@ vendor/lib64/libcodec2_soft_common.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libcodec2_vndk.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libsfplugin_ccodec_utils.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libstagefright_aidl_bufferpool2.so;MODULE_SUFFIX=_vendorcompat
+vendor/lib64/libcodec2_hidl@1.0.so;MODULE_SUFFIX=_vendorcompat
+vendor/lib64/libcodec2_hidl@1.1.so;MODULE_SUFFIX=_vendorcompat
+vendor/lib64/libcodec2_hidl@1.2.so;MODULE_SUFFIX=_vendorcompat
+vendor/lib64/libcodec2_hidl_plugin.so;MODULE_SUFFIX=_vendorcompat

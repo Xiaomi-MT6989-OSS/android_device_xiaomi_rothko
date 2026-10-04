@@ -98,3 +98,32 @@ cc_prebuilt_library_shared {
         "libc++",
     ],
 }
+
+// The BSP helper is byte-identical to the pinned VNDK 34 snapshot.
+cc_prebuilt_library_shared {
+    name: "libstagefright_bufferqueue_helper_vendorcompat",
+    stem: "libstagefright_bufferqueue_helper",
+    srcs: [":libstagefright_bufferqueue_helper.vndk.34.arm64"],
+    compile_multilib: "64",
+    vendor: true,
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbase",
+        "libcutils",
+        "libhidlbase",
+        "libhidlmemory",
+        "liblog",
+        "libstagefright_foundation_vendorcompat",
+        "libui_vendorcompat",
+        "libutils",
+        "android.hardware.graphics.bufferqueue@1.0",
+        "android.hardware.graphics.bufferqueue@2.0",
+        "android.hidl.token@1.0-utils",
+        "libEGL",
+        "libnativewindow",
+        "libvndksupport",
+        "libc++",
+    ],
+}
