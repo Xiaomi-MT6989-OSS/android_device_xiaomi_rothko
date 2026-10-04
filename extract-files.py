@@ -28,7 +28,9 @@ lib_fixups = {
     **default_lib_fixups,
     ('android.frameworks.sensorservice-V1-ndk', 'libsensorndkbridge',
      'lib_android_keymaster_keymint_utils', 'libkeymint', 'libaudiofoundation',
-     'libaudioclient_aidl_conversion', 'libaudio_aidl_conversion_common_ndk'):
+     'libaudioclient_aidl_conversion', 'libaudio_aidl_conversion_common_ndk',
+     'libmediautils_vendor', 'libshmemcompat', 'libshmemutil',
+     'av-types-aidl-cpp', 'audioclient-types-aidl-cpp'):
         lib_fixup_stock_compat,
     ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper'):
         lib_fixup_odm_suffix,
