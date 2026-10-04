@@ -2589,7 +2589,7 @@ vendor/lib64/libmigpese@2.0.so
 vendor/etc/elliptic_sensor.xml
 vendor/lib64/hw/sensors.elliptic@2.0.so
 vendor/lib64/hw/sensors.mediatek.V2.0.so;SYMLINK=vendor/lib64/hw/sensors.mt6989.so
-vendor/lib64/libsensorndkbridge.so
+vendor/lib64/libsensorndkbridge.so;MODULE_SUFFIX=_vendorcompat
 vendor/lib64/libnotifyaudiohal.so;FIX_SONAME
 vendor/lib64/libhfmanager.so
 vendor/lib64/libksensor.so

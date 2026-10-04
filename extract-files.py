@@ -26,7 +26,8 @@ def lib_fixup_sensorservice_compat(lib, partition, *args, **kwargs):
 # modules without changing filenames, SONAMEs or the stock runtime layout.
 lib_fixups = {
     **default_lib_fixups,
-    'android.frameworks.sensorservice-V1-ndk': lib_fixup_sensorservice_compat,
+    ('android.frameworks.sensorservice-V1-ndk', 'libsensorndkbridge'):
+        lib_fixup_sensorservice_compat,
     ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper'):
         lib_fixup_odm_suffix,
 }
