@@ -2718,3 +2718,4 @@ vendor/lib64/vendor.xiaomi.sensor.citsensorservice-V1-ndk.so
 vendor/lib64/libteecli.so
 vendor/etc/vintf/manifest/manifest_media_c2_V1_2_default.xml
 odm/etc/thermal-per-normal.conf
+odm/lib64/libc++_shared.so
