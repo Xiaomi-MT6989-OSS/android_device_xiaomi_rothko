@@ -2350,7 +2350,7 @@ vendor/etc/init/init.gps_scp.rc
 vendor/etc/init/mtk_agpsd_p.rc
 vendor/etc/mpe.conf
 vendor/etc/slp_conf
-vendor/etc/vintf/manifest/gnss-default.xml
+vendor/etc/vintf/manifest/gnss-default.xml;MODULE_SUFFIX=_rothko
 vendor/lib64/hw/android.hardware.gnss-impl-mediatek.so
 vendor/lib64/hw/gps.default.so
 vendor/lib64/hw/mtkgeofence.default.so
@@ -2700,7 +2700,7 @@ vendor/lib64/libbluetooth_audio_session_aidl_mtk.so
 vendor/lib64/libmisight.so
 vendor/bin/hw/android.hardware.sensors-service.multihal;MODULE_SUFFIX=_rothko
 vendor/etc/init/android.hardware.sensors-service-multihal.rc
-vendor/etc/vintf/manifest/android.hardware.sensors-multihal.xml
+vendor/etc/vintf/manifest/android.hardware.sensors-multihal.xml;MODULE_SUFFIX=_rothko
 vendor/lib64/hw/android.hardware.sensors@2.X-subhal-mediatek.so
 vendor/lib64/sensors.touch.detect.so
 odm/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service
