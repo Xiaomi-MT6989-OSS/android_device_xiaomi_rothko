@@ -52,9 +52,9 @@
             "Type": "SKIN",
             "HotThreshold": [
                 "NAN",
-                "NAN",
-                "NAN",
-                50.0,
+                53.0,
+                55.0,
+                57.0,
                 70.0,
                 80.0,
                 90.0
@@ -96,24 +96,24 @@
     ],
     "CoolingDevices": [
         {
-            "Name": "mutt-pa1",
-            "Type": "MODEM"
+            "Name": "devfreq-13000000.mali",
+            "Type": "GPU"
         },
         {
-            "Name": "mutt-pa2",
-            "Type": "MODEM"
+            "Name": "charger-cooler",
+            "Type": "COMPONENT"
         },
         {
-            "Name": "tx-pwr-pa1",
-            "Type": "MODEM"
+            "Name": "lcd-backlight",
+            "Type": "COMPONENT"
         },
         {
-            "Name": "tx-pwr-pa2",
-            "Type": "MODEM"
+            "Name": "wifi-cooler",
+            "Type": "COMPONENT"
         },
         {
-            "Name": "scg-off-pa2",
-            "Type": "MODEM"
+            "Name": "flashlight_cooler",
+            "Type": "COMPONENT"
         }
     ]
 }
