@@ -1197,9 +1197,9 @@ vendor/etc/camera/mimotion_f4b.bin
 vendor/etc/camera/mimotion_f4w.bin
 vendor/etc/camera/mimotion_f5b.bin
 vendor/etc/camera/mimotion_f5w.bin
-vendor/etc/camera/mt6897/gma_custom.xml
-vendor/etc/camera/mt6985/gma_custom.xml
-vendor/etc/camera/mt6989/gma_custom.xml
+vendor/etc/camera/mt6897/gma_custom.xml:vendor/etc/camera/mt6897/gma_custom.txt;SYMLINK=vendor/etc/camera/mt6897/gma_custom.xml
+vendor/etc/camera/mt6985/gma_custom.xml:vendor/etc/camera/mt6985/gma_custom.txt;SYMLINK=vendor/etc/camera/mt6985/gma_custom.xml
+vendor/etc/camera/mt6989/gma_custom.xml:vendor/etc/camera/mt6989/gma_custom.txt;SYMLINK=vendor/etc/camera/mt6989/gma_custom.xml
 
 # Camera（Firmware)
 vendor/firmware/lib3a.ccu
@@ -2473,7 +2473,7 @@ vendor/lib64/libapusys.so
 vendor/lib64/libapu_mdw.so
 vendor/lib64/libapu_mdw_batch.so
 vendor/lib64/libarmnn.so
-vendor/lib64/libarmnn_ndk.mtk.vndk.so
+vendor/lib64/libarmnn_ndk.mtk.vndk.so;FIX_SONAME
 vendor/lib64/libvpu.so
 vendor/lib64/libvpu5.so
 vendor/lib64/libcmdl.so
@@ -2866,3 +2866,4 @@ apex/com.android.vndk.v34/lib64/libbase.so:vendor/lib64/libbase-rothko-v34.so;MO
 vendor/lib64/libultrahdr.so:vendor/lib64/libultrahdr-rothko-v34.so;MODULE=libultrahdr_stockcompat;FIX_SONAME;TRYSRCFIRST
 vendor/lib64/libjpegencoder.so:vendor/lib64/libjpegencoder-rothko-v34.so;MODULE=libjpegencoder_stockcompat;FIX_SONAME;TRYSRCFIRST
 vendor/lib64/libjpegdecoder.so:vendor/lib64/libjpegdecoder-rothko-v34.so;MODULE=libjpegdecoder_stockcompat;FIX_SONAME;TRYSRCFIRST
+odm/lib64/libHISCppAlgos.so;MODULE_SUFFIX=_odm

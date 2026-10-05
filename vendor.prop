@@ -59,8 +59,6 @@ ro.vendor.bt.platform=6639
 ro.vendor.bt.connac3=yes
 
 # Camera
-vendor.camera.mdp.dre.enable=0
-vendor.camera.mdp.cz.enable=0
 persist.vendor.camera3.pipeline.bufnum.min.high_ram.imgo=7
 persist.vendor.camera3.pipeline.bufnum.min.low_ram.imgo=6
 persist.vendor.camera3.pipeline.bufnum.base.imgo=6
@@ -73,8 +71,6 @@ persist.vendor.camera3.pipeline.bufnum.base.lcso=4
 persist.vendor.camera3.pipeline.bufnum.min.high_ram.rsso=7
 persist.vendor.camera3.pipeline.bufnum.min.low_ram.rsso=6
 persist.vendor.camera3.pipeline.bufnum.base.rsso=5
-persist.vendor.camera3.pipeline.bufnum.min.high_ram.fdyuv=5
-persist.vendor.camera3.pipeline.bufnum.min.low_ram.fdyuv=5
 vendor.camera.mdp.dre.enable=1
 vendor.camera.mdp.cz.enable=1
 ro.vendor.camera.directfdyuv.support=1

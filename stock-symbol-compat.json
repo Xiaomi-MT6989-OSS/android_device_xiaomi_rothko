@@ -60,6 +60,34 @@
         "AHardwareBuffer_unlock"
       ],
       "reason": "Exact observed LIBNATIVEWINDOW imports; current LLNDK vendor stub exports these same names unversioned. Use the established duchamp/degas extract-utils method, limited to rothko failures."
+    },
+    "odm/lib64/libAncHumanVideoBokehV4.so": {
+      "clear_symbol_versions": [
+        "AHardwareBuffer_allocate",
+        "AHardwareBuffer_describe",
+        "AHardwareBuffer_lock",
+        "AHardwareBuffer_release",
+        "AHardwareBuffer_unlock"
+      ],
+      "reason": "Image retry 01 exact LIBNATIVEWINDOW failures; same names exported by current unversioned vendor LLNDK stub. Established extract-utils correction; preserve executable bytes and all other symbol/version records."
+    },
+    "vendor/lib64/mt6989/libneuralnetworks_sl_driver_mtk_prebuilt.so": {
+      "clear_symbol_versions": [
+        "AHardwareBuffer_allocate",
+        "AHardwareBuffer_createFromHandle",
+        "AHardwareBuffer_describe",
+        "AHardwareBuffer_getNativeHandle",
+        "AHardwareBuffer_lock",
+        "AHardwareBuffer_release",
+        "AHardwareBuffer_unlock"
+      ],
+      "reason": "Image retry 01 exact LIBNATIVEWINDOW failures; same names exported by current unversioned vendor LLNDK stub. Established extract-utils correction; preserve executable bytes and all other symbol/version records."
+    },
+    "vendor/lib64/libarmnn_ndk.mtk.vndk.so": {
+      "add_needed": [
+        "liblog.so"
+      ],
+      "reason": "After isolated SONAME correction, normal checker reports __android_log_print and __android_log_write. Current liblog exports both; stock DT_NEEDED omits liblog. Evidence: libarmnn-soname-only-check.log."
     }
   }
 }

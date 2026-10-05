@@ -48,7 +48,8 @@ lib_fixups = {
      'libomp',
      'android.hardware.graphics.allocator-V2-ndk'):
         lib_fixup_stock_compat,
-    ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper'):
+    ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper',
+     'libHISCppAlgos'):
         lib_fixup_odm_suffix,
 }
 
@@ -131,6 +132,12 @@ separate_fixups[
 ] = blob_fixup().regex_replace(
     r'/vendor/bin/hw/android\.hardware\.sensors-service\.multihal(?=\s|$)',
     '/vendor/bin/hw/android.hardware.sensors-service.multihal-rothko',
+)
+# Stock param_id=7 lacks its closing tag; keep every original parameter value.
+separate_fixups['vendor/etc/audio_param/HpImpedance_AudioParam.xml'] = (
+    blob_fixup().regex_replace(
+        r'(?m)^(\t</ParamUnitPool>)$', r'\t\t</ParamUnit>\n\1'
+    )
 )
 blob_fixups = separate_fixups
 
