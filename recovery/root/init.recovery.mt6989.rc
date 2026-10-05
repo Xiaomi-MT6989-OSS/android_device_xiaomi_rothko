@@ -1,0 +1,5 @@
+# The stock OS3.0.307.0 recovery uses this configfs controller.
+# The generic recovery init script supplies the gadget and FunctionFS actions.
+on init
+    setprop sys.usb.configfs 1
+    setprop sys.usb.controller 11201000.usb0
