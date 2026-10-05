@@ -3,3 +3,5 @@
 on init
     setprop sys.usb.configfs 1
     setprop sys.usb.controller 11201000.usb0
+    # Match the Enable ADB menu before recovery starts adbd.
+    setprop ro.adb.secure.recovery 0
