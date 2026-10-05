@@ -2867,3 +2867,5 @@ vendor/lib64/libultrahdr.so:vendor/lib64/libultrahdr-rothko-v34.so;MODULE=libult
 vendor/lib64/libjpegencoder.so:vendor/lib64/libjpegencoder-rothko-v34.so;MODULE=libjpegencoder_stockcompat;FIX_SONAME;TRYSRCFIRST
 vendor/lib64/libjpegdecoder.so:vendor/lib64/libjpegdecoder-rothko-v34.so;MODULE=libjpegdecoder_stockcompat;FIX_SONAME;TRYSRCFIRST
 odm/lib64/libHISCppAlgos.so;MODULE_SUFFIX=_odm
+odm/lib64/libhis_motion_tracker.so;MODULE_SUFFIX=_odm
+odm/lib64/libhis_face_tracking.so;MODULE_SUFFIX=_odm

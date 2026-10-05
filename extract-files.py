@@ -49,7 +49,7 @@ lib_fixups = {
      'android.hardware.graphics.allocator-V2-ndk'):
         lib_fixup_stock_compat,
     ('libmialgo_aio_seg', 'libmialgo_utils', 'libremosaic_wrapper',
-     'libHISCppAlgos'):
+     'libHISCppAlgos', 'libhis_motion_tracker', 'libhis_face_tracking'):
         lib_fixup_odm_suffix,
 }
 
