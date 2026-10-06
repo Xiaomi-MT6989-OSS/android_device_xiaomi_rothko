@@ -2872,3 +2872,6 @@ vendor/lib64/librt_extamp_intf.so
 vendor/lib64/libsilkybrightnesscore.so
 vendor/lib64/mt6989/libmmlpqImpl.so;SYMLINK=vendor/lib64/libmmlpqImpl.so
 apex/com.android.vndk.v34/lib64/libtinyxml2.so:vendor/lib64/libtinyxml2-rothko.so;MODULE=libtinyxml2_stockcompat;FIX_SONAME;TRYSRCFIRST
+
+# Stock native mapper declaration
+vendor/etc/vintf/manifest/mapper.mediatek.xml
