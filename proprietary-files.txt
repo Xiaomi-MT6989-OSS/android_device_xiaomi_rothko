@@ -2875,3 +2875,6 @@ apex/com.android.vndk.v34/lib64/libtinyxml2.so:vendor/lib64/libtinyxml2-rothko.s
 
 # Stock native mapper declaration
 vendor/etc/vintf/manifest/mapper.mediatek.xml
+
+# Stock netdagent declaration
+vendor/etc/vintf/manifest/CommandService.xml
