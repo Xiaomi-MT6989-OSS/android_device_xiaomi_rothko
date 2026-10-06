@@ -11,6 +11,7 @@ from pathlib import Path
 from extract_utils.fixups_blob import blob_fixup, blob_fixups_user_type
 from extract_utils.fixups_lib import lib_fixups as default_lib_fixups
 from extract_utils.main import ExtractUtils, ExtractUtilsModule
+from tinyxml2_isolation import blob_fixup_tinyxml2_isolation
 
 namespace_imports = [
     'device/xiaomi/rothko',
@@ -117,6 +118,10 @@ for target, replacements in runtime_compat['consumers'].items():
     fixup = separate_fixups.setdefault(target, blob_fixup())
     for old, new in replacements.items():
         fixup.replace_needed(old, new)
+for target in runtime_compat.get('symbol_namespace_isolation', {}).get('targets', []):
+    separate_fixups.setdefault(target, blob_fixup()).call(
+        blob_fixup_tinyxml2_isolation, need_tmp_dir=False,
+    )
 # Apply only the symbol/dependency corrections observed in normal ELF checks.
 symbol_compat = json.loads(
     Path(__file__).with_name('stock-symbol-compat.json').read_text()

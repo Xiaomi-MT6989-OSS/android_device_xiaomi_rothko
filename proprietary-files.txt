@@ -7,7 +7,6 @@ vendor/lib64/libaedv.so
 # Audio
 odm/etc/audio/misoundsa_spk_config.bin
 vendor/lib64/libaudioclient_aidl_conversion.so:vendor/lib64/libaudioclient_aidl_conversion-rothko.so;MODULE=libaudioclient_aidl_conversion_vendorcompat;FIX_SONAME;TRYSRCFIRST
-vendor/lib64/libaudiocloudctrl.so
 vendor/lib64/libaudiocompensationfilterc.so
 vendor/lib64/libaudiocompensationfilter_vendor.so
 vendor/lib64/libaudiocomponentenginec.so
@@ -24,7 +23,6 @@ vendor/lib64/libaudiotoolkit_vendor.so
 vendor/lib64/libaudio_aidl_conversion_common_ndk.so:vendor/lib64/libaudio_aidl_conversion_common_ndk-rothko.so;MODULE=libaudio_aidl_conversion_common_ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
 vendor/lib64/libaudio_param_parser-vnd.so
 vendor/lib64/libtinycompress.so
-vendor/lib64/hw/audio.primary.mediatek.so;SYMLINK=vendor/lib64/hw/audio.primary.mt6989.so
 vendor/lib64/hw/audio.r_submix.mediatek.so;SYMLINK=vendor/lib64/hw/audio.r_submix.mt6989.so
 vendor/lib64/hw/sound_trigger.primary.default.so
 vendor/lib64/vendor.mediatek.hardware.audio@8.1.so
@@ -61,7 +59,6 @@ vendor/lib64/libmtklimiter_vendor.so
 vendor/lib64/libmtkshifter_vendor.so
 vendor/lib64/libmtkspparser.so
 vendor/lib64/libnxp_extamp_intf.so
-vendor/lib64/librt_extamp_intf.so
 
 
 # Audio Configs
@@ -1235,7 +1232,6 @@ odm/lib64/camera/plugins/com.xiaomi.plugin.ldcpreview.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.memcpy.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.miaideblur.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.miaiie.so
-odm/lib64/camera/plugins/com.xiaomi.plugin.mialgoainr.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.mibokeh.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.mideflicker.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.midualbokehstream.so
@@ -1337,7 +1333,6 @@ vendor/lib64/egl/mt6989/libGLES_mali.so;SYMLINK=vendor/lib64/egl/libGLES_mali.so
 vendor/lib64/hw/hwcomposer.mtk_common.so
 vendor/lib64/hw/mt6989/android.hardware.graphics.allocator-V2-mediatek.so;SYMLINK=vendor/lib64/hw/android.hardware.graphics.allocator-V2-mediatek.so
 vendor/lib64/hw/mt6989/android.hardware.graphics.mapper@4.0-impl-mediatek.so;SYMLINK=vendor/lib64/hw/android.hardware.graphics.mapper@4.0-impl-mediatek.so
-vendor/lib64/hw/mt6989/vendor.mediatek.hardware.pq_aidl-impl.so;SYMLINK=vendor/lib64/hw/vendor.mediatek.hardware.pq_aidl-impl.so
 vendor/lib64/hw/mt6989/vulkan.mali.so;SYMLINK=vendor/lib64/hw/vulkan.mali.so
 vendor/lib64/mt6989/arm.graphics-V4-ndk.so;SYMLINK=vendor/lib64/arm.graphics-V4-ndk.so
 vendor/lib64/mt6989/arm.mali.platform-V1-ndk.so;SYMLINK=vendor/lib64/arm.mali.platform-V1-ndk.so
@@ -1366,14 +1361,12 @@ vendor/lib64/libpqframework.so
 vendor/lib64/libpqhdrmetaparser.so
 vendor/lib64/libpqsharememory.so
 vendor/lib64/libpqtuning.so
-vendor/lib64/libpqxmlparser.so
 vendor/lib64/librgbwlightsensor.so
 vendor/lib64/libscltm.so
 vendor/lib64/mt6989/libaal_cust_func.so;SYMLINK=vendor/lib64/libaal_cust_func.so
 vendor/lib64/mt6989/libaalservice.so;SYMLINK=vendor/lib64/libaalservice.so
 vendor/lib64/mt6989/libaiselector.so;SYMLINK=vendor/lib64/libaiselector.so
 vendor/lib64/mt6989/libdpframework.so;SYMLINK=vendor/lib64/libdpframework.so
-vendor/lib64/mt6989/libmmlpqImpl.so;SYMLINK=vendor/lib64/libmmlpqImpl.so
 vendor/lib64/mt6989/libmtk_drvb.so;SYMLINK=vendor/lib64/libmtk_drvb.so
 vendor/lib64/mt6989/libpq_cust_base.so;SYMLINK=vendor/lib64/libpq_cust_base.so
 vendor/lib64/mt6989/libpqconfig.so;SYMLINK=vendor/lib64/libpqconfig.so
@@ -2710,10 +2703,7 @@ vendor/lib64/vendor.hardware.vibratorfeature.IVibratorExt-V1-ndk.so
 vendor/etc/vintf/manifest/manifest_allocator.xml
 vendor/lib64/hw/mt6989/mapper.mediatek.so;SYMLINK=vendor/lib64/hw/mapper.mediatek.so
 vendor/lib64/hw/gralloc.default.so
-vendor/lib64/libHardwareBacklightcore.so
 vendor/lib64/libdfintf.so
-vendor/lib64/libpqxmlflagparser.so
-vendor/lib64/libsilkybrightnesscore.so
 vendor/lib64/mt6989/libpq_sec.so;SYMLINK=vendor/lib64/libpq_sec.so
 vendor/lib64/vendor.mediatek.hardware.composer_ext-V1-ndk.so
 vendor/lib64/vendor.xiaomi.hardware.displayfeature_aidl-V2-ndk.so
@@ -2744,8 +2734,6 @@ odm/lib64/libmiphone_capture_mdbokeh.so
 odm/lib64/libmiphone_capture_depth.so
 odm/lib64/libmiphone_capture_bokeh.so
 odm/lib64/libminikin.xiaomi.so
-vendor/lib64/libmicamera_aidl_provider.so
-vendor/lib64/libmicamera_hal_core.so
 vendor/lib64/libcom.xiaomi.sensorpolicy.so
 vendor/lib64/libmiSATTranslate.so
 vendor/lib64/libcom.xiaomi.ecoenginemonitor.so
@@ -2869,3 +2857,18 @@ vendor/lib64/libjpegdecoder.so:vendor/lib64/libjpegdecoder-rothko-v34.so;MODULE=
 odm/lib64/libHISCppAlgos.so;MODULE_SUFFIX=_odm
 odm/lib64/libhis_motion_tracker.so;MODULE_SUFFIX=_odm
 odm/lib64/libhis_face_tracking.so;MODULE_SUFFIX=_odm
+
+# Stock TinyXML2 ABI isolation
+odm/lib64/camera/plugins/com.xiaomi.plugin.mialgoainr.so
+vendor/lib64/hw/audio.primary.mediatek.so;SYMLINK=vendor/lib64/hw/audio.primary.mt6989.so
+vendor/lib64/hw/mt6989/vendor.mediatek.hardware.pq_aidl-impl.so;SYMLINK=vendor/lib64/hw/vendor.mediatek.hardware.pq_aidl-impl.so
+vendor/lib64/libHardwareBacklightcore.so
+vendor/lib64/libaudiocloudctrl.so
+vendor/lib64/libmicamera_aidl_provider.so
+vendor/lib64/libmicamera_hal_core.so
+vendor/lib64/libpqxmlflagparser.so
+vendor/lib64/libpqxmlparser.so
+vendor/lib64/librt_extamp_intf.so
+vendor/lib64/libsilkybrightnesscore.so
+vendor/lib64/mt6989/libmmlpqImpl.so;SYMLINK=vendor/lib64/libmmlpqImpl.so
+apex/com.android.vndk.v34/lib64/libtinyxml2.so:vendor/lib64/libtinyxml2-rothko.so;MODULE=libtinyxml2_stockcompat;FIX_SONAME;TRYSRCFIRST

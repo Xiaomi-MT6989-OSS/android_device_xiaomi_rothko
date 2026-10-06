@@ -1,5 +1,5 @@
 {
-  "scope": "Reviewed device runtime aliases and per-file direct DT_NEEDED replacements. Initial retry42 collisions plus actual retry01 native symbol failures; libbase binding is restricted to KeyMint. Does not prove dlopen, namespaces or object layout.",
+  "scope": "Reviewed device runtime aliases and per-file direct DT_NEEDED replacements. Initial retry42 collisions plus actual retry01 native symbol failures; libbase binding is restricted to KeyMint. Does not prove dlopen, namespaces or object layout. TinyXML2 additionally has a private C++ symbol namespace; exact stock VNDK34 provider and 12 stock direct consumers selected by frozen vendor/ODM ELF evidence.",
   "graph_trial": 42,
   "libraries": [
     {
@@ -874,6 +874,24 @@
         "libm.so",
         "libdl.so"
       ]
+    },
+    {
+      "old_soname": "libtinyxml2.so",
+      "new_soname": "libtinyxml2-rothko.so",
+      "module": "libtinyxml2_stockcompat",
+      "old_destination": "vendor/lib64/libtinyxml2.so",
+      "destination": "vendor/lib64/libtinyxml2-rothko.so",
+      "source": "apex/com.android.vndk.v34/lib64/libtinyxml2.so",
+      "stock_sha256": "9dfa7dd223dccb8d0fc80c23aff491feb4f413af0ea1e43af43609c1dfa30996",
+      "new_selection": "apex/com.android.vndk.v34/lib64/libtinyxml2.so:vendor/lib64/libtinyxml2-rothko.so;MODULE=libtinyxml2_stockcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": true,
+      "needed": [
+        "liblog.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
     }
   ],
   "consumers": {
@@ -932,7 +950,8 @@
       "libaudio_aidl_conversion_common_ndk.so": "libaudio_aidl_conversion_common_ndk-rothko.so"
     },
     "vendor/lib64/hw/audio.primary.mediatek.so": {
-      "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so"
+      "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so",
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
     },
     "vendor/lib64/hw/hwcomposer.mtk_common.so": {
       "libgralloctypes.so": "libgralloctypes-v34.so",
@@ -950,7 +969,8 @@
       "libgralloctypes.so": "libgralloctypes-v34.so"
     },
     "vendor/lib64/hw/mt6989/vendor.mediatek.hardware.pq_aidl-impl.so": {
-      "libui.so": "libui-rothko-v34.so"
+      "libui.so": "libui-rothko-v34.so",
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
     },
     "vendor/lib64/hw/vendor.mediatek.hardware.audio-impl.so": {
       "libmediautils_vendor.so": "libmediautils_vendor-rothko.so"
@@ -1115,7 +1135,8 @@
     "vendor/lib64/libmicamera_aidl_provider.so": {
       "libgralloctypes.so": "libgralloctypes-v34.so",
       "android.hardware.camera.device-V2-ndk.so": "android.hardware.camera.device-V2-ndk-rothko.so",
-      "android.hardware.camera.provider-V2-ndk.so": "android.hardware.camera.provider-V2-ndk-rothko.so"
+      "android.hardware.camera.provider-V2-ndk.so": "android.hardware.camera.provider-V2-ndk-rothko.so",
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
     },
     "vendor/lib64/libmicamera_aidl_utils.so": {
       "libgralloctypes.so": "libgralloctypes-v34.so",
@@ -1123,7 +1144,8 @@
       "android.hardware.camera.provider-V2-ndk.so": "android.hardware.camera.provider-V2-ndk-rothko.so"
     },
     "vendor/lib64/libmicamera_hal_core.so": {
-      "libui.so": "libui-rothko-v34.so"
+      "libui.so": "libui-rothko-v34.so",
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
     },
     "vendor/lib64/libmtkcam_grallocutils_aidlv1helper.so": {
       "libui.so": "libui-rothko-v34.so",
@@ -1186,11 +1208,56 @@
     "vendor/lib64/libultrahdr-rothko-v34.so": {
       "libjpegencoder.so": "libjpegencoder-rothko-v34.so",
       "libjpegdecoder.so": "libjpegdecoder-rothko-v34.so"
+    },
+    "vendor/lib64/libHardwareBacklightcore.so": {
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
+    },
+    "vendor/lib64/libaudiocloudctrl.so": {
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
+    },
+    "vendor/lib64/libpqxmlflagparser.so": {
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
+    },
+    "vendor/lib64/libpqxmlparser.so": {
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
+    },
+    "vendor/lib64/librt_extamp_intf.so": {
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
+    },
+    "vendor/lib64/libsilkybrightnesscore.so": {
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
+    },
+    "vendor/lib64/mt6989/libmmlpqImpl.so": {
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
+    },
+    "odm/lib64/camera/plugins/com.xiaomi.plugin.mialgoainr.so": {
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
     }
   },
   "limits": [
     "dlopen names and final namespaces need separate audit",
     "old/new C++ symbol interposition and layout in one process require runtime verification",
     "Sensors binary/init/XML naming and SELinux label must be updated together"
-  ]
+  ],
+  "symbol_namespace_isolation": {
+    "old_namespace": "tinyxml2",
+    "new_namespace": "ryt1ioez",
+    "gnu_hash": "0x2593608c",
+    "targets": [
+      "odm/lib64/camera/plugins/com.xiaomi.plugin.mialgoainr.so",
+      "vendor/lib64/hw/audio.primary.mediatek.so",
+      "vendor/lib64/hw/mt6989/vendor.mediatek.hardware.pq_aidl-impl.so",
+      "vendor/lib64/libHardwareBacklightcore.so",
+      "vendor/lib64/libaudiocloudctrl.so",
+      "vendor/lib64/libmicamera_aidl_provider.so",
+      "vendor/lib64/libmicamera_hal_core.so",
+      "vendor/lib64/libpqxmlflagparser.so",
+      "vendor/lib64/libpqxmlparser.so",
+      "vendor/lib64/librt_extamp_intf.so",
+      "vendor/lib64/libsilkybrightnesscore.so",
+      "vendor/lib64/libtinyxml2-rothko.so",
+      "vendor/lib64/mt6989/libmmlpqImpl.so"
+    ],
+    "reason": "Keep stock TinyXML2 776-byte XMLDocument isolated from source TinyXML2 880-byte layout. Equal-length GNU-hash-preserving .dynstr edits preserve dynamic symbol indexes and Android packed relocations. Source libeffectsconfig and source TinyXML2 remain unchanged."
+  }
 }
