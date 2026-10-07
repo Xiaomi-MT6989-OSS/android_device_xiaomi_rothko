@@ -6,14 +6,6 @@
     This metadata does not upgrade their implementations or establish runtime support.
 -->
 <compatibility-matrix version="9.0" type="framework">
-    <hal format="hidl">
-        <name>android.hardware.media.c2</name>
-        <version>1.0</version>
-        <interface>
-            <name>IComponentStore</name>
-            <instance>dolby</instance>
-        </interface>
-    </hal>
     <hal format="aidl">
         <name>android.hardware.vibrator</name>
         <version>1-2</version>

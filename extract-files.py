@@ -161,6 +161,13 @@ separate_fixups['odm/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service'] = (
 separate_fixups['odm/etc/vintf/manifest/vendor.xiaomi.hardware.vibratorfeature.service.xml'] = (
     blob_fixup().regex_replace('IVibrator/vibratorfeature', 'IVibrator/default')
 )
+# No Dolby Codec2 service is selected by this product. A ghost instance
+# blocks MediaCodecList and the StorageManager system-ready handler.
+separate_fixups['vendor/etc/vintf/manifest/manifest_media_c2_V1_2_default.xml'] = (
+    blob_fixup().regex_replace(
+        r'(?m)^[ \t]*<fqname>@1\.0::IComponentStore/dolby</fqname>\r?\n', ''
+    )
+)
 blob_fixups = separate_fixups
 
 module = ExtractUtilsModule(
