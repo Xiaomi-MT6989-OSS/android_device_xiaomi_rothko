@@ -12,6 +12,7 @@ from extract_utils.fixups_blob import blob_fixup, blob_fixups_user_type
 from extract_utils.fixups_lib import lib_fixups as default_lib_fixups
 from extract_utils.main import ExtractUtils, ExtractUtilsModule
 from tinyxml2_isolation import blob_fixup_tinyxml2_isolation
+from vibrator_instance_fixup import blob_fixup_vibrator_instance
 
 namespace_imports = [
     'device/xiaomi/rothko',
@@ -150,6 +151,15 @@ separate_fixups['odm/etc/init/vendor.xiaomi.hw.touchfeature-service.rc'] = (
     blob_fixup()
         .regex_replace(r'\nservice toucheventcheck[\s\S]*\Z', '\n')
         .regex_replace(r'(?m)^    (?:wait /dev/kmsg|start touch-kmsg-init-sh)\n', '')
+)
+# Stock main appends the suffix at .rodata 0x7e9b with append(const char*)
+# at 0xf4e4, then registers that IVibrator binder at 0xf564. Keep its
+# attached vendor IVibratorExt descriptor and all executable bytes intact.
+separate_fixups['odm/bin/hw/vendor.xiaomi.hardware.vibratorfeature.service'] = (
+    blob_fixup().call(blob_fixup_vibrator_instance)
+)
+separate_fixups['odm/etc/vintf/manifest/vendor.xiaomi.hardware.vibratorfeature.service.xml'] = (
+    blob_fixup().regex_replace('IVibrator/vibratorfeature', 'IVibrator/default')
 )
 blob_fixups = separate_fixups
 

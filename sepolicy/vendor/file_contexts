@@ -5,6 +5,9 @@
 /vendor/lib64/libgralloctypes-v34\.so u:object_r:same_process_hal_file:s0
 /vendor/lib64/libbase-rothko-v34\.so u:object_r:same_process_hal_file:s0
 
+# Stock vibrator domain; its AIDL registration is adapted to /default.
+/odm/bin/hw/vendor\.xiaomi\.hardware\.vibratorfeature\.service u:object_r:hal_vibrator_default_exec:s0
+
 # Stock Xiaomi THP HAL, device and private data paths.
 /odm/bin/hw/vendor\.xiaomi\.hw\.touchfeature-service u:object_r:hal_touchfeature_xiaomi_default_exec:s0
 /dev/xiaomi-touch u:object_r:touchfeature_device:s0
