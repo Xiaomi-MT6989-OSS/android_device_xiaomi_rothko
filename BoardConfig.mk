@@ -205,7 +205,7 @@ BOARD_AVB_SYSTEM_DLKM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 # Wi-Fi
 # OS3.0.307 libwifi-hal-mtk.so keeps the pre-U QPR2 table: RTT cancel
 # is at 0xd8 and subsystem restart at 0x318, verified from its initializer.
-$(call soong_config_set,mediatek_wifi_hal,use_pre_u_qpr2_struct,true)
+$(call soong_config_set_bool,mediatek_wifi_hal,use_pre_u_qpr2_struct,true)
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
 BOARD_HOSTAPD_DRIVER := NL80211
