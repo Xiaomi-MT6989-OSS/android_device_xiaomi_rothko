@@ -248,6 +248,8 @@ vendor.powerhal.interaction.max=50
 vendor.powerhal.interaction.offset=0
 
 # Radio
+# Stock mtkrild.rc starts its disabled service using this property.
+ro.vendor.mtk_mipc_support=1
 persist.radio.multisim.config=dsds
 persist.vendor.radio.msimmode=dsds
 ro.telephony.sim.count=2
