@@ -221,7 +221,7 @@ odm/lib64/libarcsoft_super_night_raw.so
 odm/lib64/libarcsoft_super_night_raw_front.so
 odm/lib64/libarcsoft_turbo_hdr_detection.so
 odm/lib64/libarcsoft_turbo_sr_detection.so
-vendor/bin/hw/mt6989/camerahalserver;SYMLINK=vendor/bin/camerahalserver
+vendor/bin/hw/mt6989/camerahalserver;SYMLINK=vendor/bin/hw/camerahalserver
 vendor/etc/init/camerahalserver.rc
 vendor/etc/vintf/manifest/manifest_aovservice.xml
 vendor/etc/vintf/manifest/manifest_cameraprovider.xml
