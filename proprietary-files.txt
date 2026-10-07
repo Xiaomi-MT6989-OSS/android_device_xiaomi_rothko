@@ -2902,3 +2902,14 @@ vendor/etc/smartpa_param/AW_DSP.bin;MAKE_COPY_RULE_ONLY
 vendor/etc/smartpa_param/AW_SINEWAVE_DSP.bin;MAKE_COPY_RULE_ONLY
 vendor/etc/smartpa_param_fs/fsmsdg_params.bin;MAKE_COPY_RULE_ONLY
 vendor/etc/smartpa_param_fs/preset_default.bin;MAKE_COPY_RULE_ONLY
+
+# Stock sensor configurations (2026-10-08 audit)
+odm/etc/sensors/lightSensorCali.json;MAKE_COPY_RULE_ONLY
+odm/etc/sensors/lightSensorConfig.json;MAKE_COPY_RULE_ONLY
+odm/etc/sensors/lightSensorConfig_Sip_Csot.json;MAKE_COPY_RULE_ONLY
+odm/etc/sensors/lightSensorConfig_Sip_Tianma.json;MAKE_COPY_RULE_ONLY
+odm/etc/sensors/lightSensorConfig_Stk_Csot_GG5.json;MAKE_COPY_RULE_ONLY
+odm/etc/sensors/lightSensorConfig_Stk_Csot_Weijing.json;MAKE_COPY_RULE_ONLY
+odm/etc/sensors/lightSensorConfig_Stk_Tianma_GG5.json;MAKE_COPY_RULE_ONLY
+odm/etc/sensors/lightSensorConfig_Stk_Tianma_Weijing.json;MAKE_COPY_RULE_ONLY
+odm/etc/sensors/ois_params_data.json;MAKE_COPY_RULE_ONLY
