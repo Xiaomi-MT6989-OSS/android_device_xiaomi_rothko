@@ -333,3 +333,6 @@ persist.vendor.wifienhancelog=1
 
 # Stock Xiaomi THP touch
 ro.vendor.touchfeature.type=255
+
+# Sensors: stock MTK subHAL gates initialization on this exact property.
+ro.vendor.mtk.sensor.support=yes
