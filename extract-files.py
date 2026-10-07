@@ -144,6 +144,13 @@ separate_fixups['vendor/etc/audio_param/HpImpedance_AudioParam.xml'] = (
         r'(?m)^(\t</ParamUnitPool>)$', r'\t\t</ParamUnit>\n\1'
     )
 )
+# Retain the stock THP HAL and its boot/DAC actions. The auxiliary debug
+# services/scripts are not part of the selected algorithm closure.
+separate_fixups['odm/etc/init/vendor.xiaomi.hw.touchfeature-service.rc'] = (
+    blob_fixup()
+        .regex_replace(r'\nservice toucheventcheck[\s\S]*\Z', '\n')
+        .regex_replace(r'(?m)^    (?:wait /dev/kmsg|start touch-kmsg-init-sh)\n', '')
+)
 blob_fixups = separate_fixups
 
 module = ExtractUtilsModule(

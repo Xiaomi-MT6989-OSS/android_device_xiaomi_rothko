@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+
+# Stock rc creates only these THP data directories and adjusts touch-node DAC.
+allow vendor_init vendor_data_touchreport_file:dir create_dir_perms;
+allow vendor_init vendor_bsp_touch_log_file:dir create_dir_perms;
+allow vendor_init touchfeature_device:chr_file setattr;
+allow vendor_init sysfs_touch_hostprocess:file setattr;
+allow vendor_init sysfs_touch_suspend:file setattr;
+allow vendor_init { proc_tp_file proc_tp_selftest proc_tp_lockdown }:file setattr;
+allow vendor_init sysfs_touch_hostprocess:file w_file_perms;

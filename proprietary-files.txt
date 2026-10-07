@@ -2878,3 +2878,15 @@ vendor/etc/vintf/manifest/mapper.mediatek.xml
 
 # Stock netdagent declaration
 vendor/etc/vintf/manifest/CommandService.xml
+
+# Xiaomi THP touch
+odm/bin/hw/vendor.xiaomi.hw.touchfeature-service
+odm/etc/init/vendor.xiaomi.hw.touchfeature-service.rc
+odm/lib64/libtouchreport.so
+odm/lib64/libtouchsensor.so
+odm/lib64/libtensorflowlite_touch_c.so
+vendor/lib64/vendor.xiaomi.hw.touchfeature-V1-ndk.so
+odm/etc/touch/dynamicrate.json
+odm/etc/touch/gameturbotool-control.json
+odm/etc/touch/gameturbotool.json
+odm/etc/vintf/manifest/vendor.xiaomi.hw.touchfeature-service.xml

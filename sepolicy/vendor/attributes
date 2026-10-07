@@ -1,0 +1,3 @@
+# SPDX-License-Identifier: Apache-2.0
+
+hal_attribute(touchfeature_xiaomi)

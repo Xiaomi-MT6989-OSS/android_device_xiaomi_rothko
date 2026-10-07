@@ -328,3 +328,6 @@ ro.vendor.wifi.sap.concurrent.iface=ap1
 ro.vendor.wlan.chrdev=wmt_chrdev_wifi_connac3
 ro.vendor.wlan.gen=gen4m_6989_6639
 persist.vendor.wifienhancelog=1
+
+# Stock Xiaomi THP touch
+ro.vendor.touchfeature.type=255

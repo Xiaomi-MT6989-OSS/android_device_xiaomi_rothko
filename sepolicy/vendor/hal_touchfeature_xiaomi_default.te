@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+
+# Stock rothko touchfeature AIDL hosts the THP algorithm and reports input.
+type hal_touchfeature_xiaomi_default, domain;
+type hal_touchfeature_xiaomi_default_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(hal_touchfeature_xiaomi_default)
+hal_server_domain(hal_touchfeature_xiaomi_default, hal_touchfeature_xiaomi)
+hal_attribute_service(hal_touchfeature_xiaomi, hal_touchfeature_xiaomi_service)
+binder_use(hal_touchfeature_xiaomi_default)
+hwbinder_use(hal_touchfeature_xiaomi_default)
+binder_call(hal_touchfeature_xiaomi_default, system_server)
+allow hal_touchfeature_xiaomi_default fwk_sensor_hwservice:hwservice_manager find;
+allow hal_touchfeature_xiaomi_default self:global_capability_class_set sys_nice;
+
+# These device classes and paths are present in stock THP policy.
+allow hal_touchfeature_xiaomi_default touchfeature_device:chr_file rw_file_perms;
+allow hal_touchfeature_xiaomi_default uhid_device:chr_file rw_file_perms;
+allow hal_touchfeature_xiaomi_default input_device:dir r_dir_perms;
+allow hal_touchfeature_xiaomi_default input_device:chr_file rw_file_perms;
+r_dir_file(hal_touchfeature_xiaomi_default, sysfs_touch_hostprocess)
+allow hal_touchfeature_xiaomi_default sysfs_touch_hostprocess:file w_file_perms;
+r_dir_file(hal_touchfeature_xiaomi_default, sysfs_touch_suspend)
+allow hal_touchfeature_xiaomi_default sysfs_touch_suspend:file w_file_perms;
+allow hal_touchfeature_xiaomi_default proc_tp_file:file rw_file_perms;
+allow hal_touchfeature_xiaomi_default sysfs_boot_mode:file r_file_perms;
+r_dir_file(hal_touchfeature_xiaomi_default, sysfs_therm)
+
+allow hal_touchfeature_xiaomi_default vendor_data_touchreport_file:dir create_dir_perms;
+allow hal_touchfeature_xiaomi_default vendor_data_touchreport_file:file create_file_perms;
+allow hal_touchfeature_xiaomi_default vendor_bsp_touch_log_file:dir create_dir_perms;
+allow hal_touchfeature_xiaomi_default vendor_bsp_touch_log_file:file create_file_perms;
+set_prop(hal_touchfeature_xiaomi_default, vendor_touchfeature_prop)
+set_prop(hal_touchfeature_xiaomi_default, vendor_touch_hostprocess_prop)

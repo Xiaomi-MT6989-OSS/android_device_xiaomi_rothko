@@ -1,0 +1,3 @@
+# SPDX-License-Identifier: Apache-2.0
+
+type touchfeature_device, dev_type;

@@ -36,3 +36,6 @@ ro.vendor.nfc.debounce_field_on=1
 ro.vendor.nfc.field_on_debounce=500
 ro.vendor.nfc.mibeam=1
 
+# Stock Xiaomi THP touch
+ro.vendor.touch.touchscheduler.enable=true
+persist.vendor.touchfeature.gameturbotool.version=v3.5
