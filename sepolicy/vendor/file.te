@@ -7,3 +7,6 @@ type proc_tp_selftest, fs_type, proc_type;
 type proc_tp_lockdown, fs_type, proc_type;
 type vendor_data_touchreport_file, file_type, data_file_type;
 type vendor_bsp_touch_log_file, file_type, data_file_type;
+
+# Stock /proc/stpbt metadata, shared by the UART initializer and BT HAL.
+type proc_stpbt, fs_type, proc_type;

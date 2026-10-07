@@ -12,3 +12,5 @@
 /dev/xiaomi-thp u:object_r:touchfeature_device:s0
 /data/vendor/touch(/.*)? u:object_r:vendor_data_touchreport_file:s0
 /data/vendor/bsplog/touch(/.*)? u:object_r:vendor_bsp_touch_log_file:s0
+
+/(vendor|system/vendor)/bin/uart_launcher    u:object_r:uart_launcher_exec:s0

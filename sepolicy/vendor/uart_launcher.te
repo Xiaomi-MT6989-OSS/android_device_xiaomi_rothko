@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Stock OS3.0.307 UART initializer for the MT6639 connectivity driver.
+type uart_launcher, domain;
+type uart_launcher_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(uart_launcher)
+
+set_prop(uart_launcher, vendor_mtk_wmt_prop)
+allow uart_launcher { stpbt_device ttyS_device }:chr_file rw_file_perms;
+r_dir_file(uart_launcher, proc_stpbt)

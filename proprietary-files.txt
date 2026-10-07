@@ -196,9 +196,7 @@ vendor/etc/audiodata.db
 vendor/bin/batterysecret
 
 # Bluetooth
-vendor/bin/hw/android.hardware.bluetooth@1.1-service-mediatek
 vendor/bin/uart_launcher
-vendor/etc/init/android.hardware.bluetooth@1.1-service-mediatek.rc
 vendor/etc/init/init.btmtk_uart.rc
 vendor/lib64/libbluetoothem_mtk.so
 vendor/lib64/libbluetooth_mtk.so
