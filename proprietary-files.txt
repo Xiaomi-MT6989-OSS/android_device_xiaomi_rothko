@@ -2881,10 +2881,13 @@ vendor/etc/vintf/manifest/CommandService.xml
 odm/bin/hw/vendor.xiaomi.hw.touchfeature-service
 odm/etc/init/vendor.xiaomi.hw.touchfeature-service.rc
 odm/lib64/libtouchreport.so
-odm/lib64/libtouchsensor.so
-odm/lib64/libtensorflowlite_touch_c.so
+odm/lib64/libtouchsensor.so;RECOVERY_AVAILABLE
+odm/lib64/libtensorflowlite_touch_c.so;RECOVERY_AVAILABLE
 vendor/lib64/vendor.xiaomi.hw.touchfeature-V1-ndk.so
 odm/etc/touch/dynamicrate.json
 odm/etc/touch/gameturbotool-control.json
 odm/etc/touch/gameturbotool.json
 odm/etc/vintf/manifest/vendor.xiaomi.hw.touchfeature-service.xml
+
+# Recovery THP: stock standalone main; no touchfeature binder service required.
+odm/bin/touch_report_debug:recovery/system/bin/touch_report_recovery;MODULE=touch_report_recovery;TRYSRCFIRST

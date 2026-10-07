@@ -5,3 +5,16 @@ on init
     setprop sys.usb.controller 11201000.usb0
     # Match the Enable ADB menu before recovery starts adbd.
     setprop ro.adb.secure.recovery 0
+
+# The standalone stock THP main consumes raw frames and reports coordinates.
+on boot
+    wait /dev/xiaomi-touch 10
+    start recovery-touch-report
+
+service recovery-touch-report /system/bin/touch_report_recovery
+    class default
+    disabled
+    user root
+    group root
+    capabilities SYS_NICE
+    seclabel u:r:recovery:s0

@@ -243,3 +243,19 @@ PRODUCT_COPY_FILES += \
 
 # Inherit the proprietary files
 $(call inherit-product, vendor/xiaomi/rothko/rothko-vendor.mk)
+
+# Goodix requests firmware before logical ODM is mounted in Recovery.
+# Keep the stock files in the ramdisk for both kernel and THP lookup paths.
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/goodix_cfg_group_rothko.bin:$(TARGET_COPY_OUT_RECOVERY)/root/lib/firmware/goodix_cfg_group_rothko.bin
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/goodix_cfg_group_rothko_nowater.bin:$(TARGET_COPY_OUT_RECOVERY)/root/lib/firmware/goodix_cfg_group_rothko_nowater.bin
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/goodix_cfg_group_rothko_weijing.bin:$(TARGET_COPY_OUT_RECOVERY)/root/lib/firmware/goodix_cfg_group_rothko_weijing.bin
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/goodix_firmware_rothko.bin:$(TARGET_COPY_OUT_RECOVERY)/root/lib/firmware/goodix_firmware_rothko.bin
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/goodix_cfg_group_rothko.bin:$(TARGET_COPY_OUT_RECOVERY)/root/odm/firmware/goodix_cfg_group_rothko.bin
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/goodix_cfg_group_rothko_nowater.bin:$(TARGET_COPY_OUT_RECOVERY)/root/odm/firmware/goodix_cfg_group_rothko_nowater.bin
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/goodix_cfg_group_rothko_weijing.bin:$(TARGET_COPY_OUT_RECOVERY)/root/odm/firmware/goodix_cfg_group_rothko_weijing.bin
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/goodix_firmware_rothko.bin:$(TARGET_COPY_OUT_RECOVERY)/root/odm/firmware/goodix_firmware_rothko.bin
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/rothko_gtp_thp_config.ini:$(TARGET_COPY_OUT_RECOVERY)/root/odm/firmware/rothko_gtp_thp_config.ini
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/rothko_fts_thp_config.ini:$(TARGET_COPY_OUT_RECOVERY)/root/odm/firmware/rothko_fts_thp_config.ini
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/film_model.tflite:$(TARGET_COPY_OUT_RECOVERY)/root/odm/firmware/film_model.tflite
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/glove_model.tflite:$(TARGET_COPY_OUT_RECOVERY)/root/odm/firmware/glove_model.tflite
+PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/water_check.tflite:$(TARGET_COPY_OUT_RECOVERY)/root/odm/firmware/water_check.tflite
