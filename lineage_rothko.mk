@@ -14,6 +14,8 @@ $(call inherit-product, device/xiaomi/rothko/device.mk)
 # Inherit some common LineageOS stuff.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
+PRODUCT_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
+
 PRODUCT_NAME := lineage_rothko
 PRODUCT_DEVICE := rothko
 PRODUCT_MANUFACTURER := Xiaomi
