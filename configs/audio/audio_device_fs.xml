@@ -46,7 +46,7 @@
         </path>
         <path name="RCV_OUT_DEVICE_CTRL_PRE_PMU" value="turnoff">
             <kctl name="FSM_Volume" value="255" />
-            <kctl name="FSM_Scene" value="15" />
+            <kctl name="FSM_Scene" value="0" />
             <kctl name="FSM_SW_GPIO" value="0" />
         </path>
         <path name="SPK_OUT_DEVICE_CTRL_PRE_PMU" value="turnon">
@@ -63,7 +63,7 @@
         </path>
         <path name="VOICE_SPK_OUT_DEVICE_CTRL_PRE_PMU" value="turnoff">
             <kctl name="FSM_Volume" value="255" />
-            <kctl name="FSM_Scene" value="1" />
+            <kctl name="FSM_Scene" value="0" />
         </path>
         <path name="speaker_output_top" value="turnon">
             <kctl name="FSM_Scene" value="8" />
@@ -71,7 +71,7 @@
         </path>
         <path name="speaker_output_top" value="turnoff">
             <kctl name="FSM_Volume" value="255" />
-            <kctl name="FSM_Scene" value="8" />
+            <kctl name="FSM_Scene" value="0" />
         </path>
         <path name="speaker_output_bottom" value="turnon">
             <kctl name="FSM_Scene" value="10" />
@@ -79,7 +79,7 @@
         </path>
         <path name="speaker_output_bottom" value="turnoff">
             <kctl name="FSM_Volume" value="255" />
-            <kctl name="FSM_Scene" value="10" />
+            <kctl name="FSM_Scene" value="0" />
         </path>
        <!-- 2-in-1 speaker output-->
         <path name="two_in_one_speaker_output" value="turnon">

@@ -17,3 +17,6 @@
 /data/vendor/bsplog/touch(/.*)? u:object_r:vendor_bsp_touch_log_file:s0
 
 /(vendor|system/vendor)/bin/uart_launcher    u:object_r:uart_launcher_exec:s0
+
+# Stock audio parameter ownership; reuse the existing MTK data type/rules.
+/data/vendor/audio(/.*)? u:object_r:mtk_audiohal_data_file:s0

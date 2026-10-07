@@ -2891,3 +2891,14 @@ odm/etc/vintf/manifest/vendor.xiaomi.hw.touchfeature-service.xml
 
 # Recovery THP: stock standalone main; no touchfeature binder service required.
 odm/bin/touch_report_debug:recovery/system/bin/touch_report_recovery;MODULE=touch_report_recovery;TRYSRCFIRST
+
+# Stock Aurisys 64-bit processors and SmartPA parameters (2026-10-08 audit)
+vendor/lib64/lib_iir.so;MODULE_SUFFIX=_rothko
+vendor/lib64/libADCSwitch.so;MODULE_SUFFIX=_rothko
+vendor/lib64/libANS.so;MODULE_SUFFIX=_rothko
+vendor/lib64/libdlbdap.so;MODULE_SUFFIX=_rothko
+vendor/lib64/libfsmsmartpaparse.so;MODULE_SUFFIX=_rothko
+vendor/etc/smartpa_param/AW_DSP.bin;MAKE_COPY_RULE_ONLY
+vendor/etc/smartpa_param/AW_SINEWAVE_DSP.bin;MAKE_COPY_RULE_ONLY
+vendor/etc/smartpa_param_fs/fsmsdg_params.bin;MAKE_COPY_RULE_ONLY
+vendor/etc/smartpa_param_fs/preset_default.bin;MAKE_COPY_RULE_ONLY

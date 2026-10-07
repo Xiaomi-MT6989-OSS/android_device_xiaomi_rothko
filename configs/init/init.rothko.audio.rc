@@ -1,0 +1,5 @@
+# Exact post-fs-data actions from rothko's stock audio service RC.
+# Keep the current service provider for this configuration-only comparison.
+on post-fs-data
+    mkdir /data/vendor/audiohal 0771 system audio
+    mkdir /data/vendor/audio 0771 system audio
