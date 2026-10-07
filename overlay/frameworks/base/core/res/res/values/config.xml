@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Native 60/90/120/144 Hz modes were verified on rothko with HWC.
+         Let the user's peak setting cap rendering instead of a default 60 Hz vote. -->
+    <integer name="config_defaultRefreshRate">0</integer>
+    <integer name="config_defaultPeakRefreshRate">144</integer>
+</resources>
