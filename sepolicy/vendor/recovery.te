@@ -2,6 +2,8 @@
 # Recovery runs the same stock THP main without its normal-system binder HAL.
 # No permissions are added to normal-system Recovery policy.
 recovery_only(`
+    # init's wait for the THP node only needs to stat the device.
+    allow init touchfeature_device:chr_file getattr;
     allow recovery self:global_capability_class_set sys_nice;
     allow recovery touchfeature_device:chr_file rw_file_perms;
     allow recovery input_device:chr_file rw_file_perms;
