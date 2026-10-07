@@ -5,5 +5,5 @@ type sysfs_touch_suspend, fs_type, sysfs_type;
 type proc_tp_file, fs_type, proc_type;
 type proc_tp_selftest, fs_type, proc_type;
 type proc_tp_lockdown, fs_type, proc_type;
-type vendor_data_touchreport_file, file_type, data_file_type, vendor_data_file_type;
-type vendor_bsp_touch_log_file, file_type, data_file_type, vendor_data_file_type;
+type vendor_data_touchreport_file, file_type, data_file_type;
+type vendor_bsp_touch_log_file, file_type, data_file_type;
