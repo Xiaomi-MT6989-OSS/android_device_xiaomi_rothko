@@ -8,3 +8,6 @@ allow vendor_init sysfs_touch_hostprocess:file setattr;
 allow vendor_init sysfs_touch_suspend:file setattr;
 allow vendor_init { proc_tp_file proc_tp_selftest proc_tp_lockdown }:file setattr;
 allow vendor_init sysfs_touch_hostprocess:file w_file_perms;
+
+# Both stock touch properties are set by vendor init actions.
+set_prop(vendor_init, vendor_touchfeature_prop)
