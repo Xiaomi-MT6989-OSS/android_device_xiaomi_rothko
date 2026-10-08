@@ -2938,3 +2938,6 @@ odm/bin/crossbuild/DataSet/SQLiteModule/db/tuning_DB_aov/default_sensor/mt6989/I
 odm/bin/crossbuild/DataSet/SQLiteModule/db/tuning_DB_aov/default_sensor/mt6989/ISP_param.db;SYMLINK=odm/bin/crossbuild/DataSet/SQLiteModule/db/tuning_DB_aov/default_sensor/ISP_param.db;MAKE_COPY_RULE_ONLY
 odm/bin/crossbuild/DataSet/SQLiteModule/db/tuning_DB_aov/mt6989/ISP_info.db;SYMLINK=odm/bin/crossbuild/DataSet/SQLiteModule/db/tuning_DB_aov/ISP_info.db;MAKE_COPY_RULE_ONLY
 vendor/bin/crossbuild/DataSet/SQLiteModule/db/port_select.db;MAKE_COPY_RULE_ONLY
+
+# Camera CCD runtime - stock rothko OS3.0.307.0
+vendor/lib64/mt6989/libccd.so;SYMLINK=vendor/lib64/libccd.so
