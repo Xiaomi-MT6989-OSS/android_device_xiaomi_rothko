@@ -4,4 +4,6 @@
          Let the user's peak setting cap rendering instead of a default 60 Hz vote. -->
     <integer name="config_defaultRefreshRate">0</integer>
     <integer name="config_defaultPeakRefreshRate">144</integer>
+    <!-- Stock rothko enables software navigation; SystemUI needs it for edge back. -->
+    <bool name="config_showNavigationBar">true</bool>
 </resources>
