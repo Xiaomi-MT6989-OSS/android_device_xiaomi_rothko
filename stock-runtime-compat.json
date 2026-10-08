@@ -1259,5 +1259,21 @@
       "vendor/lib64/mt6989/libmmlpqImpl.so"
     ],
     "reason": "Keep stock TinyXML2 776-byte XMLDocument isolated from source TinyXML2 880-byte layout. Equal-length GNU-hash-preserving .dynstr edits preserve dynamic symbol indexes and Android packed relocations. Source libeffectsconfig and source TinyXML2 remain unchanged."
+  },
+  "allocator_v2_symbol_isolation": {
+    "old_mangled_namespace": "4aidl7android8hardware8graphics9allocator",
+    "new_mangled_namespace": "4aidl7android8hardware8graphics9rkccndb1y",
+    "targets": [
+      "vendor/bin/hw/mt6989/android.hardware.graphics.allocator-V2-service-mediatek.mt6989",
+      "vendor/lib64/android.hardware.graphics.allocator-V2-ndk-v34.so",
+      "vendor/lib64/egl/mt6989/libGLES_mali.so",
+      "vendor/lib64/hw/hwcomposer.mtk_common.so",
+      "vendor/lib64/hw/mt6989/android.hardware.graphics.allocator-V2-mediatek.so",
+      "vendor/lib64/libcodec2_fsr.so",
+      "vendor/lib64/libcodec2_vpp_AIMEMC_plugin.so",
+      "vendor/lib64/libcodec2_vpp_AISR_plugin.so",
+      "vendor/lib64/libui-rothko-v34.so"
+    ],
+    "reason": "Stock V2 caller received V1 C++ object in camera process (vtable +0x50 null call). Isolate stock V2 names and paired consumers with same-length GNU-hash-preserving dynstr edits; preserve V1 helpers, Binder descriptor, code, dynamic symbol indexes and packed relocations."
   }
 }

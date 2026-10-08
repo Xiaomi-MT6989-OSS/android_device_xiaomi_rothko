@@ -13,6 +13,7 @@ from extract_utils.fixups_lib import lib_fixups as default_lib_fixups
 from extract_utils.main import ExtractUtils, ExtractUtilsModule
 from tinyxml2_isolation import blob_fixup_tinyxml2_isolation
 from vibrator_instance_fixup import blob_fixup_vibrator_instance
+from allocator_v2_isolation import blob_fixup_allocator_v2_isolation
 
 namespace_imports = [
     'device/xiaomi/rothko',
@@ -122,6 +123,10 @@ for target, replacements in runtime_compat['consumers'].items():
 for target in runtime_compat.get('symbol_namespace_isolation', {}).get('targets', []):
     separate_fixups.setdefault(target, blob_fixup()).call(
         blob_fixup_tinyxml2_isolation, need_tmp_dir=False,
+    )
+for target in runtime_compat.get('allocator_v2_symbol_isolation', {}).get('targets', []):
+    separate_fixups.setdefault(target, blob_fixup()).call(
+        blob_fixup_allocator_v2_isolation, need_tmp_dir=False,
     )
 # Apply only the symbol/dependency corrections observed in normal ELF checks.
 symbol_compat = json.loads(

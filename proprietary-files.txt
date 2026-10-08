@@ -1304,7 +1304,6 @@ vendor/lib64/hw/consumerir.common.so
 # Chipinfo
 
 # Display
-vendor/bin/hw/mt6989/android.hardware.graphics.allocator-V2-service-mediatek.mt6989;SYMLINK=vendor/bin/hw/android.hardware.graphics.allocator-V2-service-mediatek
 vendor/bin/hw/android.hardware.graphics.composer@3.2-service
 vendor/bin/hw/vendor.mediatek.hardware.mmlpq@V1-service
 vendor/bin/hw/vendor.mediatek.hardware.pq_aidl-service
@@ -1327,9 +1326,6 @@ vendor/lib64/egl/libMEOW_data.so
 vendor/lib64/egl/libMEOW_gift.so
 vendor/lib64/egl/libMEOW_qt.so
 vendor/lib64/egl/libMEOW_trace.so
-vendor/lib64/egl/mt6989/libGLES_mali.so;SYMLINK=vendor/lib64/egl/libGLES_mali.so
-vendor/lib64/hw/hwcomposer.mtk_common.so
-vendor/lib64/hw/mt6989/android.hardware.graphics.allocator-V2-mediatek.so;SYMLINK=vendor/lib64/hw/android.hardware.graphics.allocator-V2-mediatek.so
 vendor/lib64/hw/mt6989/android.hardware.graphics.mapper@4.0-impl-mediatek.so;SYMLINK=vendor/lib64/hw/android.hardware.graphics.mapper@4.0-impl-mediatek.so
 vendor/lib64/hw/mt6989/vulkan.mali.so;SYMLINK=vendor/lib64/hw/vulkan.mali.so
 vendor/lib64/mt6989/arm.graphics-V4-ndk.so;SYMLINK=vendor/lib64/arm.graphics-V4-ndk.so
@@ -2381,8 +2377,6 @@ vendor/lib64/libcodec2_soft_mtk_alacdec.so
 vendor/lib64/libcodec2_soft_mtk_imaadpcmdec.so
 vendor/lib64/libcodec2_soft_mtk_mp3dec.so
 vendor/lib64/libcodec2_soft_mtk_msadpcmdec.so
-vendor/lib64/libcodec2_vpp_AIMEMC_plugin.so
-vendor/lib64/libcodec2_vpp_AISR_plugin.so
 vendor/lib64/libcodec2_vpp_qt_plugin.so
 vendor/lib64/libcodec2_vpp_rs_plugin.so
 vendor/lib64/libdolbyottcameracontrol.so
@@ -2778,7 +2772,6 @@ vendor/lib64/libcom.xiaomi.hwadapter.postprocinterface.so
 vendor/lib64/libcom.xiaomi.hwadapter.decoupleutil.so
 vendor/lib64/libcodec2_vpp_frc_plugin.so
 vendor/lib64/libcodec2_vpp_fa_plugin.so
-vendor/lib64/libcodec2_fsr.so
 vendor/lib64/mt6989/libalgo.aosp.log.so;SYMLINK=vendor/lib64/libalgo.aosp.log.so
 vendor/lib64/mt6989/libaiseg_cache.so;SYMLINK=vendor/lib64/libaiseg_cache.so
 vendor/lib64/mt6989/libaicapturecore.so;SYMLINK=vendor/lib64/libaicapturecore.so
@@ -2845,9 +2838,7 @@ vendor/lib64/libcodec2_hidl_plugin.so:vendor/lib64/libcodec2_hidl_plugin-rothko.
 odm/lib64/libomp.so;MODULE_SUFFIX=_vendorcompat
 apex/com.android.vndk.v34/lib64/libstagefright_foundation.so:vendor/lib64/libstagefright_foundation-v34.so;FIX_SONAME;TRYSRCFIRST
 apex/com.android.vndk.v34/lib64/libstagefright_bufferqueue_helper.so:vendor/lib64/libstagefright_bufferqueue_helper-rothko.so;MODULE=libstagefright_bufferqueue_helper_vendorcompat;FIX_SONAME;TRYSRCFIRST
-apex/com.android.vndk.v34/lib64/android.hardware.graphics.allocator-V2-ndk.so:vendor/lib64/android.hardware.graphics.allocator-V2-ndk-v34.so;MODULE=android.hardware.graphics.allocator-V2-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
 apex/com.android.vndk.v34/lib64/libgralloctypes.so:vendor/lib64/libgralloctypes-v34.so;MODULE=libgralloctypes_vendorcompat;FIX_SONAME;TRYSRCFIRST
-apex/com.android.vndk.v34/lib64/libui.so:vendor/lib64/libui-rothko-v34.so;MODULE=libui_vendorcompat;FIX_SONAME;TRYSRCFIRST
 apex/com.android.vndk.v34/lib64/libbase.so:vendor/lib64/libbase-rothko-v34.so;MODULE=libbase_stockcompat;FIX_SONAME;TRYSRCFIRST
 vendor/lib64/libultrahdr.so:vendor/lib64/libultrahdr-rothko-v34.so;MODULE=libultrahdr_stockcompat;FIX_SONAME;TRYSRCFIRST
 vendor/lib64/libjpegencoder.so:vendor/lib64/libjpegencoder-rothko-v34.so;MODULE=libjpegencoder_stockcompat;FIX_SONAME;TRYSRCFIRST
@@ -2913,3 +2904,14 @@ odm/etc/sensors/lightSensorConfig_Stk_Csot_Weijing.json;MAKE_COPY_RULE_ONLY
 odm/etc/sensors/lightSensorConfig_Stk_Tianma_GG5.json;MAKE_COPY_RULE_ONLY
 odm/etc/sensors/lightSensorConfig_Stk_Tianma_Weijing.json;MAKE_COPY_RULE_ONLY
 odm/etc/sensors/ois_params_data.json;MAKE_COPY_RULE_ONLY
+
+# Allocator V2 symbol isolation 2026-10-08 audit
+vendor/bin/hw/mt6989/android.hardware.graphics.allocator-V2-service-mediatek.mt6989;SYMLINK=vendor/bin/hw/android.hardware.graphics.allocator-V2-service-mediatek
+vendor/lib64/egl/mt6989/libGLES_mali.so;SYMLINK=vendor/lib64/egl/libGLES_mali.so
+vendor/lib64/hw/hwcomposer.mtk_common.so
+vendor/lib64/hw/mt6989/android.hardware.graphics.allocator-V2-mediatek.so;SYMLINK=vendor/lib64/hw/android.hardware.graphics.allocator-V2-mediatek.so
+vendor/lib64/libcodec2_vpp_AIMEMC_plugin.so
+vendor/lib64/libcodec2_vpp_AISR_plugin.so
+vendor/lib64/libcodec2_fsr.so
+apex/com.android.vndk.v34/lib64/android.hardware.graphics.allocator-V2-ndk.so:vendor/lib64/android.hardware.graphics.allocator-V2-ndk-v34.so;MODULE=android.hardware.graphics.allocator-V2-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
+apex/com.android.vndk.v34/lib64/libui.so:vendor/lib64/libui-rothko-v34.so;MODULE=libui_vendorcompat;FIX_SONAME;TRYSRCFIRST
