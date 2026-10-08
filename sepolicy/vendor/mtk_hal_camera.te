@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+
+# Stock decryptJsonFile generates CameraPlatformInfo/CameraImageSize JSON here.
+# Scope the access to camera runtime output instead of generic vendor_data_file.
+allow mtk_hal_camera vendor_camera_runtime_data_file:dir { add_name getattr search write };
+allow mtk_hal_camera vendor_camera_runtime_data_file:file { create getattr open read write };

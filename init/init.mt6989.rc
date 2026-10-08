@@ -252,6 +252,8 @@ on post-fs-data
     chmod 0771 /data/vendor/camera
 
     mkdir /data/vendor/camera/offlinelog 0777 cameraserver audio
+    # Repair labels on camera runtime directories retained from earlier builds.
+    restorecon_recursive /data/vendor/camera
     chmod 0666 /dev/camlog
     #XIAOMI: Create camera directory for calibration file --end
 
