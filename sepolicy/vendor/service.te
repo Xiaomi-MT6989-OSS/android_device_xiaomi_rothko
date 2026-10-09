@@ -5,3 +5,8 @@ type hal_touchfeature_xiaomi_service, service_manager_type, hal_service_type, pr
 type hal_displayfeature_xiaomi_service, service_manager_type, hal_service_type, protected_service;
 
 type hal_visdisplaysrv_service, service_manager_type, hal_service_type, protected_service;
+
+# The stock HWC RGB notifier checks whether the optional CIT service is declared.
+# Restore its exact stock label/find rule; no server, Binder call, or calibration access.
+type vendor_hal_citsensorservice_xiaomi_service, service_manager_type, hal_service_type, protected_service;
+allow hal_graphics_composer_default vendor_hal_citsensorservice_xiaomi_service:service_manager find;
