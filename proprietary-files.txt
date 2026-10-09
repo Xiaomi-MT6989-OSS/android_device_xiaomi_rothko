@@ -3028,4 +3028,4 @@ odm/lib64/libsre.so
 odm/lib64/libtruetone.so
 odm/lib64/libvideomode.so
 vendor/bin/hw/vendor.xiaomi.hardware.displayfeature_aidl-service
-vendor/etc/vintf/manifest/vendor.xiaomi.hardware.displayfeature_aidl-service.xml;MAKE_COPY_RULE_ONLY
+vendor/etc/vintf/manifest/vendor.xiaomi.hardware.displayfeature_aidl-service.xml
