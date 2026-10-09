@@ -33,3 +33,14 @@ set_prop(hal_displayfeature_xiaomi_default, vendor_displayfeature_runtime_prop)
 r_dir_file(hal_displayfeature_xiaomi_default, persist_data_file)
 neverallow hal_displayfeature_xiaomi_default persist_data_file:dir { create write add_name remove_name rmdir rename reparent setattr };
 neverallow hal_displayfeature_xiaomi_default persist_data_file:file { create write append unlink rename setattr };
+
+# Stable Binder requests and callbacks use the HAL's paired client attribute.
+# Finding/registering a service alone does not authorize Binder transactions.
+binder_call(hal_displayfeature_xiaomi_client, hal_displayfeature_xiaomi_server)
+binder_call(hal_displayfeature_xiaomi_server, hal_displayfeature_xiaomi_client)
+
+# Match AOSP's debug HAL test model: the server remains enforcing. A root
+# diagnostic client is permissive and is not a production client-policy test.
+userdebug_or_eng(`
+  hal_client_domain(su, hal_displayfeature_xiaomi)
+')
