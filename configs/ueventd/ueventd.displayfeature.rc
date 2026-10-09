@@ -6,3 +6,6 @@ subsystem mi_display
     dirname /dev/mi_display
 
 /dev/mi_display/disp_feature 0660 system graphics
+
+# Match the stock service UID while limiting access to its system group.
+/dev/vis_display_spidev 0660 system system

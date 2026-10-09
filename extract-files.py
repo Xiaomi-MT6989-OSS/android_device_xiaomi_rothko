@@ -173,6 +173,14 @@ separate_fixups['vendor/etc/vintf/manifest/manifest_media_c2_V1_2_default.xml'] 
         r'(?m)^[ \t]*<fqname>@1\.0::IComponentStore/dolby</fqname>\r?\n', ''
     )
 )
+# Keep the stock Novatek service definition and chip parameters. Until the
+# complete hardware path is verified, only an explicit diagnostic start runs it.
+# The dedicated ueventd rule supplies system ownership; init keeps that DAC.
+separate_fixups['odm/etc/init/vendor.novatek.hardware.visdisplaysrv-service.rc'] = (
+    blob_fixup()
+        .regex_replace(r'(?m)^    ##disabled\r?$', '    disabled')
+        .regex_replace('chmod 0666 /dev/vis_display_spidev', 'chmod 0660 /dev/vis_display_spidev')
+)
 blob_fixups = separate_fixups
 
 module = ExtractUtilsModule(

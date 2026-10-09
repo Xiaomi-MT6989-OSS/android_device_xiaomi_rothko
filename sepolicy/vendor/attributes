@@ -3,3 +3,5 @@
 hal_attribute(touchfeature_xiaomi)
 
 hal_attribute(displayfeature_xiaomi)
+
+hal_attribute(visdisplaysrv)

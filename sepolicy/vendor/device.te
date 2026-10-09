@@ -4,3 +4,6 @@ type touchfeature_device, dev_type;
 
 # Original mi_display display-control character device.
 type displayfeature_device, dev_type;
+
+# Original Novatek visual-display SPI character device, not a calibration file.
+type nvt_device, dev_type;

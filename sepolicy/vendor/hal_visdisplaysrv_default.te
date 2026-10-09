@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Original Novatek service and dedicated original driver; diagnostic start only.
+type hal_visdisplaysrv_default, domain;
+type hal_visdisplaysrv_default_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(hal_visdisplaysrv_default)
+hal_server_domain(hal_visdisplaysrv_default, hal_visdisplaysrv)
+hal_attribute_service(hal_visdisplaysrv, hal_visdisplaysrv_service)
+binder_use(hal_visdisplaysrv_default)
+allow hal_visdisplaysrv_default nvt_device:chr_file rw_file_perms;
+
+# Stock policy identifies DisplayFeature and the hardware composer as clients.
+hal_client_domain(hal_graphics_composer_default, hal_visdisplaysrv)
+binder_call(hal_visdisplaysrv_client, hal_visdisplaysrv_server)
+binder_call(hal_visdisplaysrv_server, hal_visdisplaysrv_client)
+
+# Keep calibration files outside this hardware service's write permissions.
+neverallow hal_visdisplaysrv_default persist_data_file:dir { create write add_name remove_name rmdir rename reparent setattr };
+neverallow hal_visdisplaysrv_default persist_data_file:file { create write append unlink rename setattr };

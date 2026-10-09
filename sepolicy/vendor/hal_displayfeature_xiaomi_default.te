@@ -47,3 +47,7 @@ binder_call(hal_displayfeature_xiaomi_server, hal_displayfeature_xiaomi_client)
 userdebug_or_eng(`
   hal_client_domain(su, hal_displayfeature_xiaomi)
 ')
+
+# Stock ON notification enters the Novatek client and reads sys.boot_completed.
+hal_client_domain(hal_displayfeature_xiaomi_default, hal_visdisplaysrv)
+get_prop(hal_displayfeature_xiaomi_default, boot_status_prop)

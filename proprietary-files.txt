@@ -3029,3 +3029,12 @@ odm/lib64/libtruetone.so
 odm/lib64/libvideomode.so
 vendor/bin/hw/vendor.xiaomi.hardware.displayfeature_aidl-service
 vendor/etc/vintf/manifest/vendor.xiaomi.hardware.displayfeature_aidl-service.xml
+
+# Novatek DQE data: exact paths referenced by the stock service
+odm/etc/dqe/36_cust_HW_backlight.xml;MAKE_COPY_RULE_ONLY
+odm/etc/dqe/36_hwDBV_nit.csv;MAKE_COPY_RULE_ONLY
+odm/etc/dqe/42_cust_HW_backlight.xml;MAKE_COPY_RULE_ONLY
+odm/etc/dqe/42_hwDBV_nit.csv;MAKE_COPY_RULE_ONLY
+odm/etc/dqe/ASICPCC.xml;MAKE_COPY_RULE_ONLY
+odm/etc/dqe/ASICPanel.xml;MAKE_COPY_RULE_ONLY
+odm/etc/dqe/ASICScene.xml;MAKE_COPY_RULE_ONLY

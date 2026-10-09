@@ -15,3 +15,6 @@ set_prop(vendor_init, vendor_touchfeature_prop)
 # Original ODM display.rc already creates this non-calibration directory.
 allow vendor_init vendor_display_runtime_data_file:dir create_dir_perms;
 allow vendor_init sysfs_displayfeature_control:file setattr;
+
+# Only the original Novatek init chmod action on its dedicated SPI node.
+allow vendor_init nvt_device:chr_file setattr;
