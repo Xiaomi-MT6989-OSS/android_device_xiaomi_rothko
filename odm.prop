@@ -39,3 +39,6 @@ ro.vendor.nfc.mibeam=1
 # Stock Xiaomi THP touch
 ro.vendor.touch.touchscheduler.enable=true
 persist.vendor.touchfeature.gameturbotool.version=v3.5
+
+# Stock panel-specific PQ configuration
+ro.vendor.mtk.pq.odm=true
