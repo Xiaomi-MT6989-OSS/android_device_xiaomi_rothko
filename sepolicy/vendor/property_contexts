@@ -11,3 +11,4 @@ ro.vendor.touch.touchscheduler.enable  u:object_r:vendor_touchfeature_prop:s0 ex
 # Exact stock runtime properties, not a writable blanket display prefix.
 vendor.displayfeature.entry.enable u:object_r:vendor_displayfeature_runtime_prop:s0 exact
 vendor.display.panel.calibration.status u:object_r:vendor_displayfeature_runtime_prop:s0 exact
+persist.vendor.max.brightness u:object_r:vendor_displayfeature_runtime_prop:s0 exact
