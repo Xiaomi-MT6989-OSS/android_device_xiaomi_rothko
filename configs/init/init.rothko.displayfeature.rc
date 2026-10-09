@@ -11,6 +11,8 @@ service vendor.displayfeatureaidl-hal /vendor/bin/hw/vendor.xiaomi.hardware.disp
 on early-boot
     chown system system /sys/class/mi_display/disp-DSI-0/disp_count
     chmod 0664 /sys/class/mi_display/disp-DSI-0/disp_count
+    chown system system /sys/class/mi_display/disp-DSI-0/brightness_clone
+    chmod 0664 /sys/class/mi_display/disp-DSI-0/brightness_clone
 
 on post-fs-data
     restorecon_recursive /data/vendor/display
