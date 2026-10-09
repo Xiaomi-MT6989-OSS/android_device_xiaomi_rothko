@@ -1232,6 +1232,9 @@
     },
     "odm/lib64/camera/plugins/com.xiaomi.plugin.mialgoainr.so": {
       "libtinyxml2.so": "libtinyxml2-rothko.so"
+    },
+    "odm/lib64/hw/displayfeature.default.so": {
+      "libtinyxml2.so": "libtinyxml2-rothko.so"
     }
   },
   "limits": [
@@ -1245,6 +1248,7 @@
     "gnu_hash": "0x2593608c",
     "targets": [
       "odm/lib64/camera/plugins/com.xiaomi.plugin.mialgoainr.so",
+      "odm/lib64/hw/displayfeature.default.so",
       "vendor/lib64/hw/audio.primary.mediatek.so",
       "vendor/lib64/hw/mt6989/vendor.mediatek.hardware.pq_aidl-impl.so",
       "vendor/lib64/libHardwareBacklightcore.so",
