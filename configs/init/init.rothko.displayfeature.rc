@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Preserve the original AIDL executable, UID and graphics group. This first
+# backend candidate is diagnostic: explicit init start only, no lazy autostart.
+# The legacy DisplayFeatureControl wrapper is not part of this candidate.
+service vendor.displayfeatureaidl-hal /vendor/bin/hw/vendor.xiaomi.hardware.displayfeature_aidl-service
+    class hal
+    user system
+    group system graphics
+    disabled
+
+on early-boot
+    chown system system /sys/class/mi_display/disp-DSI-0/disp_count
+    chmod 0664 /sys/class/mi_display/disp-DSI-0/disp_count
+
+on post-fs-data
+    restorecon_recursive /data/vendor/display

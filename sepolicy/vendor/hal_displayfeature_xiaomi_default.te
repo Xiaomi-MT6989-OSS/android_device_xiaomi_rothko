@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+# Original rothko AIDL server and dynamically loaded ODM displayfeature HAL.
+type hal_displayfeature_xiaomi_default, domain;
+type hal_displayfeature_xiaomi_default_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(hal_displayfeature_xiaomi_default)
+hal_server_domain(hal_displayfeature_xiaomi_default, hal_displayfeature_xiaomi)
+hal_attribute_service(hal_displayfeature_xiaomi, hal_displayfeature_xiaomi_service)
+binder_use(hal_displayfeature_xiaomi_default)
+vndbinder_use(hal_displayfeature_xiaomi_default)
+hwbinder_use(hal_displayfeature_xiaomi_default)
+hal_client_domain(hal_displayfeature_xiaomi_default, hal_mtk_pq)
+hal_client_domain(hal_displayfeature_xiaomi_default, hal_allocator)
+binder_call(hal_displayfeature_xiaomi_default, system_server)
+allow hal_displayfeature_xiaomi_default fwk_sensor_hwservice:hwservice_manager find;
+allow hal_displayfeature_xiaomi_default sensors_device:chr_file r_file_perms;
+
+allow hal_displayfeature_xiaomi_default displayfeature_device:chr_file rw_file_perms;
+r_dir_file(hal_displayfeature_xiaomi_default, sysfs_displayfeature)
+r_dir_file(hal_displayfeature_xiaomi_default, sysfs_displayfeature_control)
+allow hal_displayfeature_xiaomi_default sysfs_displayfeature_control:file w_file_perms;
+r_dir_file(hal_displayfeature_xiaomi_default, sysfs_leds)
+r_dir_file(hal_displayfeature_xiaomi_default, sysfs_therm)
+
+# Only generated runtime state belongs in /data/vendor/display.
+allow hal_displayfeature_xiaomi_default vendor_display_runtime_data_file:dir create_dir_perms;
+allow hal_displayfeature_xiaomi_default vendor_display_runtime_data_file:file create_file_perms;
+get_prop(hal_displayfeature_xiaomi_default, vendor_mtk_pq_ro_prop)
+get_prop(hal_displayfeature_xiaomi_default, vendor_mtk_pq_prop)
+set_prop(hal_displayfeature_xiaomi_default, vendor_displayfeature_runtime_prop)
+
+# Existing persist labels are retained: do not relabel or rewrite calibration.
+# The stock consumers may read display calibration through this existing type.
+r_dir_file(hal_displayfeature_xiaomi_default, persist_data_file)
+neverallow hal_displayfeature_xiaomi_default persist_data_file:dir { create write add_name remove_name rmdir rename reparent setattr };
+neverallow hal_displayfeature_xiaomi_default persist_data_file:file { create write append unlink rename setattr };

@@ -7,3 +7,7 @@ persist.vendor.hostprocess.waterproof  u:object_r:vendor_touch_hostprocess_prop:
 persist.vendor.hostprocess.glovestatus  u:object_r:vendor_touch_hostprocess_prop:s0 exact
 persist.vendor.hostprocess.filmstatus   u:object_r:vendor_touch_hostprocess_prop:s0 exact
 ro.vendor.touch.touchscheduler.enable  u:object_r:vendor_touchfeature_prop:s0 exact bool
+
+# Exact stock runtime properties, not a writable blanket display prefix.
+vendor.displayfeature.entry.enable u:object_r:vendor_displayfeature_runtime_prop:s0 exact
+vendor.display.panel.calibration.status u:object_r:vendor_displayfeature_runtime_prop:s0 exact

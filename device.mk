@@ -258,3 +258,8 @@ PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/rothko_fts_t
 PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/film_model.tflite:$(TARGET_COPY_OUT_RECOVERY)/root/vendor/odm/firmware/film_model.tflite
 PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/glove_model.tflite:$(TARGET_COPY_OUT_RECOVERY)/root/vendor/odm/firmware/glove_model.tflite
 PRODUCT_COPY_FILES += vendor/xiaomi/rothko/proprietary/odm/firmware/water_check.tflite:$(TARGET_COPY_OUT_RECOVERY)/root/vendor/odm/firmware/water_check.tflite
+
+# Stock DisplayFeature diagnostic backend: disabled until runtime validation.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/init/init.rothko.displayfeature.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.rothko.displayfeature.rc \
+    $(LOCAL_PATH)/configs/ueventd/ueventd.displayfeature.rc:$(TARGET_COPY_OUT_ODM)/etc/ueventd.rc

@@ -56,3 +56,7 @@ genfscon proc /tp_fw_version u:object_r:proc_tp_file:s0
 genfscon proc /tp_lockdown_info u:object_r:proc_tp_lockdown:s0
 
 genfscon proc /stpbt u:object_r:proc_stpbt:s0
+
+# Real paths verified on rothko; disp_count is the only writable sysfs node.
+genfscon sysfs /devices/virtual/mi_display/disp_feature/disp-DSI-0 u:object_r:sysfs_displayfeature:s0
+genfscon sysfs /devices/virtual/mi_display/disp_feature/disp-DSI-0/disp_count u:object_r:sysfs_displayfeature_control:s0

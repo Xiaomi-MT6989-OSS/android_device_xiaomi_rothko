@@ -11,3 +11,7 @@ allow vendor_init sysfs_touch_hostprocess:file w_file_perms;
 
 # Both stock touch properties are set by vendor init actions.
 set_prop(vendor_init, vendor_touchfeature_prop)
+
+# Original ODM display.rc already creates this non-calibration directory.
+allow vendor_init vendor_display_runtime_data_file:dir create_dir_perms;
+allow vendor_init sysfs_displayfeature_control:file setattr;

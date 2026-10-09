@@ -42,3 +42,6 @@ persist.vendor.touchfeature.gameturbotool.version=v3.5
 
 # Stock panel-specific PQ configuration
 ro.vendor.mtk.pq.odm=true
+
+# Stock DSPP AIDL transport and render-intent callback branch.
+ro.vendor.mtk.pq.aidl=true

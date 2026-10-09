@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# The kernel advertises DEVNAME=mi_display/disp_feature. Keep the original
+# subsystem naming, granting only the stock service's UID/groups access.
+subsystem mi_display
+    devname uevent_devpath
+    dirname /dev/mi_display
+
+/dev/mi_display/disp_feature 0660 system graphics
