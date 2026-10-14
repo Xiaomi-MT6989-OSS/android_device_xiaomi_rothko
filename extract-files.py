@@ -56,6 +56,17 @@ lib_fixups = {
         lib_fixup_odm_suffix,
 }
 
+# Original fingerprint AIDL/common bindings retain their stock SONAMEs.
+lib_fixups[(
+    'android.hardware.biometrics.fingerprint-V3-ndk',
+    'android.hardware.biometrics.common-V3-ndk',
+    'android.hardware.biometrics.common.thread',
+    'android.hardware.biometrics.common.util',
+    'android.hardware.keymaster-V4-ndk',
+    'vendor.xiaomi.hardware.fingerprintextension-V1-ndk',
+    'com.fingerprints.extension3-V1-ndk',
+)] = lib_fixup_stock_compat
+
 # The stock audio primary imports libalsautils.so. Preserve the original
 # device-tree isolation of this stock library from the AOSP implementation.
 # Current ELF evidence does not justify the old KeyMint/composer interface

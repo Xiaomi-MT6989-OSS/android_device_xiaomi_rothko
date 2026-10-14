@@ -336,3 +336,16 @@ ro.vendor.touchfeature.type=255
 
 # Sensors: stock MTK subHAL gates initialization on this exact property.
 ro.vendor.mtk.sensor.support=yes
+
+# Fingerprint/FOD properties from rothko OS3.0.307.0.
+persist.vendor.sys.fp.expolevel=0x88
+persist.vendor.sys.fp.fod.location.X_Y=505,2339
+persist.vendor.sys.fp.fod.optimize=true
+persist.vendor.sys.fp.fod.size.width_height=210,210
+persist.vendor.sys.fp.fp_anti_mistouch=true
+ro.hardware.fp.fod=true
+ro.hardware.fp.fod.location=low
+ro.hardware.fp.fod.touch.ctl.version=2.0
+ro.hardware.fp.halworkmode=true
+ro.hardware.fp.mievent=true
+ro.vendor.display.fod_monitor_default_fps=120

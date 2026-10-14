@@ -31,3 +31,11 @@
 
 /odm/bin/hw/vendor\.novatek\.hardware\.visdisplaysrv-service u:object_r:hal_visdisplaysrv_default_exec:s0
 /dev/vis_display_spidev u:object_r:nvt_device:s0
+
+# Original fingerprint daemon and its actual rothko driver node.
+/vendor/bin/hw/mfp-daemon u:object_r:hal_fingerprint_default_exec:s0
+/dev/xiaomi-fp u:object_r:fingerprint_device:s0
+/data/vendor/goodix(/.*)? u:object_r:vendor_fingerprint_runtime_data_file:s0
+/data/vendor/gf_data(/.*)? u:object_r:vendor_fingerprint_runtime_data_file:s0
+/data/vendor/fingerprint(/.*)? u:object_r:vendor_fingerprint_runtime_data_file:s0
+/data/vendor/misc/mi_fp(/.*)? u:object_r:vendor_fingerprint_runtime_data_file:s0

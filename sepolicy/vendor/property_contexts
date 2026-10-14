@@ -12,3 +12,11 @@ ro.vendor.touch.touchscheduler.enable  u:object_r:vendor_touchfeature_prop:s0 ex
 vendor.displayfeature.entry.enable u:object_r:vendor_displayfeature_runtime_prop:s0 exact
 vendor.display.panel.calibration.status u:object_r:vendor_displayfeature_runtime_prop:s0 exact
 persist.vendor.max.brightness u:object_r:vendor_displayfeature_runtime_prop:s0 exact
+
+# Stock fingerprint property namespaces used by the original service.
+ro.hardware.fp. u:object_r:vendor_fp_prop:s0 prefix
+persist.vendor.sys.fp. u:object_r:vendor_fp_prop:s0 prefix
+vendor.fps_hal. u:object_r:vendor_fp_prop:s0 prefix
+persist.vendor.goodix. u:object_r:vendor_fp_prop:s0 prefix
+vendor.panel.touch_vendor u:object_r:vendor_fp_prop:s0 exact
+ro.vendor.display.fod_monitor_default_fps u:object_r:vendor_fp_prop:s0 exact int

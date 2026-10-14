@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# Stock service stanza; only rothko nodes and private runtime directories follow.
+service mfp-daemon /vendor/bin/hw/mfp-daemon
+    interface aidl android.hardware.biometrics.fingerprint.IFingerprint/default
+    class late_start
+    user system
+    group system drmrpc diag input uhid
+    seclabel u:r:hal_fingerprint_default:s0
+
+on boot
+    chown system system /dev/xiaomi-fp
+    chmod 0660 /dev/xiaomi-fp
+    restorecon /dev/xiaomi-fp
+
+on post-fs-data
+    mkdir /data/vendor/goodix 0770 system system
+    mkdir /data/vendor/gf_data 0770 system system
+    mkdir /data/vendor/fingerprint 0770 system system
+    mkdir /data/vendor/misc 01771 system system
+    mkdir /data/vendor/misc/mi_fp 0770 system system

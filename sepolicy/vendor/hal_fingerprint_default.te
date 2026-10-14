@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+# Reuse the platform fingerprint server domain and the MTK driver/TEE rules.
+binder_use(hal_fingerprint_default)
+hwbinder_use(hal_fingerprint_default)
+allow hal_fingerprint_default fwk_sensor_hwservice:hwservice_manager find;
+binder_call(hal_fingerprint_default, system_server)
+binder_call(system_server, hal_fingerprint_default)
+
+# Vendor interfaces actually present in the original daemon/module.
+type vendor_fingerprint_ext_service, hal_service_type, service_manager_type;
+hal_attribute_service(hal_fingerprint, vendor_fingerprint_ext_service)
+
+# Original FodEngineCore monitors these stock interfaces.
+hal_client_domain(hal_fingerprint_default, hal_touchfeature_xiaomi)
+allow hal_fingerprint_default displayfeature_device:chr_file rw_file_perms;
+allow hal_fingerprint_default input_device:dir r_dir_perms;
+allow hal_fingerprint_default input_device:chr_file r_file_perms;
+r_dir_file(hal_fingerprint_default, sysfs_displayfeature)
+r_dir_file(hal_fingerprint_default, sysfs_touch_hostprocess)
+type sysfs_tp_fodstatus, fs_type, sysfs_type;
+r_dir_file(hal_fingerprint_default, sysfs_tp_fodstatus)
+
+# These are new runtime data directories, not the existing persist calibration.
+type vendor_fingerprint_runtime_data_file, file_type, data_file_type;
+allow hal_fingerprint_default vendor_fingerprint_runtime_data_file:dir create_dir_perms;
+allow hal_fingerprint_default vendor_fingerprint_runtime_data_file:file create_file_perms;
+
+vendor_internal_prop(vendor_fp_prop)
+set_prop(hal_fingerprint_default, vendor_fp_prop)
+
+# Retain current calibration labels and ownership. No calibration mutation.
+allow hal_fingerprint_default mnt_vendor_file:dir search;
+r_dir_file(hal_fingerprint_default, persist_data_file)
+neverallow hal_fingerprint_default persist_data_file:dir { create write add_name remove_name rmdir rename reparent setattr };
+neverallow hal_fingerprint_default persist_data_file:file { create write append unlink rename setattr };

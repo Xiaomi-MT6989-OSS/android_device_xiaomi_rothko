@@ -7,3 +7,8 @@ vendor.xiaomi.hardware.displayfeature_aidl.IDisplayFeature/default u:object_r:ha
 vendor.novatek.hardware.visdisplaysrv.IVisdisplaysrv/default u:object_r:hal_visdisplaysrv_service:s0
 
 vendor.xiaomi.sensor.citsensorservice.ICitSensorService/default u:object_r:vendor_hal_citsensorservice_xiaomi_service:s0
+
+vendor.xiaomi.hardware.fingerprintextension.IXiaomiFingerprint/default u:object_r:vendor_fingerprint_ext_service:s0
+com.fingerprints.extension3.IFingerprintSensorTest/default u:object_r:vendor_fingerprint_ext_service:s0
+com.fingerprints.extension3.IFingerprintNavigation/default u:object_r:vendor_fingerprint_ext_service:s0
+vendor.xiaomi.hardware.fx.tunnel.IMiFxTunnel/default u:object_r:vendor_fingerprint_ext_service:s0
