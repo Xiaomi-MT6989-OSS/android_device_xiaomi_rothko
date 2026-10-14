@@ -31,3 +31,8 @@ allow hal_touchfeature_xiaomi_default vendor_bsp_touch_log_file:dir create_dir_p
 allow hal_touchfeature_xiaomi_default vendor_bsp_touch_log_file:file create_file_perms;
 set_prop(hal_touchfeature_xiaomi_default, vendor_touchfeature_prop)
 set_prop(hal_touchfeature_xiaomi_default, vendor_touch_hostprocess_prop)
+
+# Runtime AVC: system_server's sensor callback calls the stock THP service.
+hal_client_domain(system_server, hal_touchfeature_xiaomi)
+binder_call(hal_touchfeature_xiaomi_client, hal_touchfeature_xiaomi_server)
+binder_call(hal_touchfeature_xiaomi_server, hal_touchfeature_xiaomi_client)
