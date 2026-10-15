@@ -266,5 +266,4 @@ PRODUCT_COPY_FILES += \
 
 # Original fingerprint HAL and its FOD vendor declarations.
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/init/init.rothko.fingerprint.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.rothko.fingerprint.rc \
-    $(LOCAL_PATH)/configs/fingerprint/fod-aidl.xml:$(TARGET_COPY_OUT_VENDOR)/etc/vintf/manifest/fod-aidl.xml
+    $(LOCAL_PATH)/configs/init/init.rothko.fingerprint.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.rothko.fingerprint.rc
