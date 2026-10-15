@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <!-- Stock rothko DisplayDeviceInfo: xDpi/yDpi=445.614.
+         Physical pixel pitch in microns: 25400 / 445.614 = 57.000004. -->
+    <item name="pixel_pitch" format="float" type="dimen">57.0</item>
+</resources>
