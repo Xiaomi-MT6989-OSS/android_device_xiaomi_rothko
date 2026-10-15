@@ -4,6 +4,7 @@ package org.lineageos.rothko.fingerprint;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.hardware.display.DisplayManager;
 import android.os.Binder;
 import android.os.Handler;
@@ -12,6 +13,8 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.Slog;
 import android.view.Display;
 
@@ -34,6 +37,7 @@ public final class RothkoFodService extends SystemService {
     private FodStateMachine mState;
     private IBinder mExtension;
     private boolean mNeedsBaseline = true;
+    private int mCurrentUser;
     private volatile String mSummary = "starting";
     private volatile long mTransactionSince;
 
@@ -43,8 +47,16 @@ public final class RothkoFodService extends SystemService {
     public void onStart() {
         mThread.start();
         mHandler = new Handler(mThread.getLooper());
-        mState = new FodStateMachine(ActivityManager.getCurrentUser());
+        mCurrentUser = ActivityManager.getCurrentUser();
+        mState = new FodStateMachine(mCurrentUser);
         mDisplays = getContext().getSystemService(DisplayManager.class);
+        getContext().getContentResolver().registerContentObserver(
+                Settings.Secure.getUriFor(Settings.Secure.SCREEN_OFF_UNLOCK_UDFPS_ENABLED),
+                false, new ContentObserver(mHandler) {
+                    @Override public void onChange(boolean selfChange) {
+                        post(() -> updateScreenOffPreference());
+                    }
+                }, UserHandle.USER_ALL);
         LocalServices.addService(UdfpsLifecycle.class, new UdfpsLifecycle() {
             @Override public void onOperationStarted(int sensor, long request, int user, int state) {
                 if (sensor == SENSOR_ID) post(() -> mState.start(request, user, state));
@@ -70,7 +82,7 @@ public final class RothkoFodService extends SystemService {
                 final long since = mTransactionSince;
                 writer.println("  OEM transaction pendingMs="
                         + (since == 0 ? 0 : SystemClock.elapsedRealtime() - since));
-                writer.println("  capturePolicy=display-ON-only; no polling or root helper");
+                writer.println("  capturePolicy=ON or opted-in keyguard OFF/DOZE; no polling or root helper");
             }
         });
         mDisplays.registerDisplayListener(new DisplayManager.DisplayListener() {
@@ -82,13 +94,20 @@ public final class RothkoFodService extends SystemService {
                 }
             }
         }, mHandler);
-        post(() -> updateDisplay(UdfpsLifecycle.getDefaultDisplayState()));
+        post(() -> {
+            updateScreenOffPreference();
+            updateDisplay(UdfpsLifecycle.getDefaultDisplayState());
+        });
         Slog.i(TAG, "Registered stock fingerprint lifecycle bridge");
     }
 
     @Override
     public void onUserSwitching(TargetUser from, TargetUser to) {
-        post(() -> mState.user(to.getUserIdentifier()));
+        post(() -> {
+            mCurrentUser = to.getUserIdentifier();
+            mState.user(mCurrentUser);
+            updateScreenOffPreference();
+        });
     }
 
     @Override
@@ -98,6 +117,16 @@ public final class RothkoFodService extends SystemService {
     }
 
     private void post(Runnable event) { mHandler.post(() -> updateAndApply(event)); }
+
+    private void updateScreenOffPreference() {
+        final boolean supported = getContext().getResources().getBoolean(
+                com.android.internal.R.bool.config_screen_off_udfps_enabled);
+        final boolean defaultOn = getContext().getResources().getBoolean(
+                com.android.internal.R.bool.config_screen_off_udfps_default_on);
+        mState.screenOffUnlock(supported && Settings.Secure.getIntForUser(
+                getContext().getContentResolver(), Settings.Secure.SCREEN_OFF_UNLOCK_UDFPS_ENABLED,
+                defaultOn ? 1 : 0, mCurrentUser) != 0);
+    }
 
     private void updateDisplay(UdfpsLifecycle.DisplayState state) {
         final Display display = mDisplays.getDisplay(Display.DEFAULT_DISPLAY);

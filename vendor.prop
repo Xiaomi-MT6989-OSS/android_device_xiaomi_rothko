@@ -349,3 +349,6 @@ ro.hardware.fp.fod.touch.ctl.version=2.0
 ro.hardware.fp.halworkmode=true
 ro.hardware.fp.mievent=true
 ro.vendor.display.fod_monitor_default_fps=120
+
+# Stock HWC's Doze capability is disabled unless this original property is set.
+ro.vendor.mtk_aod_support=1

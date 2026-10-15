@@ -36,6 +36,7 @@ final class FodStateMachine {
     private int mDesiredDisplay;
     private int mActualDisplay;
     private boolean mFade = true;
+    private boolean mScreenOffUnlock;
 
     FodStateMachine(int user) {
         mUser = user;
@@ -66,6 +67,8 @@ final class FodStateMachine {
         if (mode >= 0 && mode <= 2) mLockouts.put(user, mode);
     }
 
+    void screenOffUnlock(boolean enabled) { mScreenOffUnlock = enabled; }
+
     void user(int user) {
         mOperation = null;
         mUser = user;
@@ -86,11 +89,17 @@ final class FodStateMachine {
 
     void apply(Transport transport) throws Exception {
         final Integer lockout = mLockouts.get(mUser);
-        // This first production candidate enables capture only while the physical display is ON.
-        // AOD/DOZE illumination must be validated separately; never pretend an OFF display is ON.
+        final boolean screenOn = mDesiredDisplay == 2 && mActualDisplay == 2 && !mFade;
+        final boolean stableLowPower = mDesiredDisplay == mActualDisplay
+                && (mActualDisplay == 1 || mActualDisplay == 3 || mActualDisplay == 4);
+        // Stock FodEngine accepts real OFF/DOZE power with an attached keyguard UI.
+        // A persistent ColorFade surface while OFF is reported truthfully to the HAL;
+        // it must not be confused with an ON-screen transition. Enroll/app auth remain ON-only.
+        final boolean screenOffKeyguard = mScreenOffUnlock && stableLowPower
+                && mOperation != null && mOperation.keyguard();
         final boolean active = mOperation != null && mOperation.attached
                 && mOperation.user == mUser && lockout != null && lockout == 0
-                && mDesiredDisplay == 2 && mActualDisplay == 2 && !mFade;
+                && (screenOn || screenOffKeyguard);
         if (mAppliedOperation != null && (!active || mAppliedOperation != mOperation)) {
             send(transport, 1, 0);
             send(transport, 4, mAppliedOperation.enrolling() ? 2 : 4);
@@ -122,6 +131,7 @@ final class FodStateMachine {
                 + " vendorOperation=" + (mAppliedOperation != null)
                 + " desiredDisplay=" + mDesiredDisplay + " actualDisplay=" + mActualDisplay
                 + " colorFade=" + mFade + " lockout=" + mLockouts.get(mUser)
+                + " screenOffUnlock=" + mScreenOffUnlock
                 + " uiCondition=" + mSent[1] + " keyguardLowBrightness=" + mSent[7];
     }
 }

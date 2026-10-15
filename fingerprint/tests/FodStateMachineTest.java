@@ -134,6 +134,51 @@ public final class FodStateMachineTest {
         state.forgetTransport();
         state.apply(wire);
         check(wire.ui == 0, "caller cleanup after failure must remain inactive");
-        System.out.println("PASS: enrollment, auth, request races, fade, wake, lockout, users, death and transport failure");
+        // Low-power capture is opt-in, keyguard-only and still reports the real power/fade.
+        for (int[] display : new int[][] {{1, 0}, {3, 1}, {4, 3}}) {
+            state = ready();
+            wire = new Wire();
+            state.screenOffUnlock(true);
+            state.start(10, 0, 2);
+            state.overlay(10, true);
+            state.display(display[0], display[0], true);
+            state.apply(wire);
+            check(wire.ui == 1 && wire.operation == 3 && wire.lowBrightness == 1,
+                    "opted-in stable low-power keyguard must keep real auth active");
+            check(wire.events.contains("3/" + display[1]) && wire.events.contains("2/1"),
+                    "low-power auth must retain physical power and persistent fade truth");
+            state.screenOffUnlock(false);
+            state.apply(wire);
+            check(wire.ui == 0 && wire.operation == 4 && wire.lowBrightness == 0,
+                    "turning off the preference must stop low-power capture");
+            state.screenOffUnlock(true);
+            state.lockout(0, 1);
+            state.apply(wire);
+            check(wire.ui == 0, "low-power opt-in cannot bypass timed lockout");
+            state.lockout(0, 0);
+            state.apply(wire);
+            check(wire.ui == 1, "actual lockout reset may restore the still-valid keyguard request");
+            state.display(2, display[0], false);
+            state.apply(wire);
+            check(wire.ui == 0, "mismatched desired/actual states must stop capture during wake");
+            state.display(2, 2, false);
+            state.apply(wire);
+            check(wire.ui == 1, "normal ON auth must resume after the transition");
+            state.cancel();
+            state.display(display[0], display[0], true);
+            state.apply(wire);
+            check(wire.ui == 0, "low-power setting cannot resurrect canceled auth");
+        }
+        for (int operation : new int[] {1, 3, 4}) {
+            state = ready();
+            wire = new Wire();
+            state.screenOffUnlock(true);
+            state.start(20, 0, operation);
+            state.overlay(20, true);
+            state.display(3, 3, true);
+            state.apply(wire);
+            check(wire.ui == 0, "enrollment and app/other auth must remain ON-only");
+        }
+        System.out.println("PASS: enrollment, auth, request races, fade, low-power preference, wake, lockout, users, death and transport failure");
     }
 }
