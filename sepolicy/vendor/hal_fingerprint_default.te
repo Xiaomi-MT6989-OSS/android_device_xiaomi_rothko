@@ -11,6 +11,8 @@ type vendor_fingerprint_ext_service, hal_service_type, service_manager_type;
 hal_attribute_service(hal_fingerprint, vendor_fingerprint_ext_service)
 
 # Original FodEngineCore monitors these stock interfaces.
+# Its MTK composer AIDL client was denied at runtime; use the existing paired policy.
+hal_client_domain(hal_fingerprint_default, hal_mtk_composer_ext)
 hal_client_domain(hal_fingerprint_default, hal_touchfeature_xiaomi)
 allow hal_fingerprint_default displayfeature_device:chr_file rw_file_perms;
 allow hal_fingerprint_default input_device:dir r_dir_perms;

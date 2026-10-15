@@ -10,7 +10,6 @@ service mfp-daemon /vendor/bin/hw/mfp-daemon
 on boot
     chown system system /dev/xiaomi-fp
     chmod 0660 /dev/xiaomi-fp
-    restorecon /dev/xiaomi-fp
 
 on post-fs-data
     mkdir /data/vendor/goodix 0770 system system
