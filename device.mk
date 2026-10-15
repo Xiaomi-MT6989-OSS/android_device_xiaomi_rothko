@@ -4,6 +4,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+# Original FodEngine lifecycle integration, loaded by SystemServer from system_ext.
+PRODUCT_PACKAGES += rothko-fod-services
+PRODUCT_SYSTEM_SERVER_JARS_EXTRA += system_ext:rothko-fod-services
+
 # Inherit generic_ramdisk product configuration
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
 

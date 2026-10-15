@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="config_deviceSpecificSystemServices" translatable="false">
+        <item>org.lineageos.rothko.fingerprint.RothkoFodService</item>
+    </string-array>
     <!-- Native 60/90/120/144 Hz modes were verified on rothko with HWC.
          Let the user's peak setting cap rendering instead of a default 60 Hz vote. -->
     <integer name="config_defaultRefreshRate">0</integer>

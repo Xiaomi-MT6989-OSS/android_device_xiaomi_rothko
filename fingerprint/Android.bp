@@ -1,0 +1,11 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+java_library {
+    name: "rothko-fod-services",
+    srcs: ["src/**/*.java"],
+    libs: ["services"],
+    installable: true,
+    system_ext_specific: true,
+    // The entry point is loaded by config_deviceSpecificSystemServices.
+    optimize: { enabled: false },
+}
