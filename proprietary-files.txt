@@ -3049,3 +3049,10 @@ vendor/lib64/android.hardware.biometrics.common.util.so:vendor/lib64/android.har
 vendor/lib64/android.hardware.keymaster-V4-ndk.so:vendor/lib64/android.hardware.keymaster-V4-ndk-rothko.so;MODULE=android.hardware.keymaster-V4-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
 vendor/lib64/vendor.xiaomi.hardware.fingerprintextension-V1-ndk.so;MODULE=vendor.xiaomi.hardware.fingerprintextension-V1-ndk_vendorcompat
 vendor/lib64/com.fingerprints.extension3-V1-ndk.so;MODULE=com.fingerprints.extension3-V1-ndk_vendorcompat
+
+# Face service - stock rothko OS3.0.307.0
+vendor/bin/hw/mifaced
+vendor/lib64/libmiface.so
+vendor/lib64/android.hardware.biometrics.face-V3-ndk.so:vendor/lib64/android.hardware.biometrics.face-V3-ndk-rothko.so;MODULE=android.hardware.biometrics.face-V3-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
+vendor/etc/vintf/manifest/android.hardware.biometrics.face-v3.xml
+vendor/etc/permissions/android.hardware.biometrics.face.xml

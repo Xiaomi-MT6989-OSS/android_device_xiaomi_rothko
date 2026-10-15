@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Stock miface lifecycle, restricted to the executable present on rothko.
+on post-fs-data
+    mkdir /data/vendor/face 0775 system system
+    restorecon /data/vendor/face
+
+service vendor.miface /vendor/bin/hw/mifaced
+    interface aidl android.hardware.biometrics.face.IFace/default
+    class hal
+    user system
+    group system
+    disabled
+
+on property:ro.vendor.miface.started=true
+    start vendor.miface

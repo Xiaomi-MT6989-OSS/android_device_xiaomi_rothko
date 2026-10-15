@@ -985,6 +985,27 @@
         "libm.so",
         "libdl.so"
       ]
+    },
+    {
+      "old_soname": "android.hardware.biometrics.face-V3-ndk.so",
+      "new_soname": "android.hardware.biometrics.face-V3-ndk-rothko.so",
+      "module": "android.hardware.biometrics.face-V3-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.biometrics.face-V3-ndk.so",
+      "destination": "vendor/lib64/android.hardware.biometrics.face-V3-ndk-rothko.so",
+      "source": "vendor/lib64/android.hardware.biometrics.face-V3-ndk.so",
+      "stock_sha256": "e4fb4ceeb6178b91b984f201bcc75fbda106eb0e35022bf7eacb7675bd365b82",
+      "new_selection": "vendor/lib64/android.hardware.biometrics.face-V3-ndk.so:vendor/lib64/android.hardware.biometrics.face-V3-ndk-rothko.so;MODULE=android.hardware.biometrics.face-V3-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.biometrics.common-V3-ndk.so",
+        "android.hardware.common-V2-ndk.so",
+        "android.hardware.keymaster-V4-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
     }
   ],
   "consumers": {
@@ -1339,6 +1360,18 @@
       "android.hardware.biometrics.common-V3-ndk.so": "android.hardware.biometrics.common-V3-ndk-rothko.so"
     },
     "vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk-rothko.so": {
+      "android.hardware.biometrics.common-V3-ndk.so": "android.hardware.biometrics.common-V3-ndk-rothko.so",
+      "android.hardware.keymaster-V4-ndk.so": "android.hardware.keymaster-V4-ndk-rothko.so"
+    },
+    "vendor/lib64/libmiface.so": {
+      "libbase.so": "libbase-rothko-v34.so",
+      "libcamera2ndk_vendor.so": "libcamera2ndk_vendor-rothko.so",
+      "libui.so": "libui-rothko-v34.so",
+      "android.hardware.biometrics.common-V3-ndk.so": "android.hardware.biometrics.common-V3-ndk-rothko.so",
+      "android.hardware.biometrics.face-V3-ndk.so": "android.hardware.biometrics.face-V3-ndk-rothko.so",
+      "libstagefright_foundation.so": "libstagefright_foundation-v34.so"
+    },
+    "vendor/lib64/android.hardware.biometrics.face-V3-ndk-rothko.so": {
       "android.hardware.biometrics.common-V3-ndk.so": "android.hardware.biometrics.common-V3-ndk-rothko.so",
       "android.hardware.keymaster-V4-ndk.so": "android.hardware.keymaster-V4-ndk-rothko.so"
     }

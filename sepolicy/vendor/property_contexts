@@ -20,3 +20,8 @@ vendor.fps_hal. u:object_r:vendor_fp_prop:s0 prefix
 persist.vendor.goodix. u:object_r:vendor_fp_prop:s0 prefix
 vendor.panel.touch_vendor u:object_r:vendor_fp_prop:s0 exact
 ro.vendor.display.fod_monitor_default_fps u:object_r:vendor_fp_prop:s0 exact int
+
+# Stock miface namespace; startup is the original read-only vendor property.
+vendor.miface. u:object_r:vendor_miface_prop:s0 prefix
+ro.vendor.miface. u:object_r:vendor_miface_prop:s0 prefix
+persist.vendor.miface. u:object_r:vendor_miface_prop:s0 prefix

@@ -271,3 +271,7 @@ PRODUCT_COPY_FILES += \
 # Original fingerprint HAL and its FOD vendor declarations.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/init/init.rothko.fingerprint.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.rothko.fingerprint.rc
+
+# Original convenience-strength IFace HAL; service and feature XML come from stock.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/init/init.rothko.face.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.rothko.face.rc

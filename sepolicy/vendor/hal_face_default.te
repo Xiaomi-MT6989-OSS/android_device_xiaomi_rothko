@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+# Reuse the platform's standard AIDL face server/domain; keep stock CONVENIENCE.
+# Stock CIL hal_miface_default camera, allocator and TEE access, scoped to the
+# actual Camera2/GraphicBuffer/libteecli paths. Do not copy debug/sysrq rules.
+hwbinder_use(hal_face_default)
+binder_call(hal_face_default, cameraserver)
+allow hal_face_default fwk_camera_service:service_manager find;
+allow hal_face_default fwk_camera_hwservice:hwservice_manager find;
+allow cameraserver hal_face_default:dir search;
+allow cameraserver hal_face_default:file { read getattr map open };
+get_prop(hal_face_default, camera_config_prop)
+
+hal_client_domain(hal_face_default, hal_graphics_allocator)
+allow hal_face_default hal_graphics_allocator_default_tmpfs:file rw_file_perms;
+allow hal_face_default hidl_token_hwservice:hwservice_manager find;
+allow hal_face_default fwk_sensor_hwservice:hwservice_manager find;
+
+allow hal_face_default tee_device:chr_file rw_file_perms;
+allow hal_face_default mitee_client_device:chr_file rw_file_perms;
+
+# The platform already grants hal_face access to face_vendor_data_file. Add
+# only directory creation/label maintenance from the original face CIL.
+allow hal_face_default face_vendor_data_file:dir create_dir_perms;
+
+vendor_internal_prop(vendor_miface_prop)
+set_prop(hal_face_default, vendor_miface_prop)
+get_prop(hal_face_default, vendor_fp_prop)

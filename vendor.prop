@@ -350,5 +350,8 @@ ro.hardware.fp.halworkmode=true
 ro.hardware.fp.mievent=true
 ro.vendor.display.fod_monitor_default_fps=120
 
+# Original stock gate for the shipped vendor miface service.
+ro.vendor.miface.started=true
+
 # Stock HWC's Doze capability is disabled unless this original property is set.
 ro.vendor.mtk_aod_support=1
