@@ -3042,10 +3042,10 @@ odm/etc/dqe/ASICScene.xml;MAKE_COPY_RULE_ONLY
 vendor/bin/hw/mfp-daemon
 odm/lib64/hw/fingerprint.goodix_fod.so
 vendor/etc/vintf/manifest/AHBF-V3-service.xml
-vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk.so;MODULE=android.hardware.biometrics.fingerprint-V3-ndk_vendorcompat
-vendor/lib64/android.hardware.biometrics.common-V3-ndk.so;MODULE=android.hardware.biometrics.common-V3-ndk_vendorcompat
-vendor/lib64/android.hardware.biometrics.common.thread.so;MODULE=android.hardware.biometrics.common.thread_vendorcompat
-vendor/lib64/android.hardware.biometrics.common.util.so;MODULE=android.hardware.biometrics.common.util_vendorcompat
-vendor/lib64/android.hardware.keymaster-V4-ndk.so;MODULE=android.hardware.keymaster-V4-ndk_vendorcompat
+vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk.so:vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk-rothko.so;MODULE=android.hardware.biometrics.fingerprint-V3-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
+vendor/lib64/android.hardware.biometrics.common-V3-ndk.so:vendor/lib64/android.hardware.biometrics.common-V3-ndk-rothko.so;MODULE=android.hardware.biometrics.common-V3-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
+vendor/lib64/android.hardware.biometrics.common.thread.so:vendor/lib64/android.hardware.biometrics.common.thread-rothko.so;MODULE=android.hardware.biometrics.common.thread_vendorcompat;FIX_SONAME;TRYSRCFIRST
+vendor/lib64/android.hardware.biometrics.common.util.so:vendor/lib64/android.hardware.biometrics.common.util-rothko.so;MODULE=android.hardware.biometrics.common.util_vendorcompat;FIX_SONAME;TRYSRCFIRST
+vendor/lib64/android.hardware.keymaster-V4-ndk.so:vendor/lib64/android.hardware.keymaster-V4-ndk-rothko.so;MODULE=android.hardware.keymaster-V4-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
 vendor/lib64/vendor.xiaomi.hardware.fingerprintextension-V1-ndk.so;MODULE=vendor.xiaomi.hardware.fingerprintextension-V1-ndk_vendorcompat
 vendor/lib64/com.fingerprints.extension3-V1-ndk.so;MODULE=com.fingerprints.extension3-V1-ndk_vendorcompat

@@ -892,6 +892,99 @@
         "libm.so",
         "libdl.so"
       ]
+    },
+    {
+      "old_soname": "android.hardware.biometrics.common-V3-ndk.so",
+      "new_soname": "android.hardware.biometrics.common-V3-ndk-rothko.so",
+      "module": "android.hardware.biometrics.common-V3-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.biometrics.common-V3-ndk.so",
+      "destination": "vendor/lib64/android.hardware.biometrics.common-V3-ndk-rothko.so",
+      "source": "vendor/lib64/android.hardware.biometrics.common-V3-ndk.so",
+      "stock_sha256": "291db269ea6303c8a4877a625793648bac96df7a90bb58799b83dc8723b548eb",
+      "new_selection": "vendor/lib64/android.hardware.biometrics.common-V3-ndk.so:vendor/lib64/android.hardware.biometrics.common-V3-ndk-rothko.so;MODULE=android.hardware.biometrics.common-V3-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "android.hardware.biometrics.common.thread.so",
+      "new_soname": "android.hardware.biometrics.common.thread-rothko.so",
+      "module": "android.hardware.biometrics.common.thread_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.biometrics.common.thread.so",
+      "destination": "vendor/lib64/android.hardware.biometrics.common.thread-rothko.so",
+      "source": "vendor/lib64/android.hardware.biometrics.common.thread.so",
+      "stock_sha256": "6397e4bce0741e62e7970a14b021216f74363177d7333810bad01833cb75997e",
+      "new_selection": "vendor/lib64/android.hardware.biometrics.common.thread.so:vendor/lib64/android.hardware.biometrics.common.thread-rothko.so;MODULE=android.hardware.biometrics.common.thread_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "android.hardware.biometrics.common.util.so",
+      "new_soname": "android.hardware.biometrics.common.util-rothko.so",
+      "module": "android.hardware.biometrics.common.util_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.biometrics.common.util.so",
+      "destination": "vendor/lib64/android.hardware.biometrics.common.util-rothko.so",
+      "source": "vendor/lib64/android.hardware.biometrics.common.util.so",
+      "stock_sha256": "5df472cb0f8299dc94bd585c91401af0108e155a3de5b2f3fe313db76dc004d7",
+      "new_selection": "vendor/lib64/android.hardware.biometrics.common.util.so:vendor/lib64/android.hardware.biometrics.common.util-rothko.so;MODULE=android.hardware.biometrics.common.util_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbase.so",
+        "libbinder_ndk.so",
+        "android.hardware.biometrics.common-V3-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "android.hardware.biometrics.fingerprint-V3-ndk.so",
+      "new_soname": "android.hardware.biometrics.fingerprint-V3-ndk-rothko.so",
+      "module": "android.hardware.biometrics.fingerprint-V3-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk.so",
+      "destination": "vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk-rothko.so",
+      "source": "vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk.so",
+      "stock_sha256": "f6c63235cc16513df23a8ed2d4116db4ca2975b5cd57006fd1e0daac1358d488",
+      "new_selection": "vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk.so:vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk-rothko.so;MODULE=android.hardware.biometrics.fingerprint-V3-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.biometrics.common-V3-ndk.so",
+        "android.hardware.keymaster-V4-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "android.hardware.keymaster-V4-ndk.so",
+      "new_soname": "android.hardware.keymaster-V4-ndk-rothko.so",
+      "module": "android.hardware.keymaster-V4-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.keymaster-V4-ndk.so",
+      "destination": "vendor/lib64/android.hardware.keymaster-V4-ndk-rothko.so",
+      "source": "vendor/lib64/android.hardware.keymaster-V4-ndk.so",
+      "stock_sha256": "9dd25b77eafd6d40598b69657efb17fbabd1db1bc4a5bdc2ed5c589a050659cd",
+      "new_selection": "vendor/lib64/android.hardware.keymaster-V4-ndk.so:vendor/lib64/android.hardware.keymaster-V4-ndk-rothko.so;MODULE=android.hardware.keymaster-V4-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
     }
   ],
   "consumers": {
@@ -1235,6 +1328,19 @@
     },
     "odm/lib64/hw/displayfeature.default.so": {
       "libtinyxml2.so": "libtinyxml2-rothko.so"
+    },
+    "vendor/bin/hw/mfp-daemon": {
+      "android.hardware.biometrics.fingerprint-V3-ndk.so": "android.hardware.biometrics.fingerprint-V3-ndk-rothko.so",
+      "android.hardware.biometrics.common-V3-ndk.so": "android.hardware.biometrics.common-V3-ndk-rothko.so",
+      "android.hardware.biometrics.common.thread.so": "android.hardware.biometrics.common.thread-rothko.so",
+      "android.hardware.biometrics.common.util.so": "android.hardware.biometrics.common.util-rothko.so"
+    },
+    "vendor/lib64/android.hardware.biometrics.common.util-rothko.so": {
+      "android.hardware.biometrics.common-V3-ndk.so": "android.hardware.biometrics.common-V3-ndk-rothko.so"
+    },
+    "vendor/lib64/android.hardware.biometrics.fingerprint-V3-ndk-rothko.so": {
+      "android.hardware.biometrics.common-V3-ndk.so": "android.hardware.biometrics.common-V3-ndk-rothko.so",
+      "android.hardware.keymaster-V4-ndk.so": "android.hardware.keymaster-V4-ndk-rothko.so"
     }
   },
   "limits": [
