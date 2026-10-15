@@ -75,6 +75,10 @@ DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
     hardware/mediatek/vintf/mediatek_framework_compatibility_matrix.xml \
     hardware/xiaomi/vintf/xiaomi_framework_compatibility_matrix.xml
 
+# Original fingerprint extensions use AIDL, unlike the common HIDL entries.
+DEVICE_PRODUCT_COMPATIBILITY_MATRIX_FILE += \
+    $(DEVICE_PATH)/configs/fingerprint/framework_compatibility_matrix.xml
+
 # Kernel
 KERNEL_PREBUILTS_DIR := $(DEVICE_PATH)-kernel
 
