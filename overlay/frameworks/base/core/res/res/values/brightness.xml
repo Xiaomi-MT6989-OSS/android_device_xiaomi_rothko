@@ -5,7 +5,11 @@
     <item name="config_screenBrightnessSettingMinimumFloat" type="dimen" format="float">0.000854597</item>
     <item name="config_screenBrightnessDimFloat" type="dimen" format="float">0.000854597</item>
     <item name="config_screenBrightnessSettingDefaultFloat" type="dimen" format="float">0.0749603</item>
-    <item name="config_screenBrightnessSettingMaximumFloat" type="dimen" format="float">1</item>
+    <!-- AOSP interprets min/max as HAL raw backlight bounds, then normalizes UI 0..1.
+         Limit HDR/automatic brightness to the stock normal range until OEM HBM thermal
+         policy is restored. Keep the known logical default/dim values for this batch. -->
+    <item name="config_screenBrightnessSettingMaximumFloat" type="dimen" format="float">0.499938</item>
+    <bool name="config_hdrBrightnessThermalSafetyEnabled">true</bool>
     <item name="config_brightnessRampRateFast" type="dimen" format="float">0.415903</item>
     <integer name="config_autoBrightnessBrighteningLightDebounce">1000</integer>
     <integer name="config_autoBrightnessDarkeningLightDebounce">1000</integer>

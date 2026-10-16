@@ -23,39 +23,29 @@
             <nits>4500.0</nits>
         </point>
     </screenBrightnessMap>
-    <!-- root node for HBM-->
-    <highBrightnessMode enabled="true">
-        <!-- Transition point brightness from normal to HBM mode -->
-        <transitionPoint>0.499938</transitionPoint>
-        <!-- Minimum lux to enter HBM -->
-        <minimumLux>6001</minimumLux>
-        <!-- Time limitation for HBM-->
-        <timing>
-            <timeWindowSecs>0</timeWindowSecs>
-            <timeMaxSecs>0</timeMaxSecs>
-            <timeMinSecs>0</timeMinSecs>
-        </timing>
-        <!--Refresh rate limitation when the device is in HBM -->
-        <!-- <refreshRate>
-            <minimum>0</minimum>
-            <maximum>0</maximum>
-        </refreshRate> -->
-        <!-- Thermal limitation for HBM -->
-        <thermalStatusLimit>critical</thermalStatusLimit>
-        <!-- Low power mode limitation for HBM -->
-        <allowInLowPowerMode>true</allowInLowPowerMode>
-        <minimumHdrPercentOfScreen>0</minimumHdrPercentOfScreen>
+    <!-- OS3.0.307.0 calibration is preserved above. The brightness resource raw maximum
+         is capped at the stock normal/HBM boundary 0.499938 (500 calibrated nits).
+         Do not restore the old HBM node: its transition would equal that raw maximum.
+         Higher calibration points are not reachable until OEM high-brightness thermal
+         policy has been restored and validated. -->
+    <hdrBrightnessConfig>
+        <!-- No additional lux-dependent cap within the already bounded normal range. -->
+        <brightnessMap>
+            <point><first>0</first><second>1</second></point>
+        </brightnessMap>
+        <brightnessIncreaseDebounceMillis>0</brightnessIncreaseDebounceMillis>
+        <brightnessDecreaseDebounceMillis>0</brightnessDecreaseDebounceMillis>
+        <screenBrightnessRampIncrease>0.415903</screenBrightnessRampIncrease>
+        <screenBrightnessRampDecrease>0.415903</screenBrightnessRampDecrease>
+        <minimumHdrPercentOfScreenForNbm>0</minimumHdrPercentOfScreenForNbm>
+        <minimumHdrPercentOfScreenForHbm>0</minimumHdrPercentOfScreenForHbm>
+        <allowInLowPowerMode>false</allowInLowPowerMode>
+        <!-- Original rothko ratio ceiling, still limited by the content's desired ratio. -->
         <sdrHdrRatioMap>
-            <point>
-                <sdrNits>2.0</sdrNits>
-                <hdrRatio>8.0</hdrRatio>
-            </point>
-            <point>
-                <sdrNits>1200.0</sdrNits>
-                <hdrRatio>8.0</hdrRatio>
-            </point>
+            <point><first>2.0</first><second>8.0</second></point>
+            <point><first>1200.0</first><second>8.0</second></point>
         </sdrHdrRatioMap>
-    </highBrightnessMode>
+    </hdrBrightnessConfig>
     <ambientLightHorizonLong>1500</ambientLightHorizonLong>
     <ambientLightHorizonShort>1000</ambientLightHorizonShort>
 </displayConfiguration>
