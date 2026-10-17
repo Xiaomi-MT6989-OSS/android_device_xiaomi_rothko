@@ -544,14 +544,6 @@ private:
 
 } // namespace
 
-namespace {
-// Proves whether SurfaceFlinger loads this translation unit at all; the
-// per-call logging above cannot show that when the call never happens.
-struct ProviderProbe {
-    ProviderProbe() { ALOGW("Display colour provider translation unit loaded"); }
-} gProviderProbe;
-} // namespace
-
 DisplayColorExtension& getDisplayColorExtension() {
     static auto* provider = new RothkoDisplayColorProvider();
     return *provider;

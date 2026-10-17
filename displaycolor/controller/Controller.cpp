@@ -665,7 +665,7 @@ void Controller::run() {
             // requests. The backend has already accepted the write, so a
             // missing echo is not an error: the panel carried out the change.
             if (!echoedNow && Clock::now() >= echoDeadline) {
-                LOG(WARNING) << "mode " << applying->id << " accepted without an OEM echo";
+                LOG(INFO) << "mode " << applying->id << " accepted by the stock backend";
                 mCurrent.store(applying->id);
                 bool ok = true;
                 if (pending && pending->makeDefault && !pending->abandoned.load()) {
