@@ -12,6 +12,10 @@ PRODUCT_SYSTEM_SERVER_JARS_EXTRA += system_ext:rothko-fod-services
 # owns the only channel to the stock Xiaomi DisplayFeature service.
 PRODUCT_PACKAGES += vendor.lineage.livedisplay-service.rothko
 
+# Android 16 camera NDK client for the stock face HAL (its Android 14 client
+# cannot register a listener with the Android 16 cameraserver).
+PRODUCT_PACKAGES += libcamera2ndk_vendor_rothko
+
 # Inherit generic_ramdisk product configuration
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
 
