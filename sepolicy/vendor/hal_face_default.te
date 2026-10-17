@@ -4,6 +4,9 @@
 # actual Camera2/GraphicBuffer/libteecli paths. Do not copy debug/sysrq rules.
 hwbinder_use(hal_face_default)
 binder_call(hal_face_default, cameraserver)
+# CameraService queries the vendor client's ICameraServiceListener descriptor
+# and sends availability/device callbacks back into the face HAL process.
+binder_call(cameraserver, hal_face_default)
 allow hal_face_default fwk_camera_service:service_manager find;
 allow hal_face_default fwk_camera_hwservice:hwservice_manager find;
 allow cameraserver hal_face_default:dir search;
