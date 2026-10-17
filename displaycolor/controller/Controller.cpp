@@ -28,8 +28,10 @@ constexpr const char* kDirectory = "/data/vendor/rothko_display_color";
 // Service-specific errors surface through the frozen void AIDL setter and are
 // mapped to failure by the Lineage SDK.
 constexpr int kUnavailable = 1, kTimeout = 2, kPersistence = 3;
-constexpr auto kRequestTimeout = 3500ms;
-constexpr auto kApplyTimeout = 2500ms;
+// The stock backend reloads a 62-table C3D LUT while it applies a profile, so
+// the intent echo arrives seconds after the request, not immediately.
+constexpr auto kRequestTimeout = 12000ms;
+constexpr auto kApplyTimeout = 9000ms;
 constexpr auto kRepublishTimeout = 1500ms;
 constexpr auto kPollInterval = 25ms;
 constexpr auto kLookupInterval = 1000ms;
@@ -106,7 +108,8 @@ public:
         // atomics are recorded: no command mutex, Binder call, wait or payload log.
         if (event == 30000) {
             mObservation->lastIntent.store(value, std::memory_order_relaxed);
-            mObservation->intents.fetch_add(1, std::memory_order_release);
+            const uint64_t count = mObservation->intents.fetch_add(1, std::memory_order_release) + 1;
+            LOG(INFO) << "OEM intent echo " << value << " (count " << count << ")";
         } else if (event == 10000) {
             if (value == 0 || value == 1) {
                 mObservation->wcg.store(value, std::memory_order_relaxed);
