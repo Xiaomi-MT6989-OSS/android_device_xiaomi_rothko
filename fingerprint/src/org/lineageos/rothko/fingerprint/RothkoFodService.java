@@ -5,6 +5,7 @@ package org.lineageos.rothko.fingerprint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.database.ContentObserver;
+import android.hardware.display.AmbientDisplayConfiguration;
 import android.hardware.display.DisplayManager;
 import android.os.Binder;
 import android.os.Handler;
@@ -34,6 +35,7 @@ public final class RothkoFodService extends SystemService {
     private final HandlerThread mThread = new HandlerThread(TAG);
     private Handler mHandler;
     private DisplayManager mDisplays;
+    private AmbientDisplayConfiguration mAmbientDisplayConfig;
     private FodStateMachine mState;
     private IBinder mExtension;
     private boolean mNeedsBaseline = true;
@@ -50,6 +52,7 @@ public final class RothkoFodService extends SystemService {
         mCurrentUser = ActivityManager.getCurrentUser();
         mState = new FodStateMachine(mCurrentUser);
         mDisplays = getContext().getSystemService(DisplayManager.class);
+        mAmbientDisplayConfig = new AmbientDisplayConfiguration(getContext());
         getContext().getContentResolver().registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.SCREEN_OFF_UNLOCK_UDFPS_ENABLED),
                 false, new ContentObserver(mHandler) {
@@ -119,13 +122,7 @@ public final class RothkoFodService extends SystemService {
     private void post(Runnable event) { mHandler.post(() -> updateAndApply(event)); }
 
     private void updateScreenOffPreference() {
-        final boolean supported = getContext().getResources().getBoolean(
-                com.android.internal.R.bool.config_screen_off_udfps_enabled);
-        final boolean defaultOn = getContext().getResources().getBoolean(
-                com.android.internal.R.bool.config_screen_off_udfps_default_on);
-        mState.screenOffUnlock(supported && Settings.Secure.getIntForUser(
-                getContext().getContentResolver(), Settings.Secure.SCREEN_OFF_UNLOCK_UDFPS_ENABLED,
-                defaultOn ? 1 : 0, mCurrentUser) != 0);
+        mState.screenOffUnlock(mAmbientDisplayConfig.screenOffUdfpsEnabled(mCurrentUser));
     }
 
     private void updateDisplay(UdfpsLifecycle.DisplayState state) {
@@ -211,7 +208,7 @@ public final class RothkoFodService extends SystemService {
     }
 
     private void send(int command, int value) throws Exception {
-        if (!((command == 1 || command == 2 || command == 6 || command == 7)
+        if (!((command == 1 || command == 2 || command == 7)
                         && (value == 0 || value == 1))
                 && !(command == 3 && value >= 0 && value <= 3)
                 && !(command == 4 && value >= 1 && value <= 4)
