@@ -215,7 +215,12 @@ ndk::ScopedAStatus Controller::reportState(const bridge::DisplayState& state) {
 
 ndk::ScopedAStatus Controller::setMode(int32_t mode, bool makeDefault) {
     if (!findMode(mode)) return ndk::ScopedAStatus::fromExceptionCode(EX_ILLEGAL_ARGUMENT);
-    if (!mReady.load() || mBusy.exchange(true)) return unavailable(kUnavailable);
+    if (!mReady.load() || mBusy.exchange(true)) {
+        LOG(WARNING) << "setMode " << mode << " refused: ready=" << mReady.load()
+                     << " busy=" << mBusy.load();
+        return unavailable(kUnavailable);
+    }
+    LOG(INFO) << "setMode " << mode << " accepted";
     auto request = std::make_shared<Request>();
     request->mode = mode;
     request->makeDefault = makeDefault;
@@ -409,6 +414,10 @@ void Controller::run() {
             const Mode* mode = findMode(queued->mode);
             const bool ambiguous = mode && mUnresolvedIntent.load() == mode->intent;
             if (pending || applying || ambiguous || !state || !sdrReady(*state)) {
+                LOG(WARNING) << "queued mode " << queued->mode << " rejected: pending="
+                             << (pending != nullptr) << " applying=" << (applying != nullptr)
+                             << " ambiguous=" << ambiguous << " state=" << (state ? 1 : 0)
+                             << " sdrReady=" << (state ? sdrReady(*state) : 0);
                 finish(queued, false, kUnavailable);
             } else {
                 pending = queued;

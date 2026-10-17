@@ -321,9 +321,21 @@ private:
 
     void connect() {
         ndk::SpAIBinder binder(AServiceManager_checkService(kService));
-        if (!binder.get()) return;
+        if (!binder.get()) {
+            if (!mLookupMissing.exchange(true)) {
+                ALOGW("Display colour controller service is not available yet");
+            }
+            return;
+        }
+        mLookupMissing.store(false);
         auto remote = transport::IRothkoDisplayColor::fromBinder(binder);
-        if (!remote) return;
+        if (!remote) {
+            if (!mCastFailed.exchange(true)) {
+                ALOGW("Display colour controller interface cast failed");
+            }
+            return;
+        }
+        mCastFailed.store(false);
         if (mNextConnection == std::numeric_limits<int64_t>::max()) return;
         const int64_t generation = ++mNextConnection;
         // Binder owns cookie cleanup through onUnlinked, including failed
@@ -345,6 +357,8 @@ private:
         mLiveConnection.store(generation, std::memory_order_release);
         const auto status = remote->setListener(mSfSession, generation, callback);
         if (!status.isOk()) {
+            ALOGW("setListener rejected: %s (code %d)", status.getDescription().c_str(),
+                  status.getExceptionCode());
             mLiveConnection.store(0, std::memory_order_release);
             if (deathLinked) {
                 AIBinder_unlinkToDeath(binder.get(), mDeathRecipient.get(), cookie);
@@ -494,6 +508,9 @@ private:
     std::atomic<bool> mReconnect{false};
     std::atomic<bool> mPowerChanged{false};
     std::atomic<bool> mStarted{false};
+    // One warning per transition, so a missing controller cannot flood the log.
+    std::atomic<bool> mLookupMissing{false};
+    std::atomic<bool> mCastFailed{false};
 
     // Worker-only writer, bounded seqlock readers in CE.
     std::atomic<uint64_t> mPolicySequence{0};
