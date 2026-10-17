@@ -172,6 +172,7 @@ VENDOR_SECURITY_PATCH := $(BOOT_SECURITY_PATCH)
 # SELinux
 include device/mediatek/sepolicy_vndr/SEPolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/system_ext
 
 # Device colour policy provider. SurfaceFlinger links the device static library
 # and compiles out the inert default implementation in the same step.

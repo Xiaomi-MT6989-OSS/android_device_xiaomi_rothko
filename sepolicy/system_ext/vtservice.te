@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+
+# Stock MediaTek video telephony service. The IMS APK loads
+# libmtk_vt_wrapper, which resolves this platform service through the system
+# service manager.
+type vtservice, domain, coredomain;
+type vtservice_exec, exec_type, system_file_type, file_type;
+type vtservice_service, service_manager_type;
+
+init_daemon_domain(vtservice)
+binder_use(vtservice)
+hwbinder_use(vtservice)
+
+allow vtservice vtservice_service:service_manager add;
+allow radio vtservice_service:service_manager find;
+
+# The service hands media buffers to mediaserver and accepts callbacks from
+# the platform app. These are the stock policy edges for the restored service.
+allow vtservice mediaserver:binder { call transfer };
+allow mediaserver vtservice:binder transfer;
+allow vtservice mediaserver:fd use;
+allow vtservice { untrusted_app untrusted_app_32 }:binder call;
+
+# The stock init declaration requests NET_ADMIN, NET_RAW and an RT ioprio.
+allow vtservice self:global_capability_class_set { net_admin net_raw sys_nice };

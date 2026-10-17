@@ -1,0 +1,527 @@
+// SPDX-License-Identifier: Apache-2.0
+
+// Stock MediaTek IMS, framework, VT service and their reviewed native closure.
+// The APK is re-signed with the platform key below; it must share the
+// android.uid.phone signature with TeleService.
+
+android_app_import {
+    name: "ImsService",
+    apk: "ImsService.apk",
+    certificate: "platform",
+    privileged: true,
+    system_ext_specific: true,
+    filename: "ImsService.apk",
+}
+java_import {
+    name: "mediatek-ims-base",
+    jars: ["mediatek-ims-base.jar"],
+    installable: true,
+    system_ext_specific: true,
+}
+
+java_import {
+    name: "mediatek-ims-common",
+    jars: ["mediatek-ims-common.jar"],
+    installable: true,
+    system_ext_specific: true,
+}
+
+cc_prebuilt_binary {
+    name: "vtservice",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder",
+        "libutils",
+        "libcutils",
+        "liblog",
+        "libmtk_vt_service",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["bin/vtservice"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libcomutils",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libcutils",
+        "libstagefright_foundation",
+        "libutils",
+        "libstagefright",
+        "libmedia",
+        "liblog",
+        "libhidlbase",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libcomutils.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libimsma",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder",
+        "libcutils",
+        "libgui",
+        "libmedia",
+        "libstagefright",
+        "libstagefright_foundation",
+        "libui",
+        "libutils",
+        "libsink",
+        "libsource",
+        "libvcodec_cap",
+        "libimsma_rtp",
+        "libcomutils",
+        "liblog",
+        "libsignal",
+        "libnetd_client",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libimsma.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libimsma_adapt",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "liblog",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libimsma_adapt.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libimsma_rtp",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder",
+        "libmedia",
+        "libutils",
+        "libcutils",
+        "libstagefright",
+        "libstagefright_foundation",
+        "libimsma_socketwrapper",
+        "libvcodec_cap",
+        "libimsma_adapt",
+        "liblog",
+        "libsignal",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libimsma_rtp.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libimsma_socketwrapper",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder",
+        "libmedia",
+        "libutils",
+        "libcutils",
+        "libstagefright",
+        "libstagefright_foundation",
+        "libnetd_client",
+        "liblog",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libimsma_socketwrapper.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libmtk_vt_service",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libandroid_runtime",
+        "libbinder",
+        "libutils",
+        "libcutils",
+        "libnativehelper",
+        "libui",
+        "libgui",
+        "libmedia",
+        "libbase",
+        "libfmq",
+        "libbinder_ndk",
+        "vendor.mediatek.hardware.videotelephony@1.0",
+        "vendor.mediatek.hardware.videotelephony-V1-ndk",
+        "libhidlbase",
+        "libhidltransport",
+        "libimsma",
+        "libsource",
+        "libimsma_rtp",
+        "libvt_avsync",
+        "libstagefright_foundation",
+        "libvcodec_cap",
+        "liblog",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libmtk_vt_service.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libmtk_vt_wrapper",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libandroid_runtime",
+        "libbinder",
+        "libutils",
+        "libcutils",
+        "libnativehelper",
+        "libfmq",
+        "libbinder_ndk",
+        "vendor.mediatek.hardware.videotelephony@1.0",
+        "vendor.mediatek.hardware.videotelephony-V1-ndk",
+        "libhidlbase",
+        "libhidltransport",
+        "libui",
+        "libgui",
+        "libmedia",
+        "libvcodec_cap",
+        "liblog",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libmtk_vt_wrapper.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libsignal",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libcutils",
+        "libutils",
+        "libstagefright_foundation",
+        "liblog",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libsignal.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libsink",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder",
+        "libcutils",
+        "libgui",
+        "libmedia",
+        "libstagefright",
+        "libstagefright_foundation",
+        "libui",
+        "libutils",
+        "libcomutils",
+        "libvcodec_cap",
+        "libvt_avsync",
+        "liblog",
+        "libmedia_omx",
+        "libaudioclient",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libsink.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libsource",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder",
+        "libcutils",
+        "libgui",
+        "libmedia",
+        "libstagefright",
+        "libstagefright_foundation",
+        "libmedia_omx",
+        "libui",
+        "libutils",
+        "libcamera_client",
+        "libcomutils",
+        "libvcodec_cap",
+        "liblog",
+        "libsignal",
+        "libhardware",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libsource.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libvcodec_cap",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libui",
+        "libcutils",
+        "libutils",
+        "libbinder",
+        "libexpat",
+        "liblog",
+        "libvcodec_capenc",
+        "libstagefright_omx_utils",
+        "libstagefright_foundation",
+        "libion",
+        "android.hardware.graphics.bufferqueue@2.0",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libvcodec_cap.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libvcodec_capenc",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "liblog",
+        "libion",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libvcodec_capenc.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libvt_avsync",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder",
+        "libutils",
+        "libcutils",
+        "liblog",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libvt_avsync.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "vendor.mediatek.hardware.videotelephony-V1-ndk",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder_ndk",
+        "android.hardware.common-V2-ndk",
+        "android.hardware.common.fmq-V1-ndk",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/vendor.mediatek.hardware.videotelephony-V1-ndk.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "vendor.mediatek.hardware.videotelephony@1.0",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "libcutils",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/vendor.mediatek.hardware.videotelephony@1.0.so"],
+        },
+    },
+}
+
+cc_prebuilt_library_shared {
+    name: "libhidltransport",
+    owner: "xiaomi",
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+    target: {
+        android_arm64: {
+            srcs: ["lib64/libhidltransport.so"],
+        },
+    },
+}
