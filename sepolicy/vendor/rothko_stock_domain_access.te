@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Boot-time denials observed on stock vendor domains. Each rule grants the
+# smallest permission that satisfies the observed access.
+
+# The stock touch HAL reads the default property area directly.
+allow hal_touchfeature_xiaomi_default default_prop:file r_file_perms;
+
+# The stock audio HAL inspects /sys/class/thermal while it starts.
+r_dir_file(hal_audio_default, sysfs_therm)
