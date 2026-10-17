@@ -8,10 +8,7 @@ binder_call(hal_nfc_default, hal_secure_element_default)
 
 # The TMS library persists RF/firmware state below /data/vendor/nfc and writes
 # one VTP cache beside the secure-element service.
-type nfc_vendor_data_file, file_type, data_file_type;
 type secure_element_vendor_data_file, file_type, data_file_type;
-allow hal_nfc_default nfc_vendor_data_file:dir create_dir_perms;
-allow hal_nfc_default nfc_vendor_data_file:file create_file_perms;
 allow hal_nfc_default secure_element_vendor_data_file:dir search;
 allow hal_nfc_default secure_element_vendor_data_file:file create_file_perms;
 

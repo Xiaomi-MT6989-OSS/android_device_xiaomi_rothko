@@ -23,6 +23,6 @@ allow vendor_init sysfs_displayfeature_control:file setattr;
 allow vendor_init nvt_device:chr_file setattr;
 
 # Stock NFC service state and the TMS secure-element VTP cache.
-allow vendor_init { nfc_vendor_data_file secure_element_vendor_data_file }:dir create_dir_perms;
+allow vendor_init secure_element_vendor_data_file:dir create_dir_perms;
 set_prop(vendor_init, vendor_nfc_prop)
 set_prop(vendor_init, vendor_tms_nfc_prop)
