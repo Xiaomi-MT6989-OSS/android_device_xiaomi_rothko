@@ -11,6 +11,10 @@ android_app_import {
     privileged: true,
     system_ext_specific: true,
     filename: "ImsService.apk",
+    optional_uses_libs: [
+        "com.mediatek.ims.oemplugin",
+        "com.mediatek.ims.plugin",
+    ],
 }
 dex_import {
     name: "mediatek-ims-base",
