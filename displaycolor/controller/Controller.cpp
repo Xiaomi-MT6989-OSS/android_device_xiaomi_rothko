@@ -371,6 +371,7 @@ void Controller::run() {
         clearPolicyNow();
     };
 
+    uint64_t oemFailures = 0;
     while (!mStop.load()) {
         std::optional<bridge::DisplayState> state;
         std::shared_ptr<bridge::IColorPolicyCallback> listener;
@@ -443,6 +444,13 @@ void Controller::run() {
         if (!backend && Clock::now() >= nextLookup) {
             nextLookup = Clock::now() + kLookupInterval;
             ndk::SpAIBinder binder(AServiceManager_checkService(kOemService));
+            if (!binder.get()) {
+                const uint64_t attempt = ++oemFailures;
+                if (attempt == 1 || attempt % 20 == 0) {
+                    LOG(WARNING) << "display feature service not found: " << kOemService
+                                 << " attempt=" << attempt;
+                }
+            }
             if (binder.get()) {
                 auto candidate = df::IDisplayFeature::fromBinder(binder);
                 auto fresh = std::make_shared<Observation>();
@@ -458,6 +466,17 @@ void Controller::run() {
                         freshCallback->getInterfaceHash(&callbackHash).isOk() &&
                         callbackHash == hash &&
                         candidate->registerCallback(0, freshCallback).isOk();
+                if (!valid) {
+                    const uint64_t attempt = ++oemFailures;
+                    if (attempt == 1 || attempt % 20 == 0) {
+                        LOG(WARNING) << "display feature registration failed: candidate="
+                                     << (candidate != nullptr) << " version=" << version
+                                     << " hash_ok=" << (hash == kFrozenHash)
+                                     << " callback_version=" << callbackVersion
+                                     << " callback_hash_ok=" << (callbackHash == hash)
+                                     << " attempt=" << attempt;
+                    }
+                }
                 if (valid) {
                     backend = std::move(candidate);
                     observation = std::move(fresh);
