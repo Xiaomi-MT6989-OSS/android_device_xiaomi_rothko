@@ -343,7 +343,7 @@ void Controller::run() {
     uint64_t intentBoundary = 0;
     bool restore = true, policyActive = false;
     int32_t previousPower = -1;
-    Clock::time_point deadline{}, nextLookup{};
+    Clock::time_point deadline{}, echoDeadline{}, nextLookup{};
 
     auto clearPolicyNow = [&]() {
         if (!policyActive) return;
@@ -626,6 +626,7 @@ void Controller::run() {
             pendingPolicy = 0;
             pendingIntent = applying->intent;
             deadline = Clock::now() + (listener ? kApplyTimeout : kEchoGrace);
+            echoDeadline = Clock::now() + kEchoGrace;
             mApplyingMode.store(applying->id);
             mReady.store(false);
             applyScene = state;
@@ -639,7 +640,35 @@ void Controller::run() {
         if (applying) {
             // 11. Confirm the OEM mode echo, then the SF/HWC acceptance.
             if (Clock::now() >= deadline) {
-                failPending(kTimeout, true);
+                // A restore timeout must not poison attribution for the user's
+                // next request of the same mode.
+                failPending(kTimeout, pending != nullptr);
+                continue;
+            }
+            const bool echoedNow =
+                    observation->intents.load(std::memory_order_acquire) > intentBoundary &&
+                    observation->lastIntent.load() == pendingIntent &&
+                    mUnresolvedIntent.load() != pendingIntent;
+            // The stock service only emits the intent callback for a subset of
+            // requests. The backend has already accepted the write, so a
+            // missing echo is not an error: the panel carried out the change.
+            if (!echoedNow && Clock::now() >= echoDeadline) {
+                LOG(WARNING) << "mode " << applying->id << " accepted without an OEM echo";
+                mCurrent.store(applying->id);
+                bool ok = true;
+                if (pending && pending->makeDefault && !pending->abandoned.load()) {
+                    ok = persistDefault(applying->id,
+                                        [&] { return pending->abandoned.load(); });
+                }
+                confirmedMode = applying->id;
+                confirmedIntent = pendingIntent;
+                publishedWcgVersion = observation->wcgVersion.load();
+                finish(pending, ok, kPersistence);
+                pending = nullptr;
+                applying = nullptr;
+                applyScene.reset();
+                mApplyingMode.store(-1);
+                mReady.store(true);
                 continue;
             }
             if (!listener) {
@@ -673,10 +702,7 @@ void Controller::run() {
                 }
                 continue;
             }
-            if (!pendingPolicy &&
-                observation->intents.load(std::memory_order_acquire) > intentBoundary &&
-                observation->lastIntent.load() == pendingIntent &&
-                observation->wcg.load() >= 0 && mUnresolvedIntent.load() != pendingIntent) {
+            if (!pendingPolicy && echoedNow && observation->wcg.load() >= 0) {
                 pendingPolicy = mPolicySequence.fetch_add(1);
                 publishPolicy(activeConnection, pendingPolicy, pendingIntent,
                               observation->wcg.load() == 1);
