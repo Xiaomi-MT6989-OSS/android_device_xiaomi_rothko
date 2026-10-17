@@ -15,7 +15,7 @@ PRODUCT_PACKAGES += \
     mediatek-ims-common \
     vtservice \
     libcomutils \
-    libhidltransport \
+    libhidltransport_rothko \
     libimsma \
     libimsma_adapt \
     libimsma_rtp \
@@ -23,7 +23,7 @@ PRODUCT_PACKAGES += \
     libmtk_vt_service \
     libmtk_vt_wrapper \
     libsignal \
-    libsink \
+    libsink_rothko \
     libsource \
     libvcodec_cap \
     libvcodec_capenc \

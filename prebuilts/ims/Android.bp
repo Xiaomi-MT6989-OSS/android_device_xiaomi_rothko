@@ -97,7 +97,7 @@ cc_prebuilt_library_shared {
         "libstagefright_foundation",
         "libui",
         "libutils",
-        "libsink",
+        "libsink_rothko",
         "libsource",
         "libvcodec_cap",
         "libimsma_rtp",
@@ -223,7 +223,7 @@ cc_prebuilt_library_shared {
         "vendor.mediatek.hardware.videotelephony@1.0",
         "vendor.mediatek.hardware.videotelephony-V1-ndk",
         "libhidlbase",
-        "libhidltransport",
+        "libhidltransport_rothko",
         "libimsma",
         "libsource",
         "libimsma_rtp",
@@ -262,7 +262,7 @@ cc_prebuilt_library_shared {
         "vendor.mediatek.hardware.videotelephony@1.0",
         "vendor.mediatek.hardware.videotelephony-V1-ndk",
         "libhidlbase",
-        "libhidltransport",
+        "libhidltransport_rothko",
         "libui",
         "libgui",
         "libmedia",
@@ -306,7 +306,8 @@ cc_prebuilt_library_shared {
 }
 
 cc_prebuilt_library_shared {
-    name: "libsink",
+    name: "libsink_rothko",
+    stem: "libsink",
     owner: "xiaomi",
     system_ext_specific: true,
     compile_multilib: "64",
@@ -506,7 +507,8 @@ cc_prebuilt_library_shared {
 }
 
 cc_prebuilt_library_shared {
-    name: "libhidltransport",
+    name: "libhidltransport_rothko",
+    stem: "libhidltransport",
     owner: "xiaomi",
     system_ext_specific: true,
     compile_multilib: "64",
