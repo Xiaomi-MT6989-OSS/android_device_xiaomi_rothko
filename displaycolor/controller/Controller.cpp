@@ -446,7 +446,7 @@ void Controller::run() {
             ndk::SpAIBinder binder(AServiceManager_checkService(kOemService));
             if (!binder.get()) {
                 const uint64_t attempt = ++oemFailures;
-                if (attempt == 1 || attempt % 20 == 0) {
+                if (attempt == 1 || attempt % 120 == 0) {
                     LOG(WARNING) << "display feature service not found: " << kOemService
                                  << " attempt=" << attempt;
                 }
@@ -468,7 +468,7 @@ void Controller::run() {
                         candidate->registerCallback(0, freshCallback).isOk();
                 if (!valid) {
                     const uint64_t attempt = ++oemFailures;
-                    if (attempt == 1 || attempt % 20 == 0) {
+                    if (attempt == 1 || attempt % 120 == 0) {
                         LOG(WARNING) << "display feature registration failed: candidate="
                                      << (candidate != nullptr) << " version=" << version
                                      << " hash_ok=" << (hash == kFrozenHash)
