@@ -25,3 +25,9 @@ ro.vendor.display.fod_monitor_default_fps u:object_r:vendor_fp_prop:s0 exact int
 vendor.miface. u:object_r:vendor_miface_prop:s0 prefix
 ro.vendor.miface. u:object_r:vendor_miface_prop:s0 prefix
 persist.vendor.miface. u:object_r:vendor_miface_prop:s0 prefix
+
+# Exact stock NFC capability and firmware-update namespaces.
+vendor.nfc. u:object_r:vendor_nfc_prop:s0 prefix
+ro.vendor.nfc. u:object_r:vendor_nfc_prop:s0 prefix
+ro.vendor.se. u:object_r:vendor_nfc_prop:s0 prefix
+vendor.tms.nfc. u:object_r:vendor_tms_nfc_prop:s0 prefix

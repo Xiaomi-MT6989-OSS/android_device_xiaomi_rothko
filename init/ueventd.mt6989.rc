@@ -89,6 +89,7 @@
 /dev/connfem              0660   system     system
 
 # NFC
+/dev/tms_nfc              0660   nfc        nfc
 /dev/st21nfc              0660   nfc        radio
 /dev/st54spi              0660   secure_element        secure_element
 

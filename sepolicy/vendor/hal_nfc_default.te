@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+
+# The stock TMS HAL reuses the platform AIDL NFC server domain. It publishes
+# one private vendor extension instance and consumes the existing secure
+# element AIDL service for off-host routing.
+allow hal_nfc_default tmsnfc_aidl_service:service_manager add;
+binder_call(hal_nfc_default, hal_secure_element_default)
+
+# The TMS library persists RF/firmware state below /data/vendor/nfc and writes
+# one VTP cache beside the secure-element service.
+type nfc_vendor_data_file, file_type, data_file_type;
+type secure_element_vendor_data_file, file_type, data_file_type;
+allow hal_nfc_default nfc_vendor_data_file:dir create_dir_perms;
+allow hal_nfc_default nfc_vendor_data_file:file create_file_perms;
+allow hal_nfc_default secure_element_vendor_data_file:dir search;
+allow hal_nfc_default secure_element_vendor_data_file:file create_file_perms;
+
+type sysfs_chip_name, fs_type, sysfs_type;
+allow hal_nfc_default sysfs_chip_name:file r_file_perms;
+
+# The stock service reads the exported chip/SKU properties and publishes the
+# exact firmware-update result namespace used by the TMS libraries.
+get_prop(hal_nfc_default, vendor_nfc_prop)
+get_prop(hal_nfc_default, vendor_tms_nfc_prop)
+set_prop(hal_nfc_default, vendor_tms_nfc_prop)
+get_prop(nfc, vendor_nfc_prop)
+allow nfc sysfs_chip_name:file r_file_perms;
+
+# Keep the shared secure-element HAL functional after its cache path is
+# relabelled from generic vendor data to this precise type.
+allow hal_secure_element_default secure_element_vendor_data_file:dir create_dir_perms;
+allow hal_secure_element_default secure_element_vendor_data_file:file create_file_perms;
+allow hal_secure_element_default sysfs_chip_name:file r_file_perms;
+get_prop(hal_secure_element_default, vendor_nfc_prop)
+get_prop(hal_secure_element_default, vendor_tms_nfc_prop)
+set_prop(hal_secure_element_default, vendor_tms_nfc_prop)
