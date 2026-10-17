@@ -1,0 +1,24 @@
+// SPDX-License-Identifier: Apache-2.0
+
+// The stock MTK BluetoothAudioProvider publishes session state through the
+// `_mtk` session library. The A16 source-built module uses the generic session
+// library, so its readiness check can never observe the provider's session.
+// Keep this device-specific module paired with the stock provider.
+cc_prebuilt_library_shared {
+    name: "audio.bluetooth.default.rothko",
+    stem: "audio.bluetooth.default",
+    owner: "xiaomi",
+    vendor: true,
+    relative_install_path: "hw",
+    overrides: ["audio.bluetooth.default"],
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    check_elf_files: false,
+    target: {
+        android_arm64: {
+            srcs: ["audio.bluetooth.default.so"],
+        },
+    },
+}

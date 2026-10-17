@@ -1,0 +1,4 @@
+source: OS3.0.307.0 stock vendor/lib64/hw/audio.bluetooth.default.so
+sha256: a53fb5b36fdb5ca8dd5efb410454f083645a126a82381b3f0f1d82278aac9d29
+change: rewrite AIDL dependency to android.hardware.bluetooth.audio-V3-ndk-rothko.so
+reason: match the stock MTK BluetoothAudioProvider and _mtk session library

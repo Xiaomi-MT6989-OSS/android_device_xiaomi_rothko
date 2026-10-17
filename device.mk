@@ -63,9 +63,10 @@ PRODUCT_PACKAGES += \
     android.hardware.audio.service.mediatek \
     android.hardware.audio.effect@7.0-impl
 
+PRODUCT_PACKAGES := $(filter-out audio.bluetooth.default,$(PRODUCT_PACKAGES))
 PRODUCT_PACKAGES += \
     audio.primary.default \
-    audio.bluetooth.default \
+    audio.bluetooth.default.rothko \
     audio.usb.default
 
 PRODUCT_COPY_FILES += \
