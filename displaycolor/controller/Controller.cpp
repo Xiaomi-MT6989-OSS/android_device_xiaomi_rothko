@@ -34,7 +34,7 @@ constexpr auto kRequestTimeout = 12000ms;
 constexpr auto kApplyTimeout = 9000ms;
 // Without a SurfaceFlinger listener the stock backend is the only acceptance
 // signal; the LUT rewrite is synchronous, so a short grace is enough.
-constexpr auto kEchoGrace = 1500ms;
+constexpr auto kEchoGrace = 400ms;
 constexpr auto kRepublishTimeout = 1500ms;
 constexpr auto kPollInterval = 25ms;
 constexpr auto kLookupInterval = 1000ms;
@@ -382,6 +382,7 @@ void Controller::run() {
         std::optional<bridge::DisplayState> state;
         std::shared_ptr<bridge::IColorPolicyCallback> listener;
         std::shared_ptr<Request> queued;
+        std::shared_ptr<Request> nextQueued;
         int64_t session = 0, connection = 0;
         {
             std::unique_lock lock(mMutex);
@@ -420,15 +421,26 @@ void Controller::run() {
         if (queued) {
             const Mode* mode = findMode(queued->mode);
             const bool ambiguous = mode && mUnresolvedIntent.load() == mode->intent;
-            if (pending || applying || ambiguous || !state || !sdrReady(*state)) {
-                LOG(WARNING) << "queued mode " << queued->mode << " rejected: pending="
-                             << (pending != nullptr) << " applying=" << (applying != nullptr)
-                             << " ambiguous=" << ambiguous << " state=" << (state ? 1 : 0)
+            if (ambiguous || !state || !sdrReady(*state)) {
+                LOG(WARNING) << "queued mode " << queued->mode << " rejected: ambiguous="
+                             << ambiguous << " state=" << (state ? 1 : 0)
                              << " sdrReady=" << (state ? sdrReady(*state) : 0);
                 finish(queued, false, kUnavailable);
+            } else if (pending) {
+                // A newer selection supersedes one that has not started yet.
+                finish(pending, false, kUnavailable);
+                pending = queued;
+            } else if (applying) {
+                // Queue behind the write in progress instead of failing the tap.
+                if (nextQueued) finish(nextQueued, false, kUnavailable);
+                nextQueued = queued;
             } else {
                 pending = queued;
             }
+        }
+
+        if (!applying && !pending && nextQueued) {
+            pending = std::exchange(nextQueued, nullptr);
         }
 
         // 3. OEM backend death invalidates the whole generation of correlation.
