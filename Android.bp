@@ -5,4 +5,9 @@
 //
 
 soong_namespace {
+    // The device colour controller links the byte-identical stock DisplayFeature
+    // V2 binding, which is declared in the generated vendor blob namespace.
+    imports: [
+        "vendor/xiaomi/rothko",
+    ],
 }

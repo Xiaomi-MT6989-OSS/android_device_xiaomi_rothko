@@ -8,6 +8,10 @@
 PRODUCT_PACKAGES += rothko-fod-services
 PRODUCT_SYSTEM_SERVER_JARS_EXTRA += system_ext:rothko-fod-services
 
+# Device colour controller: serves the LiveDisplay colour-profile interface and
+# owns the only channel to the stock Xiaomi DisplayFeature service.
+PRODUCT_PACKAGES += vendor.lineage.livedisplay-service.rothko
+
 # Inherit generic_ramdisk product configuration
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
 

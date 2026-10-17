@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Device colour controller. It owns the only channel to the stock Xiaomi
+# DisplayFeature service and serves the LiveDisplay colour-profile interface.
+service vendor.livedisplay-rothko /vendor/bin/hw/vendor.lineage.livedisplay-service.rothko
+    class late_start
+    user system
+    group system graphics
+
+# Persisted default colour profile. Created before the controller starts so a
+# failed mkdir cannot silently disable persistence.
+on post-fs-data
+    mkdir /data/vendor/rothko_display_color 0770 system system
+    restorecon_recursive /data/vendor/rothko_display_color

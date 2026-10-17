@@ -1,0 +1,112 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+// Device-private platform transport. Neither VINTF nor an OEM frozen ABI.
+aidl_interface {
+    name: "vendor.xiaomi.rothko.display.color",
+    unstable: true,
+    // SurfaceFlinger links the platform variant; the controller service is a
+    // vendor process and links the vendor variant.
+    vendor_available: true,
+    srcs: ["aidl/vendor/xiaomi/rothko/display/color/*.aidl"],
+    local_include_dir: "aidl",
+    backend: {
+        cpp: { enabled: false },
+        java: { enabled: false },
+        ndk: { enabled: true },
+    },
+}
+
+// SF links this platform library through the BoardConfig soong config; the OEM
+// proxy belongs to the controller and never enters this process.
+cc_library_static {
+    name: "librothko_display_color_provider",
+    srcs: ["provider/RothkoDisplayColorProvider.cpp"],
+    cpp_std: "c++20",
+    // BINDER_STABILITY_SUPPORT matches how the generated NDK stubs are built
+    // for platform/vendor/product targets.
+    cflags: ["-Wall", "-Wextra", "-Werror", "-DBINDER_STABILITY_SUPPORT"],
+    include_dirs: [
+        "frameworks/native/services/surfaceflinger/CompositionEngine/include",
+        "frameworks/native/include",
+    ],
+    // ui/GraphicTypes.h pulls the stable AIDL graphics-common types through
+    // this defaults module and the HIDL 1.1/1.2 types through the shared lib.
+    // android.hardware.graphics.common@1.2 is a code library, not a header
+    // library, so it belongs in shared_libs.
+    defaults: ["android.hardware.graphics.common-ndk_shared"],
+    header_libs: [
+        "libsystem_headers",
+        "libui_headers",
+        "libutils_headers",
+    ],
+    shared_libs: [
+        "android.hardware.graphics.common@1.2",
+        "libbinder_ndk",
+        "liblog",
+    ],
+    // Compile the generated Binder stubs into this library. A static library's
+    // shared library dependencies are not part of the final link of the last
+    // consumer here, so the generated code must be self-contained instead.
+    generated_sources: ["vendor.xiaomi.rothko.display.color-ndk-source"],
+    generated_headers: ["vendor.xiaomi.rothko.display.color-ndk-source"],
+}
+
+// Device colour controller. It is the only process that talks to the stock
+// Xiaomi DisplayFeature service; SurfaceFlinger links the provider above and
+// exchanges cached policy and display state through the private interface.
+cc_library_static {
+    name: "librothko_display_color_controller",
+    srcs: ["controller/Controller.cpp"],
+    cpp_std: "c++20",
+    cflags: ["-Wall", "-Wextra", "-Werror", "-DBINDER_STABILITY_SUPPORT"],
+    local_include_dirs: ["controller"],
+    // ui::Dataspace values come from the platform ui headers; ui/GraphicTypes.h
+    // in turn needs the stable AIDL and HIDL graphics-common types.
+    defaults: ["android.hardware.graphics.common-ndk_shared"],
+    header_libs: [
+        "libsystem_headers",
+        "libui_headers",
+        "libutils_headers",
+    ],
+    // Same self-contained treatment as the provider: the private interface's
+    // generated code is compiled in rather than depended on at link time, and
+    // its headers are exported so the service binary that consumes this
+    // library also sees the generated Binder headers.
+    generated_sources: ["vendor.xiaomi.rothko.display.color-ndk-source"],
+    generated_headers: ["vendor.xiaomi.rothko.display.color-ndk-source"],
+    export_generated_headers: ["vendor.xiaomi.rothko.display.color-ndk-source"],
+    shared_libs: [
+        "libbase",
+        "libbinder_ndk",
+        "liblog",
+        "libutils",
+        "android.hardware.graphics.common@1.2",
+        "vendor.lineage.livedisplay-V1-ndk",
+        "vendor.xiaomi.hardware.displayfeature_aidl-V2-ndk",
+    ],
+}
+
+cc_binary {
+    name: "vendor.lineage.livedisplay-service.rothko",
+    vendor: true,
+    relative_install_path: "hw",
+    init_rc: ["vendor.lineage.livedisplay-service.rothko.rc"],
+    vintf_fragments: ["vendor.lineage.livedisplay-service.rothko.xml"],
+    cpp_std: "c++20",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    local_include_dirs: ["controller"],
+    srcs: ["service.cpp"],
+    static_libs: ["librothko_display_color_controller"],
+    shared_libs: [
+        "libbase",
+        "libbinder_ndk",
+        "liblog",
+        // Required for the generated LiveDisplay headers used by Controller.h.
+        "vendor.lineage.livedisplay-V1-ndk",
+        // The stock V2 binding must be linked into this binary directly: a
+        // static library's shared dependencies are not propagated to the final
+        // link. Keeping it here also keeps the OEM proxy out of SurfaceFlinger.
+        "vendor.xiaomi.hardware.displayfeature_aidl-V2-ndk",
+    ],
+}

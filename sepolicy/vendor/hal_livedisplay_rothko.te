@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Device colour controller. It serves the LiveDisplay colour-profile interface
+# and is the only client of the stock Xiaomi DisplayFeature service.
+#
+# The interface label belongs to the shared Lineage policy, which is pulled in
+# automatically by build/make/core/config.mk. That policy also declares a
+# neverallow restricting add/find on the label to domains carrying its own
+# hal_lineage_livedisplay attribute, so this domain uses the attribute instead
+# of declaring a second label (two labels for one service name make
+# servicemanager abort).
+type hal_livedisplay_rothko, domain;
+type hal_livedisplay_rothko_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(hal_livedisplay_rothko)
+
+hal_server_domain(hal_livedisplay_rothko, hal_lineage_livedisplay)
+binder_use(hal_livedisplay_rothko)
+
+# Stock DisplayFeature transport. The server pushes render-intent and gamut
+# notifications back into this process, so both directions are required.
+hal_client_domain(hal_livedisplay_rothko, hal_displayfeature_xiaomi)
+binder_call(hal_livedisplay_rothko, hal_displayfeature_xiaomi_default)
+binder_call(hal_displayfeature_xiaomi_default, hal_livedisplay_rothko)
+
+# SurfaceFlinger registers the policy callback, so it needs the client side of
+# the same attribute. The framework apps already carry it from the shared
+# policy; only the binder calls are added here.
+hal_client_domain(surfaceflinger, hal_lineage_livedisplay)
+binder_call(surfaceflinger, hal_livedisplay_rothko)
+binder_call(hal_livedisplay_rothko, surfaceflinger)
+binder_call(system_server, hal_livedisplay_rothko)
+binder_call(system_app, hal_livedisplay_rothko)
+binder_call(platform_app, hal_livedisplay_rothko)
+
+# Persisted default profile only; the directory itself is created by init.
+# Private controller transport between SurfaceFlinger and this process. The
+# name is device-specific, so it carries its own label.
+type hal_livedisplay_rothko_private_service, service_manager_type;
+allow hal_livedisplay_rothko hal_livedisplay_rothko_private_service:service_manager add;
+allow surfaceflinger hal_livedisplay_rothko_private_service:service_manager find;
+
+allow hal_livedisplay_rothko rothko_display_color_data_file:dir create_dir_perms;
+allow hal_livedisplay_rothko rothko_display_color_data_file:file create_file_perms;

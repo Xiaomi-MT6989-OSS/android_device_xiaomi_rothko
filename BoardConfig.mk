@@ -73,7 +73,8 @@ ODM_MANIFEST_FILES += $(DEVICE_PATH)/manifest_odm.xml
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
     $(DEVICE_PATH)/compatibility_matrix.xml \
     hardware/mediatek/vintf/mediatek_framework_compatibility_matrix.xml \
-    hardware/xiaomi/vintf/xiaomi_framework_compatibility_matrix.xml
+    hardware/xiaomi/vintf/xiaomi_framework_compatibility_matrix.xml \
+    hardware/lineage/interfaces/compatibility_matrices/compatibility_matrix.lineage.xml
 
 # Original fingerprint extensions use AIDL, unlike the common HIDL entries.
 DEVICE_PRODUCT_COMPATIBILITY_MATRIX_FILE += \
@@ -171,6 +172,12 @@ VENDOR_SECURITY_PATCH := $(BOOT_SECURITY_PATCH)
 # SELinux
 include device/mediatek/sepolicy_vndr/SEPolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
+
+# Device colour policy provider. SurfaceFlinger links the device static library
+# and compiles out the inert default implementation in the same step.
+SOONG_CONFIG_NAMESPACES += surfaceflinger
+SOONG_CONFIG_surfaceflinger += display_color_lib
+SOONG_CONFIG_surfaceflinger_display_color_lib := librothko_display_color_provider
 
 # Verified Boot
 BOARD_AVB_ENABLE := true
