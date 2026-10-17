@@ -2574,8 +2574,6 @@ vendor/bin/hw/android.hardware.nfc-service-tms
 vendor/etc/init/nfc-service-tms.rc
 vendor/etc/vintf/manifest/nfc-service-tms.xml
 vendor/lib64/7816-3-T1.so
-vendor/lib64/android.hardware.nfc-V1-ndk.so;MODULE=android.hardware.nfc-V1-ndk_vendorcompat;FIX_SONAME
-vendor/lib64/android.hardware.nfc@1.0.so;MODULE=android.hardware.nfc@1.0_vendorcompat;FIX_SONAME
 vendor/lib64/nfc_nci.thn31nfc.tms.so
 vendor/lib64/tms-cos-dl-common.so
 vendor/lib64/tms-cos-dl-ree.so
