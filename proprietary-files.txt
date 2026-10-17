@@ -2583,6 +2583,16 @@ vendor/lib64/tms-utils.so
 vendor/lib64/vendor.tms.tmsnfc@1.0.so
 vendor/lib64/vendor.tms.tmsnfc_aidl-V1-ndk.so
 
+# IMS / VoLTE vendor bridge
+vendor/bin/rcs_volte_stack
+vendor/bin/volte_clientapi_ua
+vendor/bin/volte_rcs_ua
+vendor/etc/init/volte_clientapi_ua.rc
+vendor/lib64/librcs_volte_core.so
+vendor/lib64/vendor.mediatek.hardware.clientapi-V1-ndk.so
+vendor/lib64/vendor.mediatek.hardware.rcs-V1-ndk.so
+vendor/lib64/vendor.mediatek.hardware.rcs@2.0.so
+
 # Secure Element
 vendor/bin/hw/android.hardware.secure_element@1.2-service-mediatek
 vendor/etc/init/android.hardware.secure_element@1.2-service-mediatek.rc
