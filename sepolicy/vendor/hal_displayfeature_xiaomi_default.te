@@ -19,6 +19,8 @@ r_dir_file(hal_displayfeature_xiaomi_default, sysfs_displayfeature)
 r_dir_file(hal_displayfeature_xiaomi_default, sysfs_displayfeature_control)
 allow hal_displayfeature_xiaomi_default sysfs_displayfeature_control:file w_file_perms;
 r_dir_file(hal_displayfeature_xiaomi_default, sysfs_leds)
+# A colour-mode change walks the stock brightness path and writes backlight.
+allow hal_displayfeature_xiaomi_default sysfs_leds:file w_file_perms;
 r_dir_file(hal_displayfeature_xiaomi_default, sysfs_therm)
 
 # Only generated runtime state belongs in /data/vendor/display.
