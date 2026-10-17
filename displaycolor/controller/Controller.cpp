@@ -187,6 +187,8 @@ ndk::ScopedAStatus Controller::setListener(
     mRequest.reset();
     mReady.store(false);
     mCurrent.store(-1);
+    mReportLogged = false;
+    LOG(INFO) << "listener attached session=" << session << " connection=" << connection;
     mChanged.notify_all();
     return ndk::ScopedAStatus::ok();
 }
@@ -197,6 +199,15 @@ ndk::ScopedAStatus Controller::reportState(const bridge::DisplayState& state) {
         state.sequence > mLastSequence) {
         mLastSequence = state.sequence;
         mState = state;
+        if (!mReportLogged) {
+            mReportLogged = true;
+            LOG(INFO) << "first state: connected=" << state.connected
+                      << " power=" << (state.powerKnown ? state.lastAttempted : -1)
+                      << " accepted=" << state.accepted
+                      << " content=" << (state.contentKnown ? 1 : 0)
+                      << " managed=" << state.managed
+                      << " profileKnown=" << state.profileKnown;
+        }
         mChanged.notify_all();
     }
     return ndk::ScopedAStatus::ok();
@@ -332,6 +343,10 @@ void Controller::run() {
     // `unattributed` is true only when an OEM mode request was actually issued
     // and its callback can no longer be matched to it.
     auto failPending = [&](int error, bool unattributed) {
+        if (pending || applying) {
+            LOG(WARNING) << "mode apply failed reason=" << error
+                         << (unattributed ? " (unattributed)" : "");
+        }
         if (pending) {
             finish(pending, false, error);
             pending = nullptr;
@@ -557,6 +572,10 @@ void Controller::run() {
                 continue;
             }
             applying = findMode(desired);
+            if (applying) {
+                LOG(INFO) << (pending ? "applying requested mode " : "restoring default mode ")
+                          << desired;
+            }
             if (!applying) {
                 if (pending) {
                     finish(pending, false, kUnavailable);
@@ -608,6 +627,7 @@ void Controller::run() {
                         continue;
                     }
                     if (!state->synchronizedState) continue;
+                    LOG(INFO) << "mode " << applying->id << " confirmed";
                     mCurrent.store(applying->id);
                     bool ok = true;
                     if (pending && pending->makeDefault && !pending->abandoned.load()) {
@@ -670,7 +690,13 @@ ndk::ScopedAStatus DisplayModes::getDisplayModes(std::vector<live::DisplayMode>*
     return ndk::ScopedAStatus::ok();
 }
 ndk::ScopedAStatus DisplayModes::getCurrentDisplayMode(live::DisplayMode* mode) {
-    const int32_t id = mController->currentMode();
+    int32_t id = mController->currentMode();
+    if (!findMode(id)) {
+        // Nothing has been confirmed in this session yet. Report the persisted
+        // choice: the worker restores exactly that mode once SurfaceFlinger
+        // reports state, so the selection in Settings stays truthful.
+        id = mController->defaultMode();
+    }
     if (!findMode(id)) return unavailable(kUnavailable);
     *mode = parcelMode(id);
     return ndk::ScopedAStatus::ok();

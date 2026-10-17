@@ -80,13 +80,17 @@ public:
 
     void setInvalidateCallback(std::function<void()> invalidate) override {
         // Called during SF initialization, before the provider is used by CE.
-        // A failure is handled like any lost state: clear policy and resync.
-        std::unique_lock lock(mStateMutex, std::try_to_lock);
-        if (!lock.owns_lock()) {
-            loseState();
-            return;
+        // A contended install must not park the worker forever: the callback
+        // only triggers a repaint, while the controller link carries policy.
+        {
+            std::unique_lock lock(mStateMutex, std::try_to_lock);
+            if (lock.owns_lock()) {
+                mInvalidate = std::move(invalidate);
+            } else {
+                loseState();
+                ALOGW("Invalidate callback install contended; starting without it");
+            }
         }
-        mInvalidate = std::move(invalidate);
         mStarted.store(true, std::memory_order_release);
     }
 
@@ -350,6 +354,8 @@ private:
         mRemote = std::move(remote);
         mCallback = std::move(callback);
         mDeathCookie = deathLinked ? cookie : nullptr;
+        ALOGI("Connected to the display colour controller (generation=%lld)",
+              static_cast<long long>(generation));
         mDirty.store(true, std::memory_order_release);
         invalidate();
     }
@@ -439,6 +445,7 @@ private:
     void run() {
         // Do not contend with the one-time SF invalidate callback install.
         while (!mStarted.load(std::memory_order_acquire)) std::this_thread::sleep_for(20ms);
+        ALOGI("Display colour worker started");
         ABinderProcess_startThreadPool();
         auto nextLookup = std::chrono::steady_clock::now();
         for (;;) {

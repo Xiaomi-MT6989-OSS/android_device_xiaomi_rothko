@@ -54,6 +54,8 @@ private:
     int64_t mConnection = 0;
     int64_t mLastSequence = 0;
     int64_t mLastPublished = 0;
+    // One diagnostic line per connection, so bring-up logs stay bounded.
+    bool mReportLogged = false;
     std::atomic<int64_t> mPolicySequence{1};
     std::atomic<int32_t> mCurrent{-1};
     std::atomic<int32_t> mDefault{3};
