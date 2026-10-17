@@ -233,6 +233,7 @@ PRODUCT_PACKAGES += \
     init.connectivity.rc \
     init.mi_thermald.rc \
     init.modem.rc \
+    init.project.rc \
     init.mt6989.rc \
     init.mt6989.usb.rc \
     init.rothko.usb.rc \

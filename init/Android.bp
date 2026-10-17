@@ -40,6 +40,13 @@ prebuilt_etc {
 }
 
 prebuilt_etc {
+    name: "init.project.rc",
+    src: "init.project.rc",
+    sub_dir: "init/hw",
+    vendor: true,
+}
+
+prebuilt_etc {
     name: "init.mt6989.rc",
     src: "init.mt6989.rc",
     sub_dir: "init/hw",
