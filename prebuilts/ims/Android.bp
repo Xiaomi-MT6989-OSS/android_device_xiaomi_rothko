@@ -12,17 +12,15 @@ android_app_import {
     system_ext_specific: true,
     filename: "ImsService.apk",
 }
-java_import {
+dex_import {
     name: "mediatek-ims-base",
     jars: ["mediatek-ims-base.jar"],
-    installable: true,
     system_ext_specific: true,
 }
 
-java_import {
+dex_import {
     name: "mediatek-ims-common",
     jars: ["mediatek-ims-common.jar"],
-    installable: true,
     system_ext_specific: true,
 }
 
