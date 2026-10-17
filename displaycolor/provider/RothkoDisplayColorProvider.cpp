@@ -71,6 +71,7 @@ public:
         AIBinder_DeathRecipient_setOnUnlinked(mDeathRecipient.get(), [](void* opaque) {
             delete static_cast<DeathCookie*>(opaque);
         });
+        ALOGI("Display colour provider constructed");
         // Process-lifetime provider; no thread, object or callback teardown runs
         // while SF/composition locks are held.
         std::thread([this] { run(); }).detach();
@@ -322,20 +323,24 @@ private:
     void connect() {
         ndk::SpAIBinder binder(AServiceManager_checkService(kService));
         if (!binder.get()) {
-            if (!mLookupMissing.exchange(true)) {
-                ALOGW("Display colour controller service is not available yet");
+            const uint64_t attempt = ++mLookupAttempts;
+            if (attempt == 1 || attempt % 120 == 0) {
+                ALOGW("Display colour controller service not found (attempt %llu)",
+                      static_cast<unsigned long long>(attempt));
             }
             return;
         }
-        mLookupMissing.store(false);
         auto remote = transport::IRothkoDisplayColor::fromBinder(binder);
         if (!remote) {
-            if (!mCastFailed.exchange(true)) {
-                ALOGW("Display colour controller interface cast failed");
+            const uint64_t attempt = ++mCastAttempts;
+            if (attempt == 1 || attempt % 120 == 0) {
+                ALOGW("Display colour controller interface cast failed (attempt %llu)",
+                      static_cast<unsigned long long>(attempt));
             }
             return;
         }
-        mCastFailed.store(false);
+        mLookupAttempts.store(0);
+        mCastAttempts.store(0);
         if (mNextConnection == std::numeric_limits<int64_t>::max()) return;
         const int64_t generation = ++mNextConnection;
         // Binder owns cookie cleanup through onUnlinked, including failed
@@ -508,9 +513,10 @@ private:
     std::atomic<bool> mReconnect{false};
     std::atomic<bool> mPowerChanged{false};
     std::atomic<bool> mStarted{false};
-    // One warning per transition, so a missing controller cannot flood the log.
-    std::atomic<bool> mLookupMissing{false};
-    std::atomic<bool> mCastFailed{false};
+    // Heartbeat every 120 attempts (about a minute), so a boot-time failure
+    // that predates logd's socket is still visible later.
+    std::atomic<uint64_t> mLookupAttempts{0};
+    std::atomic<uint64_t> mCastAttempts{0};
 
     // Worker-only writer, bounded seqlock readers in CE.
     std::atomic<uint64_t> mPolicySequence{0};
