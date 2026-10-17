@@ -59,6 +59,9 @@ genfscon proc /tp_lockdown_info u:object_r:proc_tp_lockdown:s0
 
 genfscon proc /stpbt u:object_r:proc_stpbt:s0
 
+# Stock TMS NFC controller identity node used by the HAL and framework.
+genfscon sysfs /devices/platform/11d01000.i2c/i2c-3/3-0028/chip_name u:object_r:sysfs_chip_name:s0
+
 # Real paths verified on rothko; disp_count is the only writable sysfs node.
 genfscon sysfs /devices/virtual/mi_display/disp_feature/disp-DSI-0 u:object_r:sysfs_displayfeature:s0
 genfscon sysfs /devices/virtual/mi_display/disp_feature/disp-DSI-0/disp_count u:object_r:sysfs_displayfeature_control:s0

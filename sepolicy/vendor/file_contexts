@@ -48,10 +48,9 @@
 /vendor/bin/hw/vendor\.lineage\.livedisplay-service\.rothko u:object_r:hal_livedisplay_rothko_exec:s0
 /data/vendor/rothko_display_color(/.*)? u:object_r:rothko_display_color_data_file:s0
 
-# Stock TMS NFC service, its controller node, chip identity and private state.
+# Stock TMS NFC service, its controller node and private state.
 /(vendor|system/vendor)/bin/hw/android\.hardware\.nfc-service-tms u:object_r:hal_nfc_default_exec:s0
 /dev/tms_nfc u:object_r:nfc_device:s0
-/sys/nfc/chip_name u:object_r:sysfs_chip_name:s0
 /data/vendor/nfc(/.*)? u:object_r:nfc_vendor_data_file:s0
 /data/vendor/secure_element(/.*)? u:object_r:secure_element_vendor_data_file:s0
 
