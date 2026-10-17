@@ -469,8 +469,11 @@ void Controller::run() {
             }
         }
 
-        // 5. Hard preconditions.
-        if (!state || !listener || !backend || (sfDead && sfDead->load())) {
+        // 5. Hard preconditions. SurfaceFlinger coordinates the policy whenever
+        //    it connects; when it never does (its binder pool cannot install the
+        //    death recipient), the OEM echo is the acceptance signal, which is
+        //    exactly what the stock framework relies on.
+        if (!backend || (sfDead && sfDead->load()) || (listener && !state)) {
             mReady.store(false);
             if (pending && !applying) {
                 finish(pending, false, kUnavailable);
@@ -493,13 +496,13 @@ void Controller::run() {
 
         // 7. A real Off -> On power transition re-initialises the OEM, so an
         //    unattributed request can no longer be confused with a later one.
-        if (state->powerKnown && state->accepted && previousPower == 1 &&
+        if (state && state->powerKnown && state->accepted && previousPower == 1 &&
             state->lastAttempted == 2) {
             mUnresolvedIntent.store(-1);
         }
 
         // 8. Push the full composition/power notification batch on any change.
-        const bool sceneChanged = !previous || !sameScene(*previous, *state);
+        const bool sceneChanged = state && (!previous || !sameScene(*previous, *state));
         if (applying && sceneChanged) {
             // The scene moved while a user mode request was outstanding. The
             // request is no longer meaningful and its callback is unattributable.
@@ -548,7 +551,8 @@ void Controller::run() {
         if (state->powerKnown) previousPower = state->lastAttempted;
 
         // 9. A user mode may only be requested while real SDR content is up.
-        if (!sdrReady(*state)) {
+        //    Without an SF observation there is no content signal to gate on.
+        if (state && !sdrReady(*state)) {
             mReady.store(false);
             clearPolicyNow();
             if (pending) {
@@ -611,6 +615,30 @@ void Controller::run() {
             // 11. Confirm the OEM mode echo, then the SF/HWC acceptance.
             if (Clock::now() >= deadline) {
                 failPending(kTimeout, true);
+                continue;
+            }
+            if (!listener) {
+                // No coordination channel: accept the OEM echo itself.
+                if (observation->intents.load(std::memory_order_acquire) > intentBoundary &&
+                    observation->lastIntent.load() == pendingIntent &&
+                    mUnresolvedIntent.load() != pendingIntent) {
+                    LOG(INFO) << "mode " << applying->id << " confirmed by OEM echo";
+                    mCurrent.store(applying->id);
+                    bool ok = true;
+                    if (pending && pending->makeDefault && !pending->abandoned.load()) {
+                        ok = persistDefault(applying->id,
+                                            [&] { return pending->abandoned.load(); });
+                    }
+                    confirmedMode = applying->id;
+                    confirmedIntent = pendingIntent;
+                    publishedWcgVersion = observation->wcgVersion.load();
+                    finish(pending, ok, kPersistence);
+                    pending = nullptr;
+                    applying = nullptr;
+                    applyScene.reset();
+                    mApplyingMode.store(-1);
+                    mReady.store(true);
+                }
                 continue;
             }
             if (!pendingPolicy &&
