@@ -59,6 +59,7 @@ PRODUCT_PACKAGES += \
 # LK/preloader zero-touch: never install create_pl_dev in system or recovery.
 
 # Audio
+$(call soong_config_set_bool,audio_bluetooth_hw,use_stock_hal,true)
 PRODUCT_PACKAGES += \
     android.hardware.audio.service.mediatek \
     android.hardware.audio.effect@7.0-impl
