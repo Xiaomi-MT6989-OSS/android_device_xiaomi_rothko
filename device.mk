@@ -113,7 +113,7 @@ PRODUCT_PACKAGES += \
 
 # Health
 PRODUCT_PACKAGES += \
-    android.hardware.health-service.mediatek \
+    android.hardware.health-service.rothko \
     android.hardware.health-service.mediatek-recovery
 
 # IFAA manager

@@ -47,3 +47,6 @@
 # Device colour controller and its persisted default profile.
 /vendor/bin/hw/vendor\.lineage\.livedisplay-service\.rothko u:object_r:hal_livedisplay_rothko_exec:s0
 /data/vendor/rothko_display_color(/.*)? u:object_r:rothko_display_color_data_file:s0
+
+# Device-specific health policy for the frozen MTK charge-time estimate.
+/(vendor|system/vendor)/bin/hw/android\.hardware\.health-service\.rothko u:object_r:hal_health_default_exec:s0
