@@ -29,6 +29,14 @@
         </interface>
     </hal>
     <hal format="aidl">
+        <name>vendor.tms.tmsnfc_aidl</name>
+        <version>1</version>
+        <interface>
+            <name>ITmsNfc</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl">
         <name>vendor.xiaomi.hw.touchfeature</name>
         <version>1</version>
         <interface>
