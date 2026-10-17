@@ -23,7 +23,6 @@ allow hal_nfc_default sysfs_chip_name:file r_file_perms;
 get_prop(hal_nfc_default, vendor_nfc_prop)
 get_prop(hal_nfc_default, vendor_tms_nfc_prop)
 set_prop(hal_nfc_default, vendor_tms_nfc_prop)
-get_prop(nfc, vendor_nfc_prop)
 allow nfc sysfs_chip_name:file r_file_perms;
 
 # Keep the shared secure-element HAL functional after its cache path is
