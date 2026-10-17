@@ -211,7 +211,8 @@ public final class RothkoFodService extends SystemService {
     }
 
     private void send(int command, int value) throws Exception {
-        if (!((command == 1 || command == 2 || command == 7) && (value == 0 || value == 1))
+        if (!((command == 1 || command == 2 || command == 6 || command == 7)
+                        && (value == 0 || value == 1))
                 && !(command == 3 && value >= 0 && value <= 3)
                 && !(command == 4 && value >= 1 && value <= 4)
                 && !(command == 5 && value >= 0 && value <= 2)) {

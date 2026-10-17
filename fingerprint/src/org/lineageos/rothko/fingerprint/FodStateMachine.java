@@ -87,6 +87,18 @@ final class FodStateMachine {
         mSent[command] = value;
     }
 
+    /**
+     * Engine command 6 is the screen-off UI-ready hint. Its acceptance varies by
+     * vendor build, so a rejection must not disturb the verified commands.
+     */
+    private void tryUiReady(Transport transport, int value) {
+        try {
+            send(transport, 6, value);
+        } catch (Exception e) {
+            mSent[6] = Integer.MIN_VALUE;
+        }
+    }
+
     void apply(Transport transport) throws Exception {
         final Integer lockout = mLockouts.get(mUser);
         final boolean screenOn = mDesiredDisplay == 2 && mActualDisplay == 2 && !mFade;
@@ -101,6 +113,7 @@ final class FodStateMachine {
                 && mOperation.user == mUser && lockout != null && lockout == 0
                 && (screenOn || screenOffKeyguard);
         if (mAppliedOperation != null && (!active || mAppliedOperation != mOperation)) {
+            tryUiReady(transport, 0);
             send(transport, 1, 0);
             send(transport, 4, mAppliedOperation.enrolling() ? 2 : 4);
             mAppliedOperation = null;
@@ -113,6 +126,7 @@ final class FodStateMachine {
         send(transport, 2, mFade ? 1 : 0);
         if (lockout != null) send(transport, 5, lockout);
         if (active) {
+            tryUiReady(transport, screenOffKeyguard ? 1 : 0);
             send(transport, 7, mOperation.keyguard() ? 1 : 0);
             if (mAppliedOperation == null) {
                 send(transport, 4, mOperation.enrolling() ? 1 : 3);
