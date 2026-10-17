@@ -1,0 +1,14 @@
+source image: rothko OS3.0.307.0 stock vendor/etc/md
+files: 756
+bytes: 132657
+modes: 0644, uid 0, gid 0
+SELinux label: u:object_r:vendor_etc_md_file:s0
+groups:
+  apncfg: 504 files, 40391 bytes
+  plmn: 214 files, 38874 bytes
+  cacerts: 38 files, 53392 bytes
+notes:
+  - One stock PLMN file is intentionally empty and is retained byte-for-byte.
+  - SHA256SUMS covers every file in this tree.
+  - The exact stock ccci_mdinit consumer is already installed by the vendor blob set.
+  - No modem NV, identity, calibration, or filesystem was modified.
