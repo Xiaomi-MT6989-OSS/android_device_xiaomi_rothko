@@ -11,8 +11,6 @@ $(call inherit-product, hardware/mediatek/frameworks/mediatek-frameworks.mk)
 
 PRODUCT_PACKAGES += \
     ImsService \
-    MssiFrameworkTelephonyOverlay \
-    MssiTelephonyOverlay \
     mediatek-ims-base \
     mediatek-ims-common \
     vtservice \
