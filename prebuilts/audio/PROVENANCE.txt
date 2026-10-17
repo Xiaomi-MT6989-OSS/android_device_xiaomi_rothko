@@ -1,4 +1,25 @@
-source: OS3.0.307.0 stock vendor/lib64/hw/audio.bluetooth.default.so
-sha256: a53fb5b36fdb5ca8dd5efb410454f083645a126a82381b3f0f1d82278aac9d29
-change: rewrite AIDL dependency to android.hardware.bluetooth.audio-V3-ndk-rothko.so
-reason: match the stock MTK BluetoothAudioProvider and _mtk session library
+source: HyperOS OS3.0.307.0 stock vendor/lib64 audio Bluetooth HAL and session libraries
+scope: restore the legacy software A2DP dependency closure; hardware offload default is unchanged
+binary changes: SONAME / DT_NEEDED only; executable .text sections are byte-identical to their sources
+isolation: private -rothko session names preserve platform A16 libraries and the existing private stock V3 binding
+build: shared_libs explicitly declared; normal Soong ELF checks enabled
+validation: offline check_elf_file passed for all three candidates; 18 existing dependency files match the live phone
+runtime: candidate not built or deployed; headset playback still requires verification
+
+audio.bluetooth.default.so:
+  candidate sha256: 1de6e6a19bbe0f591dea96da343d63e3753e51e410600d5a2909083a6dda2fb1
+  input sha256: a53fb5b36fdb5ca8dd5efb410454f083645a126a82381b3f0f1d82278aac9d29
+  text sha256: ce61406d78c271a3b480989b266d913b7ce87ecd5d9f1a8489f48a72f48e6021
+  replacements: {"libbluetooth_audio_session.so": "libbluetooth_audio_session-rothko.so"}
+
+libbluetooth_audio_session-rothko.so:
+  candidate sha256: 10c48305b23e00e22a0327164aa1a79cec160f4031e44d2befbd8bec1dc6a987
+  input sha256: 486d53ba7b762aa66b6ec003b8be63761be08e32b2fb0fda7df0f35c4d212c94
+  text sha256: 1e662e5cdfc19d02b4454c799db9d28407f523b25359e810260b0b03dbd0421e
+  replacements: {"libbluetooth_audio_session_aidl.so": "libbluetooth_audio_session_aidl-rothko.so"}
+
+libbluetooth_audio_session_aidl-rothko.so:
+  candidate sha256: 04444f5a8eb586ca094920b52115c5197a0bcd0f70fbd93f12d76b1ae6040bf3
+  input sha256: 6d9559c97906da1f8756fa0f8a32820b784eac93af061a42534bc892e50ef540
+  text sha256: 7bff00df971d6544635344673187f0b2f1cf8241cceb602ff7a3b4e7ee58f110
+  replacements: {"android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so"}

@@ -15,10 +15,69 @@ cc_prebuilt_library_shared {
     strip: {
         none: true,
     },
-    check_elf_files: false,
+    shared_libs: [
+        "android.hardware.bluetooth.audio-V3-ndk_vendorcompat",
+        "libbluetooth_audio_session_aidl_mtk",
+        "libbluetooth_audio_session.rothko",
+        "android.hardware.bluetooth.audio@2.0",
+        "android.hardware.bluetooth.audio@2.1",
+        "libaudioutils",
+        "libbase",
+        "libbinder_ndk",
+        "libcutils",
+        "libfmq",
+        "liblog",
+        "libutils",
+        "libhidlbase",
+    ],
     target: {
         android_arm64: {
             srcs: ["audio.bluetooth.default.so"],
         },
     },
+}
+
+// Preserve the stock legacy bridge without replacing the platform session libraries.
+cc_prebuilt_library_shared {
+    name: "libbluetooth_audio_session.rothko",
+    stem: "libbluetooth_audio_session-rothko",
+    owner: "xiaomi",
+    vendor: true,
+    compile_multilib: "64",
+    strip: { none: true },
+    srcs: ["libbluetooth_audio_session-rothko.so"],
+    shared_libs: [
+        "android.hardware.audio.common@5.0",
+        "android.hardware.bluetooth.audio@2.0",
+        "android.hardware.bluetooth.audio@2.1",
+        "libbluetooth_audio_session_aidl.rothko",
+        "libbase",
+        "libcutils",
+        "libfmq",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+    ],
+}
+
+cc_prebuilt_library_shared {
+    name: "libbluetooth_audio_session_aidl.rothko",
+    stem: "libbluetooth_audio_session_aidl-rothko",
+    owner: "xiaomi",
+    vendor: true,
+    compile_multilib: "64",
+    strip: { none: true },
+    srcs: ["libbluetooth_audio_session_aidl-rothko.so"],
+    shared_libs: [
+        "android.hardware.bluetooth.audio@2.0",
+        "android.hardware.bluetooth.audio@2.1",
+        "android.hardware.bluetooth.audio-V3-ndk_vendorcompat",
+        "libbase",
+        "libcutils",
+        "libbinder_ndk",
+        "libfmq",
+        "liblog",
+        "libhidlbase",
+        "libxml2",
+    ],
 }
