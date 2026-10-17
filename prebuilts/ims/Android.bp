@@ -16,12 +16,14 @@ dex_import {
     name: "mediatek-ims-base",
     jars: ["mediatek-ims-base.jar"],
     system_ext_specific: true,
+    use_generic_config: true,
 }
 
 dex_import {
     name: "mediatek-ims-common",
     jars: ["mediatek-ims-common.jar"],
     system_ext_specific: true,
+    use_generic_config: true,
 }
 
 cc_prebuilt_binary {
