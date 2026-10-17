@@ -32,6 +32,9 @@ constexpr int kUnavailable = 1, kTimeout = 2, kPersistence = 3;
 // the intent echo arrives seconds after the request, not immediately.
 constexpr auto kRequestTimeout = 12000ms;
 constexpr auto kApplyTimeout = 9000ms;
+// Without a SurfaceFlinger listener the stock backend is the only acceptance
+// signal; the LUT rewrite is synchronous, so a short grace is enough.
+constexpr auto kEchoGrace = 1500ms;
 constexpr auto kRepublishTimeout = 1500ms;
 constexpr auto kPollInterval = 25ms;
 constexpr auto kLookupInterval = 1000ms;
@@ -622,7 +625,7 @@ void Controller::run() {
             intentBoundary = observation->intents.load(std::memory_order_acquire);
             pendingPolicy = 0;
             pendingIntent = applying->intent;
-            deadline = Clock::now() + kApplyTimeout;
+            deadline = Clock::now() + (listener ? kApplyTimeout : kEchoGrace);
             mApplyingMode.store(applying->id);
             mReady.store(false);
             applyScene = state;
@@ -641,10 +644,17 @@ void Controller::run() {
             }
             if (!listener) {
                 // No coordination channel: accept the OEM echo itself.
-                if (observation->intents.load(std::memory_order_acquire) > intentBoundary &&
-                    observation->lastIntent.load() == pendingIntent &&
-                    mUnresolvedIntent.load() != pendingIntent) {
-                    LOG(INFO) << "mode " << applying->id << " confirmed by OEM echo";
+                const bool echoed =
+                        observation->intents.load(std::memory_order_acquire) > intentBoundary &&
+                        observation->lastIntent.load() == pendingIntent &&
+                        mUnresolvedIntent.load() != pendingIntent;
+                if (echoed || Clock::now() >= deadline) {
+                    if (echoed) {
+                        LOG(INFO) << "mode " << applying->id << " confirmed by OEM echo";
+                    } else {
+                        LOG(WARNING) << "mode " << applying->id
+                                     << " accepted without an OEM echo";
+                    }
                     mCurrent.store(applying->id);
                     bool ok = true;
                     if (pending && pending->makeDefault && !pending->abandoned.load()) {
