@@ -8,6 +8,12 @@
 PRODUCT_PACKAGES += rothko-fod-services
 PRODUCT_SYSTEM_SERVER_JARS_EXTRA += system_ext:rothko-fod-services
 
+# Feed real stock Goodix FOD touches into the standard Doze one-shot wakeup path.
+# The original sensors multihal also loads /odm/etc/sensors/hals.conf.
+PRODUCT_PACKAGES += sensors.rothko.udfps
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/sensors/udfps/hals.conf:$(TARGET_COPY_OUT_ODM)/etc/sensors/hals.conf
+
 # Device colour controller: serves the LiveDisplay colour-profile interface and
 # owns the only channel to the stock Xiaomi DisplayFeature service.
 PRODUCT_PACKAGES += vendor.lineage.livedisplay-service.rothko
