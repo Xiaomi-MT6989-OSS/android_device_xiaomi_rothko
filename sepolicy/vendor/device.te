@@ -7,3 +7,12 @@ type displayfeature_device, dev_type;
 
 # Original Novatek visual-display SPI character device, not a calibration file.
 type nvt_device, dev_type;
+
+# Stock MTK GNSS transport/storage nodes, absent from the common MTK policy.
+type gpsmdl_device, dev_type;
+type gpsstrg_device, dev_type;
+type fw_log_gpsmcu_device, dev_type;
+
+# Match the gpsmdl/gpsstrg access in the rothko stock vendor policy.
+allow mnld gpsmdl_device:chr_file rw_file_perms;
+allow mnld gpsstrg_device:chr_file rw_file_perms;

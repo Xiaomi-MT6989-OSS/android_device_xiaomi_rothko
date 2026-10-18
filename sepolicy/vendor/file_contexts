@@ -40,6 +40,12 @@
 /data/vendor/fingerprint(/.*)? u:object_r:vendor_fingerprint_runtime_data_file:s0
 /data/vendor/misc/mi_fp(/.*)? u:object_r:vendor_fingerprint_runtime_data_file:s0
 
+# Stock MTK MNLD data/control nodes; labels and access match the shipped
+# vendor policy, which is newer than the common MTK policy in this tree.
+/dev/gpsmdl.*(/.*)? u:object_r:gpsmdl_device:s0
+/dev/gpsstrg.*(/.*)? u:object_r:gpsstrg_device:s0
+/dev/fw_log_gpsmcu u:object_r:fw_log_gpsmcu_device:s0
+
 # Actual stock face daemon and its private runtime data, no ODM executable.
 /vendor/bin/hw/mifaced u:object_r:hal_face_default_exec:s0
 /data/vendor/face(/.*)? u:object_r:face_vendor_data_file:s0
