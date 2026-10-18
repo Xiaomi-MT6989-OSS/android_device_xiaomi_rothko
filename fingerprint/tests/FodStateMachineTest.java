@@ -158,9 +158,24 @@ public final class FodStateMachineTest {
             state.lockout(0, 0);
             state.apply(wire);
             check(wire.ui == 1, "actual lockout reset may restore the still-valid keyguard request");
-            state.display(2, display[0], false);
+            int transitionStart = wire.events.size();
+            state.display(2, display[0], true);
             state.apply(wire);
-            check(wire.ui == 0, "mismatched desired/actual states must stop capture during wake");
+            check(wire.ui == 1, "existing keyguard auth must survive desired/actual wake mismatch");
+            state.display(2, 2, true);
+            state.apply(wire);
+            check(wire.ui == 1, "existing keyguard auth must survive the remaining color fade");
+            state.display(2, 2, false);
+            state.apply(wire);
+            List<String> transition = wire.events.subList(transitionStart, wire.events.size());
+            check(!transition.contains("1/0") && !transition.contains("4/4")
+                            && !transition.contains("4/3") && !transition.contains("7/0"),
+                    "wake must not stop/replay the same auth or clear its keyguard condition");
+            check(transition.contains("3/2") && transition.contains("2/0"),
+                    "wake must still forward actual ON and actual fade completion");
+            state.display(0, 2, false);
+            state.apply(wire);
+            check(wire.ui == 0, "unknown display state must stop even continuing keyguard auth");
             state.display(2, 2, false);
             state.apply(wire);
             check(wire.ui == 1, "normal ON auth must resume after the transition");
@@ -169,6 +184,23 @@ public final class FodStateMachineTest {
             state.apply(wire);
             check(wire.ui == 0, "low-power setting cannot resurrect canceled auth");
         }
+        state = ready();
+        wire = new Wire();
+        state.screenOffUnlock(true);
+        state.start(30, 0, 2);
+        state.overlay(30, true);
+        state.display(2, 1, true);
+        state.apply(wire);
+        check(wire.ui == 0 && wire.operation == 0,
+                "a fresh request must not start during an unstable display transition");
+        state.display(1, 1, true);
+        state.apply(wire);
+        check(wire.ui == 1, "fresh keyguard auth may start once low-power state is stable");
+        state.display(2, 1, true);
+        state.lockout(0, 1);
+        state.apply(wire);
+        check(wire.ui == 0 && wire.operation == 4,
+                "lockout during a display transition must still stop the request immediately");
         for (int operation : new int[] {1, 3, 4}) {
             state = ready();
             wire = new Wire();

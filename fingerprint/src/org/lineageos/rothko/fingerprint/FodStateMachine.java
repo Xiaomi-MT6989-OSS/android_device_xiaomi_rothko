@@ -97,9 +97,18 @@ final class FodStateMachine {
         // it must not be confused with an ON-screen transition. Enroll/app auth remain ON-only.
         final boolean screenOffKeyguard = mScreenOffUnlock && stableLowPower
                 && mOperation != null && mOperation.keyguard();
+        // A real, already-applied keyguard request remains valid while OFF/DOZE/ON
+        // and ColorFade catch up with one another. Stopping and replaying that
+        // request here clears stock FodEngine's in-flight local-HBM request and
+        // loses the finger which initiated wake. Keep reporting physical power
+        // and fade below; this neither starts a new request nor fakes panel ON.
+        final boolean continuingKeyguard = mScreenOffUnlock && mOperation != null
+                && mOperation.keyguard() && mAppliedOperation == mOperation
+                && mDesiredDisplay >= 1 && mDesiredDisplay <= 4
+                && mActualDisplay >= 1 && mActualDisplay <= 4;
         final boolean active = mOperation != null && mOperation.attached
                 && mOperation.user == mUser && lockout != null && lockout == 0
-                && (screenOn || screenOffKeyguard);
+                && (screenOn || screenOffKeyguard || continuingKeyguard);
         if (mAppliedOperation != null && (!active || mAppliedOperation != mOperation)) {
             send(transport, 1, 0);
             send(transport, 4, mAppliedOperation.enrolling() ? 2 : 4);
