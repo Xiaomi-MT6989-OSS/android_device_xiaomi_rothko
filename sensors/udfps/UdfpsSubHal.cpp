@@ -47,7 +47,6 @@ constexpr char kTouchFeatureDescriptor[] =
 // ITouchFeature AIDL V1: setModeValue(int touchId, int mode, int value).
 constexpr transaction_code_t kSetModeValueTransaction = 9;
 constexpr int kTouchId = 0;
-constexpr int kTouchFodEnable = 10;
 constexpr int kTouchFodIconEnable = 16;
 
 void* touchFeatureOnCreate(void*) { return nullptr; }
@@ -103,22 +102,16 @@ bool setTouchMode(int mode, int value) {
   return statusOk && result == 0;
 }
 
-bool setTouchFodModes(bool enabled) {
-  if (enabled) {
-    if (setTouchMode(kTouchFodEnable, 1) &&
-        setTouchMode(kTouchFodIconEnable, 1)) {
-      return true;
-    }
-    // Do not leave one side of the pair enabled after a partial failure.
-    setTouchMode(kTouchFodIconEnable, 0);
-    setTouchMode(kTouchFodEnable, 0);
-    ALOGE("Cannot enable stock touch FOD modes");
+bool setTouchFodIcon(bool enabled) {
+  // Mode 10 (Touch_Fod_Enable) belongs to the original fingerprint HAL. In
+  // particular, cancelling this sensor after a power-key wake must not clear
+  // the HAL's active lockscreen touch subscription. This sensor owns only the
+  // icon/gesture mode needed to receive the screen-off one-shot input.
+  if (!setTouchMode(kTouchFodIconEnable, enabled ? 1 : 0)) {
+    ALOGE("Cannot %s stock touch FOD icon mode", enabled ? "enable" : "disable");
     return false;
   }
-  bool iconOff = setTouchMode(kTouchFodIconEnable, 0);
-  bool fodOff = setTouchMode(kTouchFodEnable, 0);
-  if (!iconOff || !fodOff) ALOGE("Cannot disable stock touch FOD modes");
-  return iconOff && fodOff;
+  return true;
 }
 
 }  // namespace
@@ -170,7 +163,7 @@ class UdfpsSubHal final : public ISensorsSubHal {
       mInput.reset();
       ++mGeneration;
     }
-    disarmTouchModesLocked();
+    disarmTouchIconLocked();
   }
 
   Return<void> getSensorsList_2_1(ISensors::getSensorsList_2_1_cb cb) override {
@@ -200,7 +193,7 @@ class UdfpsSubHal final : public ISensorsSubHal {
       mCallback = callback;
       mMode = OperationMode::NORMAL;
     }
-    disarmTouchModesLocked();
+    disarmTouchIconLocked();
     kick();
     return Result::OK;
   }
@@ -218,22 +211,22 @@ class UdfpsSubHal final : public ISensorsSubHal {
         }
         generation = ++mGeneration;
       }
-      mTouchModesEnabled = true;
-      mTouchModeGeneration = generation;
-      // A failed enable can leave only one of the two modes on. Mark cleanup
-      // pending before the first transaction so the worker retries it as well.
-      mTouchModeDisablePending.store(true);
-      if (!setTouchFodModes(true)) {
+      mTouchIconEnabled = true;
+      mTouchIconGeneration = generation;
+      // A failed Binder reply cannot prove the remote write was not applied.
+      // Mark cleanup pending before the transaction so the worker retries it.
+      mTouchIconDisablePending.store(true);
+      if (!setTouchFodIcon(true)) {
         kick();
         return Result::INVALID_OPERATION;
       }
-      mTouchModeDisablePending.store(false);
+      mTouchIconDisablePending.store(false);
       auto input = findGoodixInput();
       std::array<uint8_t, KEY_MAX / 8 + 1> keys{};
       if (input.get() < 0 ||
           ioctl(input.get(), EVIOCGKEY(sizeof(keys)), keys.data()) < 0) {
         ALOGE("Cannot arm stock Goodix input");
-        disarmTouchModesLocked();
+        disarmTouchIconLocked();
         std::lock_guard lock(mMutex);
         ++mGeneration;
         kick();
@@ -251,7 +244,7 @@ class UdfpsSubHal final : public ISensorsSubHal {
         mInput.reset();
         ++mGeneration;
       }
-      disarmTouchModesLocked();
+      disarmTouchIconLocked();
     }
     kick();
     return Result::OK;
@@ -318,7 +311,7 @@ class UdfpsSubHal final : public ISensorsSubHal {
       ::rothko::FodInput parser(held);
       while (!mStop) {
         pollfd fds[] = {{mWake.get(), POLLIN, 0}, {input.get(), POLLIN, 0}};
-        const int timeout = mTouchModeDisablePending.load() ? 1000 : -1;
+        const int timeout = mTouchIconDisablePending.load() ? 1000 : -1;
         const int rc = poll(fds, 2, timeout);
         if (rc < 0) {
           if (errno == EINTR) continue;
@@ -371,11 +364,11 @@ class UdfpsSubHal final : public ISensorsSubHal {
               ++mGeneration;
               auto wakelock = mCallback->createScopedWakelock(true);
               mCallback->postEvents({event}, std::move(wakelock));
-              shouldDisarm = mTouchModesEnabled &&
-                              mTouchModeGeneration == generation;
+              shouldDisarm = mTouchIconEnabled &&
+                              mTouchIconGeneration == generation;
             }
           }
-          if (shouldDisarm) disarmTouchModesLocked();
+          if (shouldDisarm) disarmTouchIconLocked();
           triggered = true;
           break;
         }
@@ -392,11 +385,11 @@ class UdfpsSubHal final : public ISensorsSubHal {
       if (generation == mGeneration) {
         mInput.reset();
         ++mGeneration;
-        shouldDisarm = mTouchModesEnabled &&
-                        mTouchModeGeneration == generation;
+        shouldDisarm = mTouchIconEnabled &&
+                        mTouchIconGeneration == generation;
       }
     }
-    if (shouldDisarm) disarmTouchModesLocked();
+    if (shouldDisarm) disarmTouchIconLocked();
   }
 
   void retryDisarmIfIdle() {
@@ -406,20 +399,20 @@ class UdfpsSubHal final : public ISensorsSubHal {
       std::lock_guard lock(mMutex);
       armed = mInput.get() >= 0;
     }
-    if (!armed) disarmTouchModesLocked();
+    if (!armed) disarmTouchIconLocked();
   }
 
-  void disarmTouchModesLocked() {
-    if (!mTouchModesEnabled) {
-      mTouchModeDisablePending.store(false);
+  void disarmTouchIconLocked() {
+    if (!mTouchIconEnabled) {
+      mTouchIconDisablePending.store(false);
       return;
     }
-    if (setTouchFodModes(false)) {
-      mTouchModesEnabled = false;
-      mTouchModeDisablePending.store(false);
+    if (setTouchFodIcon(false)) {
+      mTouchIconEnabled = false;
+      mTouchIconDisablePending.store(false);
     } else {
-      mTouchModeDisablePending.store(true);
-      ALOGW("Will retry disabling stock touch FOD modes");
+      mTouchIconDisablePending.store(true);
+      ALOGW("Will retry disabling stock touch FOD icon mode");
     }
   }
 
@@ -429,9 +422,9 @@ class UdfpsSubHal final : public ISensorsSubHal {
   uint64_t mGeneration = 0;
   std::atomic_bool mStop{false};
   OperationMode mMode = OperationMode::NORMAL;
-  bool mTouchModesEnabled = false;
-  uint64_t mTouchModeGeneration = 0;
-  std::atomic_bool mTouchModeDisablePending{false};
+  bool mTouchIconEnabled = false;
+  uint64_t mTouchIconGeneration = 0;
+  std::atomic_bool mTouchIconDisablePending{false};
   std::mutex mTouchTransitionMutex;
   std::mutex mMutex;
   sp<IHalProxyCallback> mCallback;

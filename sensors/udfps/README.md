@@ -25,12 +25,17 @@ Input parameters come from this rothko's captured stock Goodix evdev ABI:
   SYN_DROPPED are rejected until an appropriate new press.
 - Read evdev only while activated. Cancel, trigger, framework initialization,
   or input loss closes the subscription. An eventfd interrupts the blocking
-  wait; there is no timed polling or persistent diagnostic process.
+wait; normal input waiting has no timed polling or persistent diagnostic process.
 
-The existing sensors init service has the input group and the platform sensors
-domain already has read-only input access. No new SELinux permission, touch
-mode write, sysfs enable node, hardware ioctl, or invented motion sensor mapping
-is needed. EVIOCG* ioctls read input identity/capabilities/state only.
+The adapter controls only touchfeature mode 16 (`Touch_FodIcon_Enable`) while
+the one-shot input is armed. The original fingerprint HAL exclusively owns mode
+10 (`Touch_Fod_Enable`), including its lockscreen subscription after a power-key
+wake. Clearing mode 10 when this sensor is cancelled would disable that active
+subscription. Mode 16 is cleared on trigger, cancel, input loss and shutdown;
+failed Binder cleanup is retried while idle. Normal input waiting remains
+event-driven. The existing sensors init service has the input group and the
+platform sensors domain has read-only input access. EVIOCG* ioctls read input
+identity/capabilities/state only.
 
 FodInputTest.cpp covers event ordering, stale contacts, one-shot delivery,
 cancel/rearm held-finger semantics, missing width and dropped-event recovery.
