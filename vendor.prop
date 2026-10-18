@@ -54,7 +54,7 @@ bluetooth.profile.pan.panu.enabled=true
 bluetooth.profile.vcp.controller.enabled?=false
 ro.bluetooth.a2dp_offload.supported=true
 persist.bluetooth.a2dp_offload.cap=sbc-aac-ldac-lhdcv3-lhdcv5
-persist.bluetooth.a2dp_offload.disabled=false
+persist.bluetooth.a2dp_offload.disabled=true
 ro.vendor.bt.platform=6639
 ro.vendor.bt.connac3=yes
 
