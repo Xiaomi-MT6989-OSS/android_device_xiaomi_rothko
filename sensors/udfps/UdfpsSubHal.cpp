@@ -1,6 +1,10 @@
 /* Copyright (C) 2026 The LineageOS Project
  * SPDX-License-Identifier: Apache-2.0 */
 #define LOG_TAG "sensors.rothko.udfps"
+#include <android/binder_ibinder.h>
+#include <android/binder_manager.h>
+#include <android/binder_parcel.h>
+#include <android/binder_status.h>
 #include <android-base/unique_fd.h>
 #include <dirent.h>
 #include <fcntl.h>
@@ -33,6 +37,91 @@ using ::android::hardware::sensors::V1_0::SensorFlagBits;
 using ::android::hardware::sensors::V1_0::SharedMemInfo;
 using ::android::hardware::sensors::V2_1::implementation::IHalProxyCallback;
 using ::android::hardware::sensors::V2_1::implementation::ISensorsSubHal;
+
+namespace {
+
+constexpr char kTouchFeatureService[] =
+    "vendor.xiaomi.hw.touchfeature.ITouchFeature/default";
+constexpr char kTouchFeatureDescriptor[] =
+    "vendor.xiaomi.hw.touchfeature.ITouchFeature";
+// ITouchFeature AIDL V1: setModeValue(int touchId, int mode, int value).
+constexpr transaction_code_t kSetModeValueTransaction = 9;
+constexpr int kTouchId = 0;
+constexpr int kTouchFodEnable = 10;
+constexpr int kTouchFodIconEnable = 16;
+
+void* touchFeatureOnCreate(void*) { return nullptr; }
+void touchFeatureOnDestroy(void*) {}
+binder_status_t touchFeatureOnTransact(AIBinder*, transaction_code_t,
+                                       const AParcel*, AParcel*) {
+  return STATUS_UNKNOWN_TRANSACTION;
+}
+
+AIBinder_Class* touchFeatureClass() {
+  static AIBinder_Class* clazz = AIBinder_Class_define(
+      kTouchFeatureDescriptor, touchFeatureOnCreate, touchFeatureOnDestroy,
+      touchFeatureOnTransact);
+  return clazz;
+}
+
+bool setTouchMode(int mode, int value) {
+  AIBinder* binder = AServiceManager_checkService(kTouchFeatureService);
+  AIBinder_Class* clazz = touchFeatureClass();
+  if (!binder || !clazz) {
+    if (binder) AIBinder_decStrong(binder);
+    return false;
+  }
+  // A remote AIBinder starts without the client class. Associating the stock
+  // descriptor makes prepareTransaction write the required AIDL interface
+  // token.
+  if (!AIBinder_associateClass(binder, clazz)) {
+    AIBinder_decStrong(binder);
+    return false;
+  }
+  AParcel* input = nullptr;
+  AParcel* output = nullptr;
+  binder_status_t status = AIBinder_prepareTransaction(binder, &input);
+  if (status == STATUS_OK) status = AParcel_writeInt32(input, kTouchId);
+  if (status == STATUS_OK) status = AParcel_writeInt32(input, mode);
+  if (status == STATUS_OK) status = AParcel_writeInt32(input, value);
+  if (status != STATUS_OK) {
+    AParcel_delete(input);
+    AIBinder_decStrong(binder);
+    return false;
+  }
+  status = AIBinder_transact(binder, kSetModeValueTransaction, &input, &output, 0);
+  int32_t result = -1;
+  AStatus* replyStatus = nullptr;
+  if (status == STATUS_OK)
+    status = AParcel_readStatusHeader(output, &replyStatus);
+  if (status == STATUS_OK && replyStatus && AStatus_isOk(replyStatus))
+    status = AParcel_readInt32(output, &result);
+  bool statusOk = status == STATUS_OK && replyStatus && AStatus_isOk(replyStatus);
+  if (replyStatus) AStatus_delete(replyStatus);
+  if (output) AParcel_delete(output);
+  AIBinder_decStrong(binder);
+  return statusOk && result == 0;
+}
+
+bool setTouchFodModes(bool enabled) {
+  if (enabled) {
+    if (setTouchMode(kTouchFodEnable, 1) &&
+        setTouchMode(kTouchFodIconEnable, 1)) {
+      return true;
+    }
+    // Do not leave one side of the pair enabled after a partial failure.
+    setTouchMode(kTouchFodIconEnable, 0);
+    setTouchMode(kTouchFodEnable, 0);
+    ALOGE("Cannot enable stock touch FOD modes");
+    return false;
+  }
+  bool iconOff = setTouchMode(kTouchFodIconEnable, 0);
+  bool fodOff = setTouchMode(kTouchFodEnable, 0);
+  if (!iconOff || !fodOff) ALOGE("Cannot disable stock touch FOD modes");
+  return iconOff && fodOff;
+}
+
+}  // namespace
 
 // This device's stock Goodix input ABI was captured under real screen-off
 // presses. Never guess an event number, rescale another panel, grab input, or
@@ -75,6 +164,13 @@ class UdfpsSubHal final : public ISensorsSubHal {
     mStop = true;
     kick();
     if (mThread.joinable()) mThread.join();
+    std::lock_guard transition(mTouchTransitionMutex);
+    {
+      std::lock_guard lock(mMutex);
+      mInput.reset();
+      ++mGeneration;
+    }
+    disarmTouchModesLocked();
   }
 
   Return<void> getSensorsList_2_1(ISensors::getSensorsList_2_1_cb cb) override {
@@ -96,37 +192,67 @@ class UdfpsSubHal final : public ISensorsSubHal {
     return Void();
   }
   Return<Result> initialize(const sp<IHalProxyCallback>& callback) override {
-    std::lock_guard lock(mMutex);
-    mInput.reset();
-    ++mGeneration;
-    mCallback = callback;
-    mMode = OperationMode::NORMAL;
+    std::lock_guard transition(mTouchTransitionMutex);
+    {
+      std::lock_guard lock(mMutex);
+      mInput.reset();
+      ++mGeneration;
+      mCallback = callback;
+      mMode = OperationMode::NORMAL;
+    }
+    disarmTouchModesLocked();
     kick();
     return Result::OK;
   }
   Return<Result> activate(int32_t handle, bool enabled) override {
     if (handle != kHandle || !mAvailable) return Result::BAD_VALUE;
-    std::lock_guard lock(mMutex);
-    // Idempotent activation must not reset an in-progress physical press.
-    if (enabled == (mInput.get() >= 0)) return Result::OK;
-    if (enabled && (mMode != OperationMode::NORMAL || !mCallback)) {
-      return Result::INVALID_OPERATION;
-    }
+    std::lock_guard transition(mTouchTransitionMutex);
     if (enabled) {
+      uint64_t generation;
+      {
+        std::lock_guard lock(mMutex);
+        // Idempotent activation must not reset an in-progress physical press.
+        if (mInput.get() >= 0) return Result::OK;
+        if (mMode != OperationMode::NORMAL || !mCallback) {
+          return Result::INVALID_OPERATION;
+        }
+        generation = ++mGeneration;
+      }
+      mTouchModesEnabled = true;
+      mTouchModeGeneration = generation;
+      // A failed enable can leave only one of the two modes on. Mark cleanup
+      // pending before the first transaction so the worker retries it as well.
+      mTouchModeDisablePending.store(true);
+      if (!setTouchFodModes(true)) {
+        kick();
+        return Result::INVALID_OPERATION;
+      }
+      mTouchModeDisablePending.store(false);
       auto input = findGoodixInput();
       std::array<uint8_t, KEY_MAX / 8 + 1> keys{};
       if (input.get() < 0 ||
           ioctl(input.get(), EVIOCGKEY(sizeof(keys)), keys.data()) < 0) {
         ALOGE("Cannot arm stock Goodix input");
+        disarmTouchModesLocked();
+        std::lock_guard lock(mMutex);
+        ++mGeneration;
+        kick();
         return Result::INVALID_OPERATION;
       }
-      mHeldAtActivation = keys[::rothko::FodInput::kFodKey / 8] &
-                          (1 << (::rothko::FodInput::kFodKey % 8));
-      mInput = std::move(input);
+      {
+        std::lock_guard lock(mMutex);
+        mHeldAtActivation = keys[::rothko::FodInput::kFodKey / 8] &
+                            (1 << (::rothko::FodInput::kFodKey % 8));
+        mInput = std::move(input);
+      }
     } else {
-      mInput.reset();
+      {
+        std::lock_guard lock(mMutex);
+        mInput.reset();
+        ++mGeneration;
+      }
+      disarmTouchModesLocked();
     }
-    ++mGeneration;
     kick();
     return Result::OK;
   }
@@ -177,6 +303,9 @@ class UdfpsSubHal final : public ISensorsSubHal {
   }
   void run() {
     while (!mStop) {
+      // A failed trigger-time disable is retried once after the worker returns
+      // to its idle point, without disturbing a newly armed request.
+      retryDisarmIfIdle();
       unique_fd input;
       uint64_t generation;
       bool held;
@@ -189,10 +318,15 @@ class UdfpsSubHal final : public ISensorsSubHal {
       ::rothko::FodInput parser(held);
       while (!mStop) {
         pollfd fds[] = {{mWake.get(), POLLIN, 0}, {input.get(), POLLIN, 0}};
-        const int rc = poll(fds, 2, -1);
+        const int timeout = mTouchModeDisablePending.load() ? 1000 : -1;
+        const int rc = poll(fds, 2, timeout);
         if (rc < 0) {
           if (errno == EINTR) continue;
           return;
+        }
+        if (rc == 0) {
+          retryDisarmIfIdle();
+          continue;
         }
         if (fds[0].revents) {
           uint64_t value;
@@ -200,11 +334,7 @@ class UdfpsSubHal final : public ISensorsSubHal {
           break;
         }
         if (fds[1].revents & (POLLERR | POLLHUP | POLLNVAL)) {
-          std::lock_guard lock(mMutex);
-          if (generation == mGeneration) {
-            mInput.reset();
-            ++mGeneration;
-          }
+          dropInputAndDisarm(generation);
           ALOGE("FOD input lost; waiting for a new activation");
           break;
         }
@@ -213,11 +343,7 @@ class UdfpsSubHal final : public ISensorsSubHal {
         const auto size = read(input.get(), events, sizeof(events));
         if (size < 0 && (errno == EAGAIN || errno == EINTR)) continue;
         if (size <= 0 || size % sizeof(input_event)) {
-          std::lock_guard lock(mMutex);
-          if (generation == mGeneration) {
-            mInput.reset();
-            ++mGeneration;
-          }
+          dropInputAndDisarm(generation);
           break;
         }
         bool triggered = false;
@@ -227,22 +353,29 @@ class UdfpsSubHal final : public ISensorsSubHal {
           if (!touch) continue;
           // Serialize cancellation/reinitialization against this one-shot
           // delivery.
-          std::lock_guard lock(mMutex);
-          if (generation == mGeneration && mInput.get() >= 0 && mCallback) {
-            Event event{};
-            event.sensorHandle = kHandle;
-            event.sensorType = static_cast<SensorType>(
-                static_cast<int>(SensorType::DEVICE_PRIVATE_BASE) + 3);
-            event.timestamp = ::android::elapsedRealtimeNano();
-            event.u.data[0] = touch->x;
-            event.u.data[1] = touch->y;
-            event.u.data[3] = touch->major;
-            event.u.data[4] = touch->minor;
-            mInput.reset();
-            ++mGeneration;
-            auto wakelock = mCallback->createScopedWakelock(true);
-            mCallback->postEvents({event}, std::move(wakelock));
+          std::lock_guard touchTransition(mTouchTransitionMutex);
+          bool shouldDisarm = false;
+          {
+            std::lock_guard lock(mMutex);
+            if (generation == mGeneration && mInput.get() >= 0 && mCallback) {
+              Event event{};
+              event.sensorHandle = kHandle;
+              event.sensorType = static_cast<SensorType>(
+                  static_cast<int>(SensorType::DEVICE_PRIVATE_BASE) + 3);
+              event.timestamp = ::android::elapsedRealtimeNano();
+              event.u.data[0] = touch->x;
+              event.u.data[1] = touch->y;
+              event.u.data[3] = touch->major;
+              event.u.data[4] = touch->minor;
+              mInput.reset();
+              ++mGeneration;
+              auto wakelock = mCallback->createScopedWakelock(true);
+              mCallback->postEvents({event}, std::move(wakelock));
+              shouldDisarm = mTouchModesEnabled &&
+                              mTouchModeGeneration == generation;
+            }
           }
+          if (shouldDisarm) disarmTouchModesLocked();
           triggered = true;
           break;
         }
@@ -250,12 +383,56 @@ class UdfpsSubHal final : public ISensorsSubHal {
       }
     }
   }
+
+  void dropInputAndDisarm(uint64_t generation) {
+    std::lock_guard transition(mTouchTransitionMutex);
+    bool shouldDisarm = false;
+    {
+      std::lock_guard lock(mMutex);
+      if (generation == mGeneration) {
+        mInput.reset();
+        ++mGeneration;
+        shouldDisarm = mTouchModesEnabled &&
+                        mTouchModeGeneration == generation;
+      }
+    }
+    if (shouldDisarm) disarmTouchModesLocked();
+  }
+
+  void retryDisarmIfIdle() {
+    std::lock_guard transition(mTouchTransitionMutex);
+    bool armed;
+    {
+      std::lock_guard lock(mMutex);
+      armed = mInput.get() >= 0;
+    }
+    if (!armed) disarmTouchModesLocked();
+  }
+
+  void disarmTouchModesLocked() {
+    if (!mTouchModesEnabled) {
+      mTouchModeDisablePending.store(false);
+      return;
+    }
+    if (setTouchFodModes(false)) {
+      mTouchModesEnabled = false;
+      mTouchModeDisablePending.store(false);
+    } else {
+      mTouchModeDisablePending.store(true);
+      ALOGW("Will retry disabling stock touch FOD modes");
+    }
+  }
+
   static constexpr int32_t kHandle = 1;
   unique_fd mWake, mInput;
   bool mAvailable = false, mHeldAtActivation = false;
   uint64_t mGeneration = 0;
   std::atomic_bool mStop{false};
   OperationMode mMode = OperationMode::NORMAL;
+  bool mTouchModesEnabled = false;
+  uint64_t mTouchModeGeneration = 0;
+  std::atomic_bool mTouchModeDisablePending{false};
+  std::mutex mTouchTransitionMutex;
   std::mutex mMutex;
   sp<IHalProxyCallback> mCallback;
   std::thread mThread;

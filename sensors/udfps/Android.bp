@@ -12,6 +12,7 @@ cc_library_shared {
         "android.hardware.sensors@2.0-ScopedWakelock",
         "android.hardware.sensors@2.1",
         "libbase",
+        "libbinder_ndk",
         "libhidlbase",
         "liblog",
         "libutils",

@@ -5,6 +5,7 @@ type hal_touchfeature_xiaomi_default, domain;
 type hal_touchfeature_xiaomi_default_exec, exec_type, vendor_file_type, file_type;
 init_daemon_domain(hal_touchfeature_xiaomi_default)
 hal_server_domain(hal_touchfeature_xiaomi_default, hal_touchfeature_xiaomi)
+hal_client_domain(hal_sensors_default, hal_touchfeature_xiaomi)
 hal_attribute_service(hal_touchfeature_xiaomi, hal_touchfeature_xiaomi_service)
 binder_use(hal_touchfeature_xiaomi_default)
 hwbinder_use(hal_touchfeature_xiaomi_default)
