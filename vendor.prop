@@ -259,6 +259,8 @@ persist.vendor.radio.flashless.fsm_cst=0
 persist.vendor.radio.flashless.fsm_rw=0
 telephony.lteOnCdmaDevice=1
 ro.telephony.default_network=33,33,33,33
+# Stock libratconfig reads this as the maximum RAT set before mtk_ps1_rat.
+ro.vendor.mtk_protocol1_rat_config=N/C/Lf/Lt/W/G
 ro.vendor.mtk_ps1_rat=N/C/Lf/Lt/W/G
 ro.vendor.mtk_lte_support=1
 ro.vendor.mtk_c2k_support=1
