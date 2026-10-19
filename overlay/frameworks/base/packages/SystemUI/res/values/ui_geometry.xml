@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <!-- Use the QS content margin on both edges, including the privacy-dot reservation.
+         PhoneStatusBarView and Clock otherwise add separate padding on top of these insets. -->
+    <dimen name="rounded_corner_content_padding">@dimen/qs_horizontal_margin</dimen>
+    <dimen name="ongoing_appops_dot_min_padding">@dimen/qs_horizontal_margin</dimen>
+    <dimen name="status_bar_padding_start">0dp</dimen>
+    <dimen name="status_bar_padding_end">0dp</dimen>
+    <dimen name="status_bar_clock_starting_padding">0dp</dimen>
+    <dimen name="status_bar_icons_padding_end">0dp</dimen>
+</resources>
