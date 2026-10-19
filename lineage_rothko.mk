@@ -17,7 +17,8 @@ $(call inherit-product, $(LOCAL_PATH)/ims.mk)
 # Inherit some common LineageOS stuff.
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
-PRODUCT_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
+# Product overlays are highest-priority first; retain stock geometry over common defaults.
+PRODUCT_PACKAGE_OVERLAYS := $(LOCAL_PATH)/overlay $(PRODUCT_PACKAGE_OVERLAYS)
 
 PRODUCT_NAME := lineage_rothko
 PRODUCT_DEVICE := rothko
