@@ -65,6 +65,20 @@ thermal/power/low-power controls and existing HDR thermal gate remain in place.
 
 ## Checks
 
+`StockOprBrightnessState` is preparation for the separate PQ statistics adapter; it is
+not yet called by the production provider and does not enable histogram collection
+or HBM. It requires the full PQ reply: transport/result, cached frame counter,
+channel 0, stock format 9, 256 bins, and nonzero bin total. A valid black image is
+accepted (all pixels in bin 0); a zeroed read failure is rejected. First-session
+cache baselines and repeated frames cannot renew permission. Frame wrap/reset,
+read-start timestamps, generation isolation and a 2500 ms health deadline are
+explicit adaptation safeguards, not a claim of stock error handling or filtering.
+The SDR table/lux gate is pinned to the stock APK resources; HDR OPR is disabled
+on rothko and must not reuse this table. Future transport must begin/end sessions
+at display/HDR/request/Binder transitions and still combine nits with thermal and
+all existing caps. This helper alone does not demonstrate full screen ROI,
+hardware frame progress, correct PQ ABI, SELinux, or physical HBM.
+
 From the device directory, run:
 
 ```sh
