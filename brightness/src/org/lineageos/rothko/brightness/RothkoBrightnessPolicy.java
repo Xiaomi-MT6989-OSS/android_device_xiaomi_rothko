@@ -5,6 +5,7 @@
 package org.lineageos.rothko.brightness;
 
 import android.content.Context;
+import android.os.FileObserver;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
@@ -15,9 +16,15 @@ import android.view.Display;
 import com.android.server.display.brightness.DeviceBrightnessPolicy;
 
 import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.IntConsumer;
 
 /** Factory stock display thermal limits. Read-only: never writes thermal or panel nodes. */
 public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
@@ -37,6 +44,13 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
     private final Injector mInjector;
     private final Runnable mPoll = this::poll;
     private final Runnable mExpiry;
+    private final AtomicBoolean mEventRefreshQueued = new AtomicBoolean();
+    private final AtomicLong mWatchInvalidations = new AtomicLong();
+    // FileObserver registrations are created and released only on the IO worker.
+    private final List<FileObserver> mObservers = new ArrayList<>();
+    private long mWatchGeneration = -1;
+    private long mRegisteredWatchEpoch = -1;
+    private volatile int mWatchRequests;
     // Generation and active/stopped are also read on the IO worker.
     private volatile long mGeneration;
     private volatile boolean mActive;
@@ -89,6 +103,9 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         mDisplayHandler.removeCallbacks(mExpiry);
         mWorker.removeCallbacks(mPoll);
         if (active) mWorker.post(mPoll);
+        else mWorker.post(() -> {
+            if (!mActive || mStopped) stopObservers();
+        });
         mOnChanged.run();
     }
 
@@ -116,6 +133,55 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         return mLastCap;
     }
 
+    private void stopObservers() {
+        for (FileObserver observer : mObservers) observer.stopWatching();
+        mObservers.clear();
+        mWatchRequests = 0;
+        mWatchGeneration = -1;
+    }
+
+    private void ensureObservers(long generation) {
+        long watchEpoch = mWatchInvalidations.get();
+        if (mWatchGeneration == generation && mRegisteredWatchEpoch == watchEpoch) return;
+        stopObservers();
+        List<String> nodes = new ArrayList<>(List.of(
+                "board_sensor_temp", "sconfig", "thermal_max_brightness"));
+        if (mNtcEnabled) nodes.add("display_therm_temp");
+        for (String node : nodes) {
+            FileObserver observer = mInjector.newObserver(node,
+                    event -> onNodeEvent(generation, event));
+            mObservers.add(observer); // Keep a strong reference while inotify is registered.
+            observer.startWatching();
+        }
+        mWatchGeneration = generation;
+        mRegisteredWatchEpoch = watchEpoch;
+        // This is the number of requested watches; FileObserver does not expose registration status.
+        mWatchRequests = mObservers.size();
+    }
+
+    private void onNodeEvent(long generation, int event) {
+        if (mStopped || !mActive || generation != mGeneration) return;
+        int gone = event & (FileObserver.DELETE_SELF | FileObserver.MOVE_SELF);
+        if ((event & FileObserver.MODIFY) == 0 && gone == 0) return;
+        if (gone != 0) {
+            mWatchInvalidations.incrementAndGet();
+            mDisplayHandler.post(() -> {
+                if (mStopped || !mActive || generation != mGeneration) return;
+                mValid = false;
+                mStatus = "thermal node moved/deleted; re-registering";
+                mOnChanged.run();
+            });
+        }
+        // Match stock IN_MODIFY notification, coalescing bursts before one complete snapshot.
+        if (!mEventRefreshQueued.compareAndSet(false, true)) return;
+        mWorker.post(() -> {
+            mEventRefreshQueued.set(false);
+            if (mStopped || !mActive || generation != mGeneration) return;
+            mWorker.removeCallbacks(mPoll);
+            mWorker.post(mPoll);
+        });
+    }
+
     private void poll() {
         if (mStopped || !mActive) return;
         long generation = mGeneration;
@@ -132,6 +198,9 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
                 mNtcEnabled = mInjector.ntcEnabled();
                 mNtcFlagRead = true;
             }
+            // Register before the initial sample so writes during setup are not missed.
+            ensureObservers(generation);
+            long watchEpoch = mRegisteredWatchEpoch;
             float board = Integer.parseInt(mInjector.readNode("board_sensor_temp")) / 1000f;
             int condition = Integer.parseInt(mInjector.readNode("sconfig"));
             float safety = Float.parseFloat(mInjector.readNode("thermal_max_brightness"));
@@ -140,7 +209,8 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
             if (!Float.isFinite(safety) || safety < 0) throw new IOException("Invalid safety cap");
             StockBrightnessConfig config = mConfig;
             mDisplayHandler.post(() -> {
-                if (mStopped || !mActive || generation != mGeneration) return;
+                if (mStopped || !mActive || generation != mGeneration
+                        || watchEpoch != mWatchInvalidations.get()) return;
                 if (mState == null) mState = new StockBrightnessState(config);
                 mFailureCap = config.minimumCapNits;
                 mState.update(board, ntc);
@@ -179,6 +249,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         writer.println("  RothkoBrightnessPolicy: source=" + CONFIG);
         writer.println("    active=" + mActive + " automatic=" + mAutomatic + " lux=" + mLux
                 + " ntcEnabled=" + mNtcEnabled + " valid=" + mValid);
+        writer.println("    requestedInotifyWatches=" + mWatchRequests);
         writer.println("    condition=" + mCondition + " boardC="
                 + (mState == null ? Float.NaN : mState.appliedBoardTemperature())
                 + " safetyNits=" + mSafetyNits + " capNits=" + getMaxBrightnessNits());
@@ -194,10 +265,19 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         mValid = false;
         mDisplayHandler.removeCallbacks(mExpiry);
         mWorker.removeCallbacks(mPoll);
+        mWorker.post(this::stopObservers);
         if (mThread != null) mThread.quitSafely();
     }
 
     static class Injector {
+        FileObserver newObserver(String name, IntConsumer onEvent) {
+            return new FileObserver(new File(THERMAL + name),
+                    FileObserver.MODIFY | FileObserver.DELETE_SELF | FileObserver.MOVE_SELF) {
+                @Override public void onEvent(int event, String path) {
+                    onEvent.accept(event);
+                }
+            };
+        }
         StockBrightnessConfig loadConfig() throws Exception {
             try (FileInputStream input = new FileInputStream(CONFIG)) {
                 return StockBrightnessConfig.read(input);

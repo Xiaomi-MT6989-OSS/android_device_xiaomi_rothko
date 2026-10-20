@@ -54,6 +54,17 @@ vectors = output / "boundary-cases.csv"
 vectors.write_text("\n".join(rows) + "\n")
 
 fixtures = {
+    "android/os/FileObserver.java": """package android.os;
+import java.io.File;
+public abstract class FileObserver {
+ public static final int MODIFY=2, DELETE_SELF=0x400, MOVE_SELF=0x800;
+ public boolean active;
+ public FileObserver(File path,int events) {}
+ public void startWatching() { active=true; }
+ public void stopWatching() { active=false; }
+ public abstract void onEvent(int event,String path);
+}
+""",
     "android/os/SystemClock.java": """package android.os;
 public class SystemClock { public static long now; public static long elapsedRealtime() { return now; } }
 """,
@@ -69,6 +80,7 @@ public class Handler {
  public void removeCallbacks(Runnable r) { q.removeIf(t -> t.run() == r); }
  public void runDue() { int limit = 1000; while (!q.isEmpty() && q.peek().when() <= SystemClock.now) {
   if (--limit == 0) throw new AssertionError("unbounded handler loop"); q.remove().run().run(); } }
+ public void runOneDue() { if (!q.isEmpty() && q.peek().when() <= SystemClock.now) q.remove().run().run(); }
  public int pending() { return q.size(); }
 }
 """,

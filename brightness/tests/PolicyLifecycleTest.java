@@ -2,11 +2,15 @@
 package org.lineageos.rothko.brightness;
 
 import android.os.Handler;
+import android.os.FileObserver;
 import android.os.SystemClock;
 import android.view.Display;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.IntConsumer;
 
 /** Exercises the real reader policy with deterministic handler queues and injected read-only IO. */
 public final class PolicyLifecycleTest {
@@ -24,6 +28,9 @@ public final class PolicyLifecycleTest {
         boolean fail;
         boolean configFail;
         boolean ntc;
+        int reads;
+        Runnable duringNextRead;
+        final List<FileObserver> observers = new ArrayList<>();
         IO(String file) { this.file = file; }
         @Override StockBrightnessConfig loadConfig() throws Exception {
             if (configFail) throw new IOException("test config unavailable");
@@ -32,7 +39,21 @@ public final class PolicyLifecycleTest {
             }
         }
         @Override boolean ntcEnabled() { return ntc; }
+        @Override FileObserver newObserver(String name, IntConsumer callback) {
+            FileObserver observer = super.newObserver(name, callback);
+            observers.add(observer);
+            return observer;
+        }
         @Override String readNode(String node) throws IOException {
+            if (observers.isEmpty() || observers.stream().noneMatch(o -> o.active)) {
+                throw new AssertionError("sample read before observer registration");
+            }
+            reads++;
+            if (duringNextRead != null) {
+                Runnable event = duringNextRead;
+                duringNextRead = null;
+                event.run();
+            }
             if (fail) throw new IOException("test read failed");
             switch (node) {
                 case "board_sensor_temp": return board;
@@ -54,7 +75,20 @@ public final class PolicyLifecycleTest {
         policy.setDisplayState(Display.STATE_ON);
         worker.runDue(); display.runDue();
         equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "valid cold sample");
-        SystemClock.now = 2500;
+        equal(3, io.observers.size(), "three stock mandatory node watches");
+        SystemClock.now = 100;
+        io.safety = "100";
+        int before = io.reads;
+        io.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        io.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        worker.runDue(); display.runDue();
+        equal(100, policy.getMaxBrightnessNits(), "inotify refresh before one-second poll");
+        equal(3, io.reads - before, "modify burst coalesced to one complete sample");
+        io.safety = "0";
+        io.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        worker.runDue(); display.runDue();
+        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "event recovery");
+        SystemClock.now = 2600;
         equal(160, policy.getMaxBrightnessNits(), "elapsed-realtime expiry before queue resumes");
         display.runDue();
         io.board = "40000"; io.safety = "100";
@@ -74,12 +108,37 @@ public final class PolicyLifecycleTest {
         equal(160, policy.getMaxBrightnessNits(), "old generation cannot permit boost after wake");
         worker.runDue(); display.runDue();
         equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "new generation accepted");
+        before = io.reads;
+        io.observers.get(0).onEvent(FileObserver.MODIFY, null); // old generation's delayed event
+        worker.runDue(); display.runDue();
+        equal(before, io.reads, "old observer event cannot trigger a new generation read");
+        FileObserver current = io.observers.get(io.observers.size() - 1);
+        current.onEvent(FileObserver.MODIFY, null);
+        current.onEvent(FileObserver.DELETE_SELF, null);
+        display.runDue();
+        equal(160, policy.getMaxBrightnessNits(), "node deletion immediately revokes old snapshot");
+        before = io.observers.size();
+        int readsBeforeReplacement = io.reads;
+        worker.runDue(); display.runDue();
+        equal(before + 3, io.observers.size(), "lost node triggers watch replacement");
+        equal(0, current.active ? 1 : 0, "old watch released");
+        equal(3, io.reads - readsBeforeReplacement,
+                "coalesced modify plus delete does one complete replacement sample");
+        FileObserver replacement = io.observers.get(io.observers.size() - 1);
+        io.duringNextRead = () -> replacement.onEvent(FileObserver.DELETE_SELF, null);
+        SystemClock.now += 1000;
+        worker.runOneDue(); // Stop before the follow-up read so an old snapshot cannot hide it.
+        display.runDue();
+        equal(160, policy.getMaxBrightnessNits(), "read spanning node deletion cannot grant boost");
+        worker.runDue(); display.runDue();
+        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "new watch epoch recovers");
         policy.stop();
         SystemClock.now += 10000;
         worker.runDue(); display.runDue();
         equal(160, policy.getMaxBrightnessNits(), "stopped policy cannot grant permission");
         equal(0, worker.pending(), "no worker poll after stop");
         equal(0, display.pending(), "no expiry callback after stop");
+        equal(0, io.observers.stream().anyMatch(o -> o.active) ? 1 : 0, "all watches stopped");
 
         IO ntc = new IO(args[0]); ntc.ntc = true;
         policy = new RothkoBrightnessPolicy(display, worker, () -> {}, ntc);

@@ -34,9 +34,14 @@ thermal/power/low-power controls and existing HDR thermal gate remain in place.
 
 ## Explicit adaptation differences and limits
 
-* Read-only sysfs sampling uses a worker every 1000 ms while the main display is
-  ON. It is a polling consumer, not a claimed reconstruction of the original JNI
-  sysfs event watcher. No worker poll runs for OFF/DOZE/DOZE_SUSPEND.
+* The stock JNI watcher uses inotify `IN_MODIFY` for the original thermal nodes.
+  FileObserver uses the same event mask here, registering before the baseline
+  snapshot and coalescing event bursts into an immediate worker read. Additional
+  1000 ms reads are a health/retry fallback. OFF/DOZE/DOZE_SUSPEND release the
+  watches and stop periodic reads; screen-on creates a fresh watch generation.
+  Moved/deleted nodes revoke old data and cause re-registration. A read spanning
+  watch invalidation cannot grant a new snapshot. These lifecycle safeguards are
+  adaptations, not a claim of byte-for-byte OEM JNI behavior.
 * Samples expire after 2500 ms by elapsed realtime; the getter also checks age
   across suspend. Old generations cannot grant a new wake session permission.
   Failed/missing/stale input uses the tighter of the previous cap and the factory
