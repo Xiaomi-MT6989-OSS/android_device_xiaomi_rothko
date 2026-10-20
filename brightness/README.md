@@ -56,7 +56,7 @@ thermal/power/low-power controls and existing HDR thermal gate remain in place.
   possible NaN/retained-value behavior.
 * Only the packaged factory fallback is available. HyperOS cloud configuration,
   actual game/PowerHAL scene producers, Dolby/camera overrides, the 37/35 C image
-  HDR gate and OPR/peak-video decisions are separate unfinished integration work.
+  HDR gate and full peak-video decisions are separate unfinished integration work.
   Their presence in stock binaries is not evidence that this implementation
   reproduces them. An unchanged sconfig=-1 selects the original default table;
   this jar does not invent game ids or silently write scenario nodes.
@@ -65,18 +65,26 @@ thermal/power/low-power controls and existing HDR thermal gate remain in place.
 
 ## Checks
 
-`StockOprBrightnessState` is preparation for the separate PQ statistics adapter; it is
-not yet called by the production provider and does not enable histogram collection
-or HBM. It requires the full PQ reply: transport/result, cached frame counter,
+`OprBrightnessClient` now connects the production provider to the independent
+cached `IRothkoBrightness` interface. It uses a separate IO handler, not the
+display handler or thermal reader. It requests statistics only for ON automatic
+mode with known lux strictly above 20000; other automatic ON states only read
+cached composition identity. OFF/DOZE/manual/stop release requests. Consumer death,
+expired replies, request changes and native connection/display/HDR generations
+cannot reuse previous permission. Its getter checks an atomic Binder death epoch
+even before queued display notifications run. OPR is an extra cap, never a reason
+to relax the factory thermal or independent safety limit.
+
+`StockOprBrightnessState` consumes the full PQ reply: transport/result, cached frame counter,
 channel 0, stock format 9, 256 bins, and nonzero bin total. A valid black image is
 accepted (all pixels in bin 0); a zeroed read failure is rejected. First-session
 cache baselines and repeated frames cannot renew permission. Frame wrap/reset,
 read-start timestamps, generation isolation and a 2500 ms health deadline are
 explicit adaptation safeguards, not a claim of stock error handling or filtering.
 The SDR table/lux gate is pinned to the stock APK resources; HDR OPR is disabled
-on rothko and must not reuse this table. Future transport must begin/end sessions
-at display/HDR/request/Binder transitions and still combine nits with thermal and
-all existing caps. This helper alone does not demonstrate full screen ROI,
+on rothko and must not reuse this table. The transport begins new local sessions
+at display/HDR/request/Binder generation changes and still combines nits with
+thermal and all existing caps. Source integration does not demonstrate full screen ROI,
 hardware frame progress, correct PQ ABI, SELinux, or physical HBM.
 
 From the device directory, run:
@@ -91,7 +99,10 @@ The runner performs small host Java unit checks only, with boundary vectors
 independently derived from stock XML. Deterministic Android handler/DDC fixtures
 exercise the actual reader and generic modifier; they do not verify Android
 class loading, framework API compilation, SELinux, physical calibration or the
-installed phone. No lunch, Soong, Ninja, image packaging, ADB or writes occur.
+installed phone. The suite also checks cached-client cancellation/death/expiry and
+the production minimum between thermal and OPR caps. No lunch, Soong, Ninja,
+image packaging, ADB or device writes occur. Private AIDL/controller checks are
+documented in `displaycolor/tests/README.pq.md`.
 
 Before deployment, an authorized system build and complete matching AVB chain are
 still required. On-device validation must inspect dumpsys display input/cap/reason,

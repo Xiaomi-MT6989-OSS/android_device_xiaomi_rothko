@@ -54,6 +54,40 @@ vectors = output / "boundary-cases.csv"
 vectors.write_text("\n".join(rows) + "\n")
 
 fixtures = {
+    "android/os/RemoteException.java": """package android.os;
+public class RemoteException extends Exception { public RemoteException() {} }
+""",
+    "android/os/IBinder.java": """package android.os;
+public interface IBinder {
+ interface DeathRecipient { void binderDied(); }
+ boolean isBinderAlive(); void linkToDeath(DeathRecipient d,int flags) throws RemoteException;
+ boolean unlinkToDeath(DeathRecipient d,int flags);
+}
+""",
+    "android/os/Binder.java": """package android.os;
+public class Binder implements IBinder {
+ public boolean isBinderAlive() { return true; }
+ public void linkToDeath(DeathRecipient d,int flags) throws RemoteException {}
+ public boolean unlinkToDeath(DeathRecipient d,int flags) { return true; }
+}
+""",
+    "android/os/ServiceManager.java": """package android.os;
+public class ServiceManager { public static IBinder checkService(String n) { return null; } }
+""",
+    "vendor/xiaomi/rothko/display/brightness/HistogramSample.java": """package vendor.xiaomi.rothko.display.brightness;
+public class HistogramSample {
+ public long request,generation,readStartedAt=-1;
+ public boolean sceneKnown,hdr,active,transportOk,shapeValid;
+ public int result=-1,frame,channel=-1,format=-1,binCount; public int[] bins;
+}
+""",
+    "vendor/xiaomi/rothko/display/brightness/IRothkoBrightness.java": """package vendor.xiaomi.rothko.display.brightness;
+import android.os.*;
+public interface IRothkoBrightness {
+ HistogramSample readSample(IBinder c,long request,boolean enable) throws RemoteException;
+ class Stub { public static IRothkoBrightness asInterface(IBinder b) { return null; } }
+}
+""",
     "android/os/FileObserver.java": """package android.os;
 import java.io.File;
 public abstract class FileObserver {
@@ -163,7 +197,7 @@ jdk = root / "prebuilts/jdk/jdk21/linux-x86/bin"
 classes = output / "classes"
 classes.mkdir(exist_ok=True)
 subprocess.run([str(jdk / "javac"), "-d", str(classes), *map(str, sources)], check=True)
-for test in ("StockBrightnessTest", "PolicyLifecycleTest", "StockOprBrightnessTest"):
+for test in ("StockBrightnessTest", "PolicyLifecycleTest", "StockOprBrightnessTest", "OprClientTest"):
     subprocess.run([str(jdk / "java"), "-cp", str(classes),
                     "org.lineageos.rothko.brightness." + test, str(config), str(vectors)], check=True)
 subprocess.run([str(jdk / "java"), "-cp", str(classes),

@@ -14,6 +14,7 @@
 namespace rothko::color {
 namespace bridge = aidl::vendor::xiaomi::rothko::display::color;
 namespace live = aidl::vendor::lineage::livedisplay;
+class HistogramService;
 
 class Controller final : public bridge::BnRothkoDisplayColor {
 public:
@@ -25,6 +26,7 @@ public:
     ndk::ScopedAStatus setMode(int32_t mode, bool makeDefault);
     int32_t currentMode() const { return mCurrent.load(); }
     int32_t defaultMode() const { return mDefault.load(); }
+    const std::shared_ptr<HistogramService>& histogram() const { return mHistogram; }
 private:
     struct Request {
         int32_t mode;
@@ -53,6 +55,7 @@ private:
     int64_t mSession = 0;
     int64_t mConnection = 0;
     int64_t mLastSequence = 0;
+    int64_t mSceneRevision = 0;
     int64_t mLastPublished = 0;
     // One diagnostic line per connection, so bring-up logs stay bounded.
     bool mReportLogged = false;
@@ -67,6 +70,7 @@ private:
     // An OEM mode request whose outcome we cannot attribute to any callback.
     // A later confirmation of this exact intent is ambiguous and is refused.
     std::atomic<int32_t> mUnresolvedIntent{-1};
+    std::shared_ptr<HistogramService> mHistogram;
     std::thread mWorker;
 };
 

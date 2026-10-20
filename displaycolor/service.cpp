@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #define LOG_TAG "RothkoDisplayColor"
 #include "controller/Controller.h"
+#include "controller/HistogramService.h"
 #include <android-base/logging.h>
 #include <android/binder_ibinder.h>
 #include <android/binder_manager.h>
@@ -33,6 +34,15 @@ int main() {
 
     addService("vendor.lineage.livedisplay.IDisplayModes/default", modes);
     addService("vendor.xiaomi.rothko.display.color.IRothkoDisplayColor/default", controller);
+
+    // Optional brightness transport failure must not restart a working colour
+    // controller. The consumer fails closed and retries if it is unavailable.
+    const binder_status_t brightnessStatus = AServiceManager_addService(
+            controller->histogram()->asBinder().get(),
+            "vendor.xiaomi.rothko.display.brightness.IRothkoBrightness/default");
+    if (brightnessStatus != STATUS_OK) {
+        LOG(ERROR) << "Brightness transport registration failed: " << brightnessStatus;
+    }
 
     ABinderProcess_joinThreadPool();
     return 0;

@@ -22,6 +22,9 @@ hal_client_domain(hal_livedisplay_rothko, hal_displayfeature_xiaomi)
 binder_call(hal_livedisplay_rothko, hal_displayfeature_xiaomi_default)
 binder_call(hal_displayfeature_xiaomi_default, hal_livedisplay_rothko)
 
+# Only the controller's dedicated IO worker opens the packaged PQ AIDL service.
+hal_client_domain(hal_livedisplay_rothko, hal_mtk_pq)
+
 # SurfaceFlinger registers the policy callback, so it needs the client side of
 # the same attribute. The framework apps already carry it from the shared
 # policy; only the binder calls are added here.
@@ -38,6 +41,11 @@ binder_call(platform_app, hal_livedisplay_rothko)
 type hal_livedisplay_rothko_private_service, service_manager_type;
 allow hal_livedisplay_rothko hal_livedisplay_rothko_private_service:service_manager add;
 allow surfaceflinger hal_livedisplay_rothko_private_service:service_manager find;
+
+# Independent cached brightness transport; do not reuse SF's colour listener.
+type rothko_brightness_service, service_manager_type;
+allow hal_livedisplay_rothko rothko_brightness_service:service_manager add;
+allow system_server rothko_brightness_service:service_manager find;
 
 allow hal_livedisplay_rothko rothko_display_color_data_file:dir create_dir_perms;
 allow hal_livedisplay_rothko rothko_display_color_data_file:file create_file_perms;

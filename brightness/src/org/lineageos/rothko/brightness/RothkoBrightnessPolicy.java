@@ -42,6 +42,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
     private final HandlerThread mThread;
     private final Handler mWorker;
     private final Injector mInjector;
+    private final OprBrightnessClient mOpr;
     private final Runnable mPoll = this::poll;
     private final Runnable mExpiry;
     private final AtomicBoolean mEventRefreshQueued = new AtomicBoolean();
@@ -82,6 +83,8 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         mOnChanged = onChanged;
         mExpiry = () -> mOnChanged.run();
         mInjector = injector;
+        mOpr = worker == null ? new OprBrightnessClient(handler, onChanged)
+                : new OprBrightnessClient(handler, worker, onChanged, new OprBrightnessClient.Source());
         if (worker == null) {
             mThread = new HandlerThread(TAG);
             mThread.start();
@@ -100,6 +103,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         mGeneration++;
         mValid = false;
         mLux = Float.NaN; // ALS from a previous screen-on session cannot permit a new high limit.
+        updateOpr();
         mStatus = active ? "awaiting fresh sample after screen on" : "screen inactive";
         mDisplayHandler.removeCallbacks(mExpiry);
         mWorker.removeCallbacks(mPoll);
@@ -114,6 +118,8 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
     public void setAutomaticBrightness(boolean enabled) {
         if (mAutomatic == enabled) return;
         mAutomatic = enabled;
+        mLux = Float.NaN; // A previous automatic session cannot authorize a new request.
+        updateOpr();
         mOnChanged.run();
     }
 
@@ -121,6 +127,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
     public void setAmbientLux(float lux) {
         if (Float.compare(mLux, lux) == 0) return;
         mLux = lux;
+        updateOpr();
         mOnChanged.run();
     }
 
@@ -131,8 +138,14 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
                 || SystemClock.elapsedRealtime() - mSampleTime >= MAX_AGE_MILLIS) {
             return Math.min(mFailureCap, mLastCap);
         }
-        mLastCap = mState.cap(mAutomatic, mLux, mCondition, mSafetyNits, mNtcEnabled);
+        mLastCap = Math.min(mState.cap(mAutomatic, mLux, mCondition, mSafetyNits, mNtcEnabled),
+                mOpr.cap(mAutomatic, mLux));
         return mLastCap;
+    }
+
+    private void updateOpr() {
+        mOpr.update(mActive && mAutomatic, mActive && mAutomatic && Float.isFinite(mLux)
+                && mLux > StockOprBrightnessState.AMBIENT_LUX_THRESHOLD);
     }
 
     private void stopObservers() {
@@ -249,6 +262,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
 
     @Override
     public void dump(PrintWriter writer) {
+        mOpr.dump(writer);
         writer.println("  RothkoBrightnessPolicy: source=" + CONFIG);
         writer.println("    active=" + mActive + " automatic=" + mAutomatic + " lux=" + mLux
                 + " ntcEnabled=" + mNtcEnabled + " valid=" + mValid);
@@ -264,6 +278,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
 
     @Override
     public void stop() {
+        mOpr.stop();
         mStopped = true;
         mGeneration++;
         mActive = false;

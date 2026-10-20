@@ -1,4 +1,4 @@
-# Stock PQ readback preparation
+# Stock PQ readback and brightness transport
 
 `StockPictureQuality.h` contains declarations for the **packaged V4** client.
 Constructors, destructors, `fromBinder`, metadata RPCs, transaction handling and
@@ -24,22 +24,42 @@ V4 and V7 service version/hash pairs are pinned to the two inspected factory
 bindings; selected request/result fields were checked in both. That comparison
 does not establish compatibility with arbitrary other firmware or versions.
 
-The adapter is an **unconsumed static module**, not yet linked into the installed
-controller. There is no sampling thread, histogram enable, new Binder service,
-system-server connection, SELinux permission or production cap change in this
-commit. `shapeValid` is not session/freshness validity. The eventual owner must:
+The adapter is now consumed by `HistogramService` in the existing controller
+process. The production source path is:
 
-* Use a dedicated IO worker and `CLOCK_BOOTTIME` milliseconds. Never do vendor
-  RPC on SurfaceFlinger, a display handler, OEM callback or private Binder pool.
-* Issue all histogram enable/disable operations via the existing OEM serial
-  worker, with display/HDR/request/connection generations and cleanup on death.
-* Reject late-generation results, preserve both `transportOk` and `shapeValid`,
-  and forward the complete frame/channel/bin tuple to `StockOprBrightnessState`.
-  Do not cache/replay bins after failure or replace missing samples with zero.
-* Keep the existing colour listener separate from the brightness subscriber.
-  Blocked IO cannot extend sample permission or prevent display-state cleanup.
-* Test the physical frame counter/idle behavior before enabling higher brightness;
-  the current raw maximum remains 0.499938 and thermal limits stay authoritative.
+`SF scene -> OEM serial worker / feature 56 -> dedicated PQ IO worker -> cached
+IRothkoBrightness -> separate system-server IO worker -> StockOprBrightnessState
+-> min(factory thermal cap, OPR cap) -> existing common display modifier`.
+
+`IRothkoBrightness` is independent of the SF colour listener, permits only the
+system-server client in policy, and never runs vendor method IPC in its pool.
+Consumer Binder identity plus request id separate restarted consumers. A 1200 ms
+lease forces eventual disable if the consumer stops renewing; atomic death flags
+also invalidate old cached permission before queued work runs. The reader sleeps
+when unrequested/OFF/DOZE and reads at most every 200 ms while active. All enabling
+and disabling uses the existing OEM serial worker, not OEM callbacks. A captured
+scene revision prevents an old worker scene from authorizing a new scene. A
+late successful enable is still followed by disable before the next generation.
+Physical disable may wait for the serial OEM call already in flight; validity
+invalidation does not wait for it.
+
+The private stubs deliberately retain the original controller's **platform static
+compilation** even though the executable is installed on vendor. Changing them
+to a vendor compilation unit would change Binder stability and break platform
+callers. The source rejects that variant; OEM transport remains the stock frozen
+proxy. No VINTF ABI is being added or substituted.
+
+`shapeValid` is not session/freshness validity. The Java consumer retains the full
+tuple, uses fresh session baselines, rejects delayed replies and repeated frames
+that have expired, and takes the minimum with thermal/system limits. Known HDR
+composition bypasses only the stock SDR OPR table; unknown/stale identity cannot
+authorize that bypass. Leases/2500 ms freshness limits are adaptation watchdogs,
+not OEM waiting times or extra smoothing. No scalar-95000 fallback is present.
+
+This is source integration, **not yet built/deployed/validated on the device**.
+Physical frame-counter/idle, ROI, SELinux/class loading, AOD/FOD/colour regression
+and actual backlight still need validation. Raw maximum remains 0.499938; this
+change does not enable 1600/4500-nit HBM or implement the Gallery 37/35 C gate.
 
 Offline commands (no lunch, Soong, Ninja, ROM artifacts, device or IPC activity):
 
@@ -50,6 +70,11 @@ python3 displaycolor/tests/stock_pq_header.py \
 python3 displaycolor/tests/run_pq_reader_tests.py \
   --source-root /path/to/LineageOS \
   --output /path/to/output/pq-reader-host-suite
+python3 displaycolor/tests/check_histogram_transport.py \
+  --source-root /path/to/LineageOS \
+  --aidl /path/to/output/host/linux-x86/bin/aidl \
+  --output /path/to/output/transport-check \
+  --intermediates /path/to/output/soong/.intermediates
 ```
 
 The second command uses real source-tree Binder headers, checks the compiled
@@ -57,3 +82,9 @@ virtual call indices, and exercises the actual reader with a fake service.
 It is a small native host test, **not** an Android arm64 link, real Binder parcel
 round trip, service-manager/SELinux check or device validation. The frozen OEM
 binary itself is not executed by these host tests.
+The transport check additionally generates the new private Java/NDK source,
+checks the native service/stubs and the 47-assertion IO-free ownership state
+machine. Its optional `--intermediates` checks the actual controller with existing
+platform headers, the final entry point with vendor headers, rejects a wrong
+controller variant, and checks the real generated Java AIDL/client against an
+existing platform framework.jar. It does not run Soong or validate an arm64 link.

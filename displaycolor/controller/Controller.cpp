@@ -1,8 +1,12 @@
 // Copyright (C) 2026 The LineageOS Project
 // SPDX-License-Identifier: Apache-2.0
 #define LOG_TAG "RothkoDisplayColor"
+#if defined(__ANDROID_VENDOR__)
+#error Device-private Binder stubs require the platform static compilation variant
+#endif
 #include "Controller.h"
 #include "StockDisplayFeature.h"
+#include "HistogramService.h"
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/unique_fd.h>
@@ -155,7 +159,7 @@ private:
     ndk::ScopedAIBinder_DeathRecipient mRecipient;
 };
 
-Controller::Controller() {
+Controller::Controller() : mHistogram(ndk::SharedRefBase::make<HistogramService>()) {
     // Read the persisted default before the worker starts. Only a single digit
     // followed by a newline and a known mode id is accepted.
     android::base::unique_fd dir(open(kDirectory, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW));
@@ -194,6 +198,8 @@ ndk::ScopedAStatus Controller::setListener(
     mReady.store(false);
     mCurrent.store(-1);
     mReportLogged = false;
+    mHistogram->sfGuard(nullptr);
+    mHistogram->scene(false, false, ++mSceneRevision);
     LOG(INFO) << "listener attached session=" << session << " connection=" << connection;
     mChanged.notify_all();
     return ndk::ScopedAStatus::ok();
@@ -204,6 +210,14 @@ ndk::ScopedAStatus Controller::reportState(const bridge::DisplayState& state) {
     if (state.sfSession == mSession && state.connection == mConnection &&
         state.sequence > mLastSequence) {
         mLastSequence = state.sequence;
+        if (!mState || !sameScene(*mState, state) ||
+                mState->sfSession != state.sfSession || mState->connection != state.connection ||
+                mState->synchronizedState != state.synchronizedState) {
+            const bool known = state.synchronizedState && state.connected && state.powerKnown &&
+                    state.accepted && state.lastAttempted == 2 && state.contentKnown &&
+                    state.enabled && state.managed;
+            mHistogram->scene(known, state.hdrCandidate != ds(Dataspace::UNKNOWN), ++mSceneRevision);
+        }
         mState = state;
         if (!mReportLogged) {
             mReportLogged = true;
@@ -383,7 +397,7 @@ void Controller::run() {
         std::shared_ptr<bridge::IColorPolicyCallback> listener;
         std::shared_ptr<Request> queued;
         std::shared_ptr<Request> nextQueued;
-        int64_t session = 0, connection = 0;
+        int64_t session = 0, connection = 0, sceneRevision = 0;
         {
             std::unique_lock lock(mMutex);
             mChanged.wait_for(lock, kPollInterval);
@@ -391,6 +405,7 @@ void Controller::run() {
             listener = mListener;
             session = mSession;
             connection = mConnection;
+            sceneRevision = mSceneRevision;
             queued = std::exchange(mRequest, nullptr);
         }
 
@@ -414,6 +429,7 @@ void Controller::run() {
             if (session > 0 && connection > 0 && listener) {
                 sfDeath = std::make_unique<DeathWatch>(listener->asBinder(), sfDead);
             }
+            mHistogram->sfGuard(sfDead);
         }
 
         // 2. Accept at most one user request per generation, and only while the
@@ -445,6 +461,7 @@ void Controller::run() {
 
         // 3. OEM backend death invalidates the whole generation of correlation.
         if (observation && observation->dead->load()) {
+            mHistogram->backend(nullptr);
             if (applying) failPending(kUnavailable, true);
             backendDeath.reset();
             callback.reset();
@@ -500,17 +517,19 @@ void Controller::run() {
                     observation = std::move(fresh);
                     callback = std::move(freshCallback);
                     backendDeath = std::move(watch);
+                    mHistogram->backend(observation->dead);
                     previous.reset();
                     restore = true;
                 }
             }
         }
 
-        // 5. Hard preconditions. SurfaceFlinger coordinates the policy whenever
-        //    it connects; when it never does (its binder pool cannot install the
-        //    death recipient), the OEM echo is the acceptance signal, which is
-        //    exactly what the stock framework relies on.
-        if (!backend || (sfDead && sfDead->load()) || (listener && !state)) {
+        // 5. A missing/dead SF scene cannot authorize either colour policy or
+        //    sampling. Never dereference an empty optional during initial boot.
+        if (!backend || !listener || !state || (sfDead && sfDead->load())) {
+            // Also perform histogram cleanup when the scene disappears; it
+            // does not depend on a colour request or a pending mode change.
+            if (backend) mHistogram->drive(*backend, sceneRevision);
             mReady.store(false);
             if (pending && !applying) {
                 finish(pending, false, kUnavailable);
@@ -581,11 +600,13 @@ void Controller::run() {
             previous = state;
             restore = true;
             if (!ok) {
+                mHistogram->scene(false, false, sceneRevision);
                 failPending(kUnavailable, false);
                 continue;
             }
         }
         if (state->powerKnown) previousPower = state->lastAttempted;
+        mHistogram->drive(*backend, sceneRevision);
 
         // 9. A user mode may only be requested while real SDR content is up.
         //    Without an SF observation there is no content signal to gate on.

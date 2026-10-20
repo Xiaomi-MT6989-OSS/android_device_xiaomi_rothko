@@ -4,6 +4,7 @@ java_library {
     name: "rothko-brightness-policy",
     srcs: ["src/**/*.java"],
     libs: ["services"],
+    static_libs: ["vendor.xiaomi.rothko.display.brightness-java"],
     installable: true,
     system_ext_specific: true,
     // Entry point selected by framework resource; do not remove it as unused.

@@ -7,7 +7,7 @@ package org.lineageos.rothko.brightness;
 /**
  * OS3.0.307.0 SDR OPR table and validated PQ histogram state, without Android or IO.
  *
- * This is not yet connected to the production provider. The eventual adapter must supply the
+ * The transport adapter must supply the
  * full PQ result (not DisplayFeature callback 95000), and begin a new session for every display,
  * HDR/SDR, statistics request or Binder connection generation. Calls are handler-confined.
  */
@@ -134,4 +134,5 @@ final class StockOprBrightnessState {
 
     int gray() { return mGray; }
     long pixels() { return mPixels; }
+    long validUntil() { return mValid ? mSampleTime + MAX_AGE_MILLIS : -1; }
 }

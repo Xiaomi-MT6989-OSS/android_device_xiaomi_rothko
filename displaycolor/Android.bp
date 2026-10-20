@@ -17,6 +17,19 @@ aidl_interface {
     },
 }
 
+aidl_interface {
+    name: "vendor.xiaomi.rothko.display.brightness",
+    unstable: true,
+    vendor_available: true,
+    srcs: ["aidl/vendor/xiaomi/rothko/display/brightness/*.aidl"],
+    local_include_dir: "aidl",
+    backend: {
+        cpp: { enabled: false },
+        java: { enabled: true, platform_apis: true },
+        ndk: { enabled: true },
+    },
+}
+
 // SF links this platform library through the BoardConfig soong config; the OEM
 // proxy belongs to the controller and never enters this process.
 cc_library_static {
@@ -52,12 +65,9 @@ cc_library_static {
     generated_headers: ["vendor.xiaomi.rothko.display.color-ndk-source"],
 }
 
-// Prepared typed, read-only PQ adapter. Not linked into the colour controller
-// until request/session ownership and the brightness transport are connected.
-// This module does not install a daemon, enable sampling, or change brightness.
+// Typed read-only adapter: proxy and parcel code remain the stock V4 library.
 cc_library_static {
     name: "librothko_stock_pq_reader",
-    vendor: true,
     compile_multilib: "64",
     srcs: ["controller/StockPqReader.cpp"],
     cpp_std: "c++20",
@@ -73,7 +83,12 @@ cc_library_static {
 // exchanges cached policy and display state through the private interface.
 cc_library_static {
     name: "librothko_display_color_controller",
-    srcs: ["controller/Controller.cpp"],
+    // Intentionally retain the original platform static variant. Its private
+    // Binder stubs use system stability for SF/system_server callers even though
+    // the final executable resides on vendor. OEM proxies remain frozen blobs.
+    compile_multilib: "64",
+    srcs: ["controller/Controller.cpp", "controller/HistogramService.cpp"],
+    static_libs: ["librothko_stock_pq_reader"],
     cpp_std: "c++20",
     cflags: ["-Wall", "-Wextra", "-Werror", "-DBINDER_STABILITY_SUPPORT"],
     local_include_dirs: ["controller"],
@@ -89,9 +104,18 @@ cc_library_static {
     // generated code is compiled in rather than depended on at link time, and
     // its headers are exported so the service binary that consumes this
     // library also sees the generated Binder headers.
-    generated_sources: ["vendor.xiaomi.rothko.display.color-ndk-source"],
-    generated_headers: ["vendor.xiaomi.rothko.display.color-ndk-source"],
-    export_generated_headers: ["vendor.xiaomi.rothko.display.color-ndk-source"],
+    generated_sources: [
+        "vendor.xiaomi.rothko.display.color-ndk-source",
+        "vendor.xiaomi.rothko.display.brightness-ndk-source",
+    ],
+    generated_headers: [
+        "vendor.xiaomi.rothko.display.color-ndk-source",
+        "vendor.xiaomi.rothko.display.brightness-ndk-source",
+    ],
+    export_generated_headers: [
+        "vendor.xiaomi.rothko.display.color-ndk-source",
+        "vendor.xiaomi.rothko.display.brightness-ndk-source",
+    ],
     shared_libs: [
         "libbase",
         "libbinder_ndk",
@@ -100,6 +124,7 @@ cc_library_static {
         "android.hardware.graphics.common@1.2",
         "vendor.lineage.livedisplay-V1-ndk",
         "vendor.xiaomi.hardware.displayfeature_aidl-V2-ndk",
+        "vendor.mediatek.hardware.pq_aidl-V4-ndk",
     ],
 }
 
@@ -124,5 +149,6 @@ cc_binary {
         // static library's shared dependencies are not propagated to the final
         // link. Keeping it here also keeps the OEM proxy out of SurfaceFlinger.
         "vendor.xiaomi.hardware.displayfeature_aidl-V2-ndk",
+        "vendor.mediatek.hardware.pq_aidl-V4-ndk",
     ],
 }

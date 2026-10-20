@@ -172,6 +172,24 @@ public final class PolicyLifecycleTest {
         worker.runDue(); display.runDue();
         equal(160, policy.getMaxBrightnessNits(), "malformed board temperature");
         policy.stop();
+
+        IO combined = new IO(args[0]); combined.safety = "2000";
+        policy = new RothkoBrightnessPolicy(display, worker, () -> {}, combined);
+        policy.setDisplayState(Display.STATE_ON);
+        policy.setAutomaticBrightness(true);
+        policy.setAmbientLux(30000);
+        worker.runDue(); display.runDue();
+        equal(1000, policy.getMaxBrightnessNits(), "missing OPR transport bounds looser thermal cap");
+        combined.safety = "100";
+        combined.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        worker.runDue(); display.runDue();
+        equal(100, policy.getMaxBrightnessNits(), "OPR cannot override tighter stock thermal cap");
+        combined.safety = "2000";
+        combined.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        policy.setAutomaticBrightness(false);
+        worker.runDue(); display.runDue();
+        equal(2000, policy.getMaxBrightnessNits(), "manual bypasses OPR but retains stock safety cap");
+        policy.stop(); worker.runDue(); display.runDue();
         System.out.println("PASS: " + assertions + " reader expiry/generation/recovery assertions");
     }
 }
