@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Brightness values recovered from rothko OS3.0.307.0 stock resources. -->
 <resources>
+    <string name="config_deviceSpecificBrightnessPolicy" translatable="false">org.lineageos.rothko.brightness.RothkoBrightnessPolicy</string>
     <bool name="config_automatic_brightness_available">true</bool>
     <item name="config_screenBrightnessSettingMinimumFloat" type="dimen" format="float">0.000854597</item>
     <item name="config_screenBrightnessDimFloat" type="dimen" format="float">0.000854597</item>

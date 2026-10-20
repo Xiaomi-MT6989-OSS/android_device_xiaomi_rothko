@@ -1,0 +1,11 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+java_library {
+    name: "rothko-brightness-policy",
+    srcs: ["src/**/*.java"],
+    libs: ["services"],
+    installable: true,
+    system_ext_specific: true,
+    // Entry point selected by framework resource; do not remove it as unused.
+    optimize: { enabled: false },
+}

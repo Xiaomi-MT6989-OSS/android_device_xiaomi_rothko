@@ -5,6 +5,9 @@ vendor_internal_prop(vendor_touch_hostprocess_prop)
 
 vendor_internal_prop(vendor_displayfeature_runtime_prop)
 
+# Original read-only capability input shared with the framework brightness consumer.
+vendor_restricted_prop(vendor_display_ntc_prop)
+
 # Stock TMS NFC and secure-element namespaces. Keep writes limited to the
 # original hardware services; the framework NFC service only reads them.
 vendor_internal_prop(vendor_nfc_prop)

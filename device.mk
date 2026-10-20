@@ -8,6 +8,12 @@
 PRODUCT_PACKAGES += rothko-fod-services
 PRODUCT_SYSTEM_SERVER_JARS_EXTRA += system_ext:rothko-fod-services
 
+# Device-owned factory thermal brightness table; upstream clampers retain all other limits.
+PRODUCT_PACKAGES += rothko-brightness-policy
+PRODUCT_SYSTEM_SERVER_JARS_EXTRA += system_ext:rothko-brightness-policy
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/displayconfig/common_multi_factor_thermal_brightness_control.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/displayconfig/common_multi_factor_thermal_brightness_control.xml
+
 # Feed real stock Goodix FOD touches into the standard Doze one-shot wakeup path.
 # The original sensors multihal also loads /odm/etc/sensors/hals.conf.
 PRODUCT_PACKAGES += sensors.rothko.udfps

@@ -1,0 +1,93 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+package com.android.server.display.brightness.clamper;
+
+import android.content.Context;
+import android.hardware.display.DisplayManagerInternal.DisplayPowerRequest;
+import android.os.Handler;
+
+import com.android.server.display.DisplayBrightnessState;
+import com.android.server.display.DisplayDeviceConfig;
+import com.android.server.display.brightness.DeviceBrightnessPolicy;
+
+import java.io.PrintWriter;
+
+/** Tests the actual generic modifier. DDC fixtures test the bound contract, not calibration. */
+public final class ModifierPipelineTest {
+    private static int assertions;
+    private static void equal(float expected, float actual, String what) {
+        assertions++;
+        if (Math.abs(expected - actual) > 0.00001f) {
+            throw new AssertionError(what + ": " + expected + " != " + actual);
+        }
+    }
+    public static final class Policy extends DeviceBrightnessPolicy {
+        static float cap = 160;
+        static int stopped;
+        public Policy(Context c, Handler h, Runnable changed) { }
+        public void setDisplayState(int state) { }
+        public void setAutomaticBrightness(boolean enabled) { }
+        public void setAmbientLux(float lux) { }
+        public float getMaxBrightnessNits() { return cap; }
+        public void stop() { stopped++; }
+        public void dump(PrintWriter p) { }
+    }
+    public static void main(String[] args) {
+        Handler handler = new Handler();
+        DisplayDeviceConfig ddc = new DisplayDeviceConfig();
+        var data = new BrightnessClamperController.DisplayDeviceData(ddc, 0);
+        int[] changes = {0};
+        DeviceBrightnessModifier modifier = new DeviceBrightnessModifier(
+                new Context(Policy.class.getName()), handler, () -> changes[0]++, data);
+        handler.runDue();
+        equal(2, changes[0], "initial changed cap and deferred aggregate publication");
+        DisplayPowerRequest request = new DisplayPowerRequest();
+        var state = new DisplayBrightnessState.Builder();
+        state.setBrightness(0.9f);
+        modifier.apply(request, state);
+        float logical160 = (160f - 2) / 498;
+        equal(logical160, state.getMaxBrightness(), "nits-to-DDC common max");
+        equal(logical160, state.getBrightness(), "SDR obeys cap");
+        equal(1, state.getBrightnessMaxReason(), "thermal max reason");
+        equal(0, state.slow ? 1 : 0, "tightening does not use a slow ramp");
+        var aggregate = new BrightnessClamperController.ModifiersAggregatedState();
+        modifier.applyStateChange(aggregate);
+        equal(logical160, aggregate.mMaxBrightness, "aggregate cap used before HDR");
+        state = new DisplayBrightnessState.Builder();
+        state.setBrightness(0.1f); state.setMaxBrightness(0.2f);
+        modifier.apply(request, state);
+        equal(0.2f, state.getMaxBrightness(), "other stricter max preserved");
+        equal(0.1f, state.getBrightness(), "dimmer target preserved");
+        Policy.cap = 1000;
+        state = new DisplayBrightnessState.Builder();
+        modifier.apply(request, state);
+        equal(1, state.getMaxBrightness(), "nits above calibration clipped to its top");
+        Policy.cap = Float.NaN;
+        state = new DisplayBrightnessState.Builder();
+        modifier.apply(request, state);
+        equal(0, state.getMaxBrightness(), "invalid provider output fails closed");
+        Policy.cap = Float.POSITIVE_INFINITY;
+        state = new DisplayBrightnessState.Builder();
+        modifier.apply(request, state);
+        equal(1, state.getMaxBrightness(), "explicit unlimited policy");
+        modifier.stop();
+        equal(1, Policy.stopped, "provider is stopped");
+        DeviceBrightnessModifier absent = new DeviceBrightnessModifier(new Context(), handler,
+                () -> {}, data);
+        state = new DisplayBrightnessState.Builder();
+        absent.apply(request, state);
+        equal(1, state.getMaxBrightness(), "empty config has no effect");
+        Policy.cap = 160;
+        DeviceBrightnessModifier external = new DeviceBrightnessModifier(
+                new Context(Policy.class.getName()), handler, () -> {},
+                new BrightnessClamperController.DisplayDeviceData(ddc, 1));
+        state = new DisplayBrightnessState.Builder();
+        external.apply(request, state);
+        equal(1, state.getMaxBrightness(), "built-in policy not applied to external display");
+        DeviceBrightnessModifier missing = new DeviceBrightnessModifier(new Context("no.such.Policy"),
+                handler, () -> {}, data);
+        state = new DisplayBrightnessState.Builder();
+        missing.apply(request, state);
+        equal(0, state.getMaxBrightness(), "missing configured class does not crash or uncap");
+        System.out.println("PASS: " + assertions + " common-bound/factory/stop assertions");
+    }
+}

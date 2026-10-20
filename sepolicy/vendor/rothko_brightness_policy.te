@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+# The system-server policy reads original daemon outputs; never writes thermal/panel nodes.
+r_dir_file(system_server, sysfs_therm)
+get_prop(system_server, vendor_display_ntc_prop)
