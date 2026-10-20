@@ -52,6 +52,22 @@ cc_library_static {
     generated_headers: ["vendor.xiaomi.rothko.display.color-ndk-source"],
 }
 
+// Prepared typed, read-only PQ adapter. Not linked into the colour controller
+// until request/session ownership and the brightness transport are connected.
+// This module does not install a daemon, enable sampling, or change brightness.
+cc_library_static {
+    name: "librothko_stock_pq_reader",
+    vendor: true,
+    compile_multilib: "64",
+    srcs: ["controller/StockPqReader.cpp"],
+    cpp_std: "c++20",
+    cflags: ["-Wall", "-Wextra", "-Werror", "-DBINDER_STABILITY_SUPPORT"],
+    shared_libs: [
+        "libbinder_ndk",
+        "vendor.mediatek.hardware.pq_aidl-V4-ndk",
+    ],
+}
+
 // Device colour controller. It is the only process that talks to the stock
 // Xiaomi DisplayFeature service; SurfaceFlinger links the provider above and
 // exchanges cached policy and display state through the private interface.
