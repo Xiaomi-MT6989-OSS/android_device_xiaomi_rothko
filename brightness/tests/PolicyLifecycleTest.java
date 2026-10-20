@@ -115,6 +115,8 @@ public final class PolicyLifecycleTest {
         FileObserver current = io.observers.get(io.observers.size() - 1);
         current.onEvent(FileObserver.MODIFY, null);
         current.onEvent(FileObserver.DELETE_SELF, null);
+        equal(160, policy.getMaxBrightnessNits(),
+                "node deletion revokes snapshot before display queue dispatch");
         display.runDue();
         equal(160, policy.getMaxBrightnessNits(), "node deletion immediately revokes old snapshot");
         before = io.observers.size();
@@ -132,6 +134,17 @@ public final class PolicyLifecycleTest {
         equal(160, policy.getMaxBrightnessNits(), "read spanning node deletion cannot grant boost");
         worker.runDue(); display.runDue();
         equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "new watch epoch recovers");
+        io.safety = "10";
+        io.observers.get(io.observers.size() - 1).onEvent(FileObserver.MODIFY, null);
+        worker.runDue(); display.runDue();
+        equal(10, policy.getMaxBrightnessNits(), "fresh cap below factory fallback");
+        io.observers.get(io.observers.size() - 1).onEvent(FileObserver.MOVE_SELF, null);
+        equal(10, policy.getMaxBrightnessNits(),
+                "undispatched watch invalidation preserves tighter prior cap");
+        io.safety = "0";
+        display.runDue(); worker.runDue(); display.runDue();
+        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(),
+                "fresh replacement snapshot restores normal cap");
         policy.stop();
         SystemClock.now += 10000;
         worker.runDue(); display.runDue();

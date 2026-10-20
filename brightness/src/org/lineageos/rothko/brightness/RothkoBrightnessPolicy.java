@@ -65,6 +65,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
     private float mLux = Float.NaN;
     private boolean mValid;
     private long mSampleTime;
+    private long mSampleWatchEpoch = -1;
     private int mCondition;
     private float mSafetyNits;
     private float mFailureCap = FACTORY_MIN_CAP_NITS;
@@ -126,6 +127,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
     @Override
     public float getMaxBrightnessNits() {
         if (!mValid || mState == null || mStopped
+                || mSampleWatchEpoch != mWatchInvalidations.get()
                 || SystemClock.elapsedRealtime() - mSampleTime >= MAX_AGE_MILLIS) {
             return Math.min(mFailureCap, mLastCap);
         }
@@ -215,6 +217,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
                 mFailureCap = config.minimumCapNits;
                 mState.update(board, ntc);
                 mSampleTime = sampleTime; // Start of IO, never completion of a blocked read.
+                mSampleWatchEpoch = watchEpoch;
                 mCondition = condition;
                 mSafetyNits = safety;
                 mValid = true;
@@ -250,6 +253,8 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         writer.println("    active=" + mActive + " automatic=" + mAutomatic + " lux=" + mLux
                 + " ntcEnabled=" + mNtcEnabled + " valid=" + mValid);
         writer.println("    requestedInotifyWatches=" + mWatchRequests);
+        writer.println("    sampleWatchEpoch=" + mSampleWatchEpoch
+                + " currentWatchEpoch=" + mWatchInvalidations.get());
         writer.println("    condition=" + mCondition + " boardC="
                 + (mState == null ? Float.NaN : mState.appliedBoardTemperature())
                 + " safetyNits=" + mSafetyNits + " capNits=" + getMaxBrightnessNits());

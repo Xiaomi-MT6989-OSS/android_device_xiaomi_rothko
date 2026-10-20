@@ -40,7 +40,10 @@ thermal/power/low-power controls and existing HDR thermal gate remain in place.
   1000 ms reads are a health/retry fallback. OFF/DOZE/DOZE_SUSPEND release the
   watches and stop periodic reads; screen-on creates a fresh watch generation.
   Moved/deleted nodes revoke old data and cause re-registration. A read spanning
-  watch invalidation cannot grant a new snapshot. These lifecycle safeguards are
+  watch invalidation cannot grant a new snapshot. The cap getter checks the atomic
+  watch epoch as well: invalidation already received on the observer thread must
+  revoke the old snapshot even before its display-handler notification runs.
+  These lifecycle safeguards are
   adaptations, not a claim of byte-for-byte OEM JNI behavior.
 * Samples expire after 2500 ms by elapsed realtime; the getter also checks age
   across suspend. Old generations cannot grant a new wake session permission.
