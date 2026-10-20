@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AOSP leaves the device-specific face introduction text empty.
+         The stock face sensor reports CONVENIENCE, not app/payment authentication. -->
+    <bool name="config_face_intro_show_less_secure">true</bool>
+    <string name="security_settings_face_enroll_introduction_message" product="default">Use your face to unlock your phone. Use your fingerprint, PIN, pattern, or password when an app requires authentication.</string>
+    <string name="security_settings_face_enroll_introduction_message_setup">Set up Face Unlock to unlock your phone.</string>
+    <string name="security_settings_face_enroll_introduction_message_unlock_disabled">Your organization has disabled Face Unlock. Contact your administrator for more information.</string>
+    <string name="security_settings_face_enroll_introduction_info_title">Keep in mind</string>
+    <string name="security_settings_face_enroll_introduction_info_glasses">Enroll in good lighting with your face uncovered. If you usually wear glasses, wear them during setup.</string>
+    <string name="security_settings_face_enroll_introduction_info_looking" product="default">Looking at your phone may unlock it unintentionally. Someone who looks like you, or someone holding your phone up to your face, may also unlock it.</string>
+    <string name="security_settings_face_enroll_introduction_info_less_secure" product="default">Face Unlock is less secure than a strong PIN, pattern, or password. On this phone, it cannot authorize purchases or authenticate you in apps.</string>
+    <!-- Setup guidance only; do not promise enforced attention or liveness detection. -->
+    <string name="security_settings_face_enroll_introduction_info_gaze" product="default">Face the front camera and keep your eyes unobstructed during setup.</string>
+    <string name="security_settings_face_enroll_introduction_how_title">How it works</string>
+    <string name="security_settings_face_enroll_introduction_how_message" product="default">The front camera captures your face during setup. Face Unlock compares it with the enrolled face when you unlock your phone. A PIN, pattern, or password is still required after a restart and whenever Android requires it.</string>
+    <string name="security_settings_face_enroll_introduction_control_title">You are in control</string>
+    <string name="security_settings_face_enroll_introduction_control_message" product="default">You can manage or remove enrolled faces in Settings. Removing a face prevents it from being used for Face Unlock.</string>
+</resources>

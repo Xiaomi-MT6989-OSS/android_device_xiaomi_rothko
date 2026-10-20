@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="security_settings_face_enroll_introduction_message" product="default">使用面孔解锁手机。应用要求身份验证时，请使用指纹、PIN 码、图案或密码。</string>
+    <string name="security_settings_face_enroll_introduction_message_setup">设置人脸解锁，使用面孔解锁手机。</string>
+    <string name="security_settings_face_enroll_introduction_message_unlock_disabled">您所在的组织已停用人脸解锁。如需了解详情，请联系管理员。</string>
+    <string name="security_settings_face_enroll_introduction_info_title">请注意</string>
+    <string name="security_settings_face_enroll_introduction_info_glasses">请在光线充足时录入，避免遮挡面部。如果您平时佩戴眼镜，请戴着眼镜完成设置。</string>
+    <string name="security_settings_face_enroll_introduction_info_looking" product="default">注视手机可能会意外解锁。与您相貌相似的人，或将手机对准您面部的人，也可能解锁手机。</string>
+    <string name="security_settings_face_enroll_introduction_info_less_secure" product="default">人脸解锁的安全性低于高强度 PIN 码、图案或密码。本机的人脸解锁不能用于授权购买或应用内身份验证。</string>
+    <string name="security_settings_face_enroll_introduction_info_gaze" product="default">设置时请面向前置摄像头，并避免遮挡眼部。</string>
+    <string name="security_settings_face_enroll_introduction_how_title">运作方式</string>
+    <string name="security_settings_face_enroll_introduction_how_message" product="default">设置时，前置摄像头会采集您的面部。解锁时，人脸解锁会与已录入的人脸进行比对。重启后或 Android 要求时，仍需输入 PIN 码、图案或密码。</string>
+    <string name="security_settings_face_enroll_introduction_control_title">由您掌控</string>
+    <string name="security_settings_face_enroll_introduction_control_message" product="default">您可以在设置中管理或移除已录入的人脸。移除后，该人脸将无法再用于人脸解锁。</string>
+</resources>
