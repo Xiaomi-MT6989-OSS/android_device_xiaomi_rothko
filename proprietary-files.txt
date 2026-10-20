@@ -2628,6 +2628,7 @@ vendor/lib64/libforkexecwrap.so
 vendor/bin/mi_thermald
 
 # Thermal Configs
+vendor/etc/thermald-devices.conf
 vendor/etc/thermal-map.conf
 vendor/etc/thermal/disable_skin_control.conf
 vendor/etc/thermal/disable_thermal.conf
