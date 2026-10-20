@@ -21,7 +21,8 @@ public:
     // Scene changes invalidate cached permission immediately, including while
     // the OEM command thread or PQ reader is blocked in a vendor transaction.
     void scene(bool known, bool hdr, int64_t token);
-    void sfGuard(std::shared_ptr<std::atomic<bool>> dead);
+    void newSf(int64_t session, int64_t connection);
+    void sfGuard(std::shared_ptr<std::atomic<bool>> dead, int64_t session, int64_t connection);
     void backend(std::shared_ptr<std::atomic<bool>> dead);
     // Existing OEM serial worker ONLY. No other method sends an OEM command.
     void drive(aidl::vendor::xiaomi::hardware::displayfeature_aidl::IDisplayFeature& service,

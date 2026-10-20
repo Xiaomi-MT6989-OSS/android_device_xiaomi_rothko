@@ -47,8 +47,20 @@ void HistogramService::scene(bool known, bool hdr, int64_t token) {
     mSession.scene(known, hdr);
     mChanged.notify_all();
 }
-void HistogramService::sfGuard(std::shared_ptr<std::atomic<bool>> dead) {
+void HistogramService::newSf(int64_t session, int64_t connection) {
     std::lock_guard lock(mMutex);
+    mSession.newSf(session, connection);
+    mSfDead.reset();
+    mSfReaped = false;
+    mChanged.notify_all();
+}
+void HistogramService::sfGuard(std::shared_ptr<std::atomic<bool>> dead,
+        int64_t session, int64_t connection) {
+    std::lock_guard lock(mMutex);
+    // A blocked worker may finish attaching the previous SF's death recipient
+    // after Binder already installed a newer listener. Do not replace its guard.
+    // Scene revisions within one SF connection do not reject a valid guard.
+    if (!mSession.sameSf(session, connection)) return;
     mSfDead = std::move(dead);
     mSfReaped = false;
     mChanged.notify_all();

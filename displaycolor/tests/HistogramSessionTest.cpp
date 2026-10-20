@@ -113,5 +113,15 @@ int main() {
     command = session.command(1213); session.complete(*command, true);
     check(session.command(2413).has_value()); // Lease expiry also drives disable.
     check(!session.wanted(2413));
+    session.newSf(11, 2);
+    check(session.sameSf(11, 2));
+    check(!session.sameSf(10, 2));
+    check(!session.sameSf(11, 1));
+    session.scene(true, false);
+    check(session.sameSf(11, 2)); // Scene updates do not invalidate a current death guard.
+    session.newSf(12, 2);
+    check(!session.sameSf(11, 2)); // A restarted SF may reuse its connection ordinal.
+    check(session.sameSf(12, 2));
+    check(!session.sceneKnown());
     std::cout << "PASS: " << assertions << " histogram ownership/lease/generation assertions\n";
 }

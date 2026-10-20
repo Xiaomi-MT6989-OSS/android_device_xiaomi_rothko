@@ -16,6 +16,14 @@ public:
     bool oemAvailable() const { return mOem; }
     bool sceneKnown() const { return mKnown && mOem; }
     bool hdr() const { return mHdr; }
+    void newSf(int64_t session, int64_t connection) {
+        mSfSession = session;
+        mSfConnection = connection;
+        scene(false, false);
+    }
+    bool sameSf(int64_t session, int64_t connection) const {
+        return session == mSfSession && connection == mSfConnection;
+    }
 
     void invalidate() { ++mGeneration; mSample = {}; }
     void scene(bool known, bool hdr) { mKnown = known; mHdr = hdr; invalidate(); }
@@ -71,6 +79,7 @@ public:
 
 private:
     int64_t mGeneration = 1;
+    int64_t mSfSession = 0, mSfConnection = 0;
     int64_t mRequest = -1;
     int64_t mLeaseUntil = -1;
     int64_t mEnabledGeneration = -1;

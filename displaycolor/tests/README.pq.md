@@ -83,7 +83,7 @@ It is a small native host test, **not** an Android arm64 link, real Binder parce
 round trip, service-manager/SELinux check or device validation. The frozen OEM
 binary itself is not executed by these host tests.
 The transport check additionally generates the new private Java/NDK source,
-checks the native service/stubs and the 47-assertion IO-free ownership state
+checks the native service/stubs and the 54-assertion IO-free ownership state
 machine. Its optional `--intermediates` checks the actual controller with existing
 platform headers, the final entry point with vendor headers, rejects a wrong
 controller variant, and checks the real generated Java AIDL/client against an

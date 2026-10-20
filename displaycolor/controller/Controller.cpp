@@ -198,7 +198,7 @@ ndk::ScopedAStatus Controller::setListener(
     mReady.store(false);
     mCurrent.store(-1);
     mReportLogged = false;
-    mHistogram->sfGuard(nullptr);
+    mHistogram->newSf(session, connection);
     mHistogram->scene(false, false, ++mSceneRevision);
     LOG(INFO) << "listener attached session=" << session << " connection=" << connection;
     mChanged.notify_all();
@@ -429,7 +429,7 @@ void Controller::run() {
             if (session > 0 && connection > 0 && listener) {
                 sfDeath = std::make_unique<DeathWatch>(listener->asBinder(), sfDead);
             }
-            mHistogram->sfGuard(sfDead);
+            mHistogram->sfGuard(sfDead, session, connection);
         }
 
         // 2. Accept at most one user request per generation, and only while the
