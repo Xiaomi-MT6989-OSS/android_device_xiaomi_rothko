@@ -75,6 +75,17 @@ cannot reuse previous permission. Its getter checks an atomic Binder death epoch
 even before queued display notifications run. OPR is an extra cap, never a reason
 to relax the factory thermal or independent safety limit.
 
+The framework also relays its existing actual HDR-layer subscription to the optional
+policy. This includes extended-range RGB content that need not choose PQ/HLG at the
+color output. A known upstream presence/absence takes precedence over the native
+candidate; before its first report the explicit native PQ/HLG candidate is only a
+fallback. Native scene/freshness/death checks still apply. Known HDR releases the
+ordinary histogram request, and returning to SDR requires a new baseline. The
+common thermal and independent safety limits remain active. No extra SF/ALS
+subscription, app-name inference, picture/video inference or higher raw maximum
+is introduced. Display-token replacement/removal invalidates the upstream report,
+and delayed callbacks from old registrations are rejected even for a reused token.
+
 `StockOprBrightnessState` consumes the full PQ reply: transport/result, cached frame counter,
 channel 0, stock format 9, 256 bins, and nonzero bin total. A valid black image is
 accepted (all pixels in bin 0); a zeroed read failure is rejected. First-session

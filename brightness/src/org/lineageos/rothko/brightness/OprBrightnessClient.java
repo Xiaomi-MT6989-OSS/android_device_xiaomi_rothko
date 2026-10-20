@@ -76,7 +76,7 @@ final class OprBrightnessClient {
         mDisplay.removeCallbacks(mExpiry);
     }
 
-    float cap(boolean automatic, float lux) {
+    float cap(boolean automatic, float lux, boolean frameworkHdrKnown, boolean frameworkHdrPresent) {
         if (!automatic) return Float.POSITIVE_INFINITY;
         long now = SystemClock.elapsedRealtime();
         if (mStopped || !mActive || mSourceEpoch != mSource.epoch()
@@ -84,7 +84,13 @@ final class OprBrightnessClient {
                 || now - mResponseStarted >= StockOprBrightnessState.MAX_AGE_MILLIS) {
             return StockOprBrightnessState.FALLBACK_NITS;
         }
-        return mState.cap(true, lux, mSceneKnown && mHdr, now);
+        // RGB gain-map layers need not choose a PQ/HLG output dataspace. The upstream
+        // HDR-layer report complements that candidate, but cannot bypass freshness or a
+        // disconnected/unknown native scene. This only removes the ordinary SDR OPR limit.
+        // A known upstream report also wins over an old PQ candidate (for example, camera
+        // layers intentionally excluded by SF). The candidate is only a fallback before it.
+        boolean hdr = frameworkHdrKnown ? frameworkHdrPresent : mHdr;
+        return mState.cap(true, lux, mSceneKnown && hdr, now);
     }
 
     private void read() {

@@ -23,10 +23,14 @@ public final class ModifierPipelineTest {
     public static final class Policy extends DeviceBrightnessPolicy {
         static float cap = 160;
         static int stopped;
+        static boolean hdrKnown, hdrPresent;
         public Policy(Context c, Handler h, Runnable changed) { }
         public void setDisplayState(int state) { }
         public void setAutomaticBrightness(boolean enabled) { }
         public void setAmbientLux(float lux) { }
+        public void setHdrContent(boolean known, boolean present) {
+            hdrKnown = known; hdrPresent = present;
+        }
         public float getMaxBrightnessNits() { return cap; }
         public void stop() { stopped++; }
         public void dump(PrintWriter p) { }
@@ -69,7 +73,13 @@ public final class ModifierPipelineTest {
         state = new DisplayBrightnessState.Builder();
         modifier.apply(request, state);
         equal(1, state.getMaxBrightness(), "explicit unlimited policy");
+        modifier.setHdrContent(true, true);
+        equal(1, Policy.hdrKnown && Policy.hdrPresent ? 1 : 0, "actual HDR report reaches provider");
+        modifier.setHdrContent(false, false);
+        equal(0, Policy.hdrKnown || Policy.hdrPresent ? 1 : 0, "display removal propagates unknown");
         modifier.stop();
+        modifier.setHdrContent(true, true);
+        equal(0, Policy.hdrKnown || Policy.hdrPresent ? 1 : 0, "stopped provider receives no report");
         equal(1, Policy.stopped, "provider is stopped");
         DeviceBrightnessModifier absent = new DeviceBrightnessModifier(new Context(), handler,
                 () -> {}, data);

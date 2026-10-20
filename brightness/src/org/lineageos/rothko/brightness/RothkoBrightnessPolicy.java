@@ -63,6 +63,8 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
     // Everything below is display-handler confined.
     private StockBrightnessState mState;
     private boolean mAutomatic;
+    private boolean mHdrKnown;
+    private boolean mHdrPresent;
     private float mLux = Float.NaN;
     private boolean mValid;
     private long mSampleTime;
@@ -83,8 +85,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         mOnChanged = onChanged;
         mExpiry = () -> mOnChanged.run();
         mInjector = injector;
-        mOpr = worker == null ? new OprBrightnessClient(handler, onChanged)
-                : new OprBrightnessClient(handler, worker, onChanged, new OprBrightnessClient.Source());
+        mOpr = new OprBrightnessClient(handler, worker, onChanged, injector.oprSource());
         if (worker == null) {
             mThread = new HandlerThread(TAG);
             mThread.start();
@@ -132,6 +133,18 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
     }
 
     @Override
+    public void setHdrContent(boolean known, boolean present) {
+        present = known && present;
+        if (mStopped || (mHdrKnown == known && mHdrPresent == present)) return;
+        mHdrKnown = known;
+        mHdrPresent = present;
+        // Exiting HDR creates a fresh histogram request/baseline; a pre-HDR frame must not
+        // authorize a higher SDR band. Unknown remains conservative, never an HDR permission.
+        updateOpr();
+        mOnChanged.run();
+    }
+
+    @Override
     public float getMaxBrightnessNits() {
         if (!mValid || mState == null || mStopped
                 || mSampleWatchEpoch != mWatchInvalidations.get()
@@ -139,12 +152,13 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
             return Math.min(mFailureCap, mLastCap);
         }
         mLastCap = Math.min(mState.cap(mAutomatic, mLux, mCondition, mSafetyNits, mNtcEnabled),
-                mOpr.cap(mAutomatic, mLux));
+                mOpr.cap(mAutomatic, mLux, mHdrKnown, mHdrPresent));
         return mLastCap;
     }
 
     private void updateOpr() {
-        mOpr.update(mActive && mAutomatic, mActive && mAutomatic && Float.isFinite(mLux)
+        mOpr.update(mActive && mAutomatic, mActive && mAutomatic && !mHdrPresent
+                && Float.isFinite(mLux)
                 && mLux > StockOprBrightnessState.AMBIENT_LUX_THRESHOLD);
     }
 
@@ -266,6 +280,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         writer.println("  RothkoBrightnessPolicy: source=" + CONFIG);
         writer.println("    active=" + mActive + " automatic=" + mAutomatic + " lux=" + mLux
                 + " ntcEnabled=" + mNtcEnabled + " valid=" + mValid);
+        writer.println("    hdrLayerInfoKnown=" + mHdrKnown + " hdrLayerPresent=" + mHdrPresent);
         writer.println("    requestedInotifyWatches=" + mWatchRequests);
         writer.println("    sampleWatchEpoch=" + mSampleWatchEpoch
                 + " currentWatchEpoch=" + mWatchInvalidations.get());
@@ -290,6 +305,9 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
     }
 
     static class Injector {
+        OprBrightnessClient.Source oprSource() {
+            return new OprBrightnessClient.Source();
+        }
         FileObserver newObserver(String name, IntConsumer onEvent) {
             return new FileObserver(new File(THERMAL + name),
                     FileObserver.MODIFY | FileObserver.DELETE_SELF | FileObserver.MOVE_SELF) {

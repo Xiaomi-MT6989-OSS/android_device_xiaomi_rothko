@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntConsumer;
+import vendor.xiaomi.rothko.display.brightness.HistogramSample;
 
 /** Exercises the real reader policy with deterministic handler queues and injected read-only IO. */
 public final class PolicyLifecycleTest {
@@ -28,10 +29,12 @@ public final class PolicyLifecycleTest {
         boolean fail;
         boolean configFail;
         boolean ntc;
+        OprBrightnessClient.Source source = new OprBrightnessClient.Source();
         int reads;
         Runnable duringNextRead;
         final List<FileObserver> observers = new ArrayList<>();
         IO(String file) { this.file = file; }
+        @Override OprBrightnessClient.Source oprSource() { return source; }
         @Override StockBrightnessConfig loadConfig() throws Exception {
             if (configFail) throw new IOException("test config unavailable");
             try (FileInputStream input = new FileInputStream(file)) {
@@ -189,6 +192,45 @@ public final class PolicyLifecycleTest {
         policy.setAutomaticBrightness(false);
         worker.runDue(); display.runDue();
         equal(2000, policy.getMaxBrightnessNits(), "manual bypasses OPR but retains stock safety cap");
+        policy.stop(); worker.runDue(); display.runDue();
+
+        // The native color candidate is SDR even though SF reports actual RGB HDR layers.
+        boolean[] requested = {true};
+        int[] frame = {1};
+        IO rgb = new IO(args[0]); rgb.safety = "2000";
+        rgb.source = new OprBrightnessClient.Source() {
+            @Override OprBrightnessClient.Response read(long request, boolean enable) {
+                requested[0] = enable;
+                HistogramSample sample = new HistogramSample();
+                sample.request = request; sample.generation = 42;
+                sample.sceneKnown = true; sample.hdr = false; sample.active = enable;
+                sample.readStartedAt = SystemClock.now;
+                sample.transportOk = true; sample.shapeValid = true; sample.result = 0;
+                sample.frame = frame[0]; sample.channel = 0; sample.format = 9;
+                sample.binCount = 256; sample.bins = new int[256]; sample.bins[0] = 100;
+                return new OprBrightnessClient.Response(epoch(), sample);
+            }
+        };
+        policy = new RothkoBrightnessPolicy(display, worker, () -> {}, rgb);
+        policy.setDisplayState(Display.STATE_ON);
+        policy.setAutomaticBrightness(true); policy.setAmbientLux(30000);
+        worker.runDue(); display.runDue();
+        equal(1000, policy.getMaxBrightnessNits(), "SDR baseline still conservative");
+        SystemClock.now += 200; frame[0]++; worker.runDue(); display.runDue();
+        equal(1600, policy.getMaxBrightnessNits(), "SDR uses original OPR band");
+        policy.setHdrContent(true, true); worker.runDue(); display.runDue();
+        equal(0, requested[0] ? 1 : 0, "RGB HDR releases ordinary histogram request");
+        equal(2000, policy.getMaxBrightnessNits(), "RGB HDR removes SDR OPR only");
+        rgb.safety = "100"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        worker.runDue(); display.runDue();
+        equal(100, policy.getMaxBrightnessNits(), "RGB HDR cannot override stock safety limit");
+        rgb.safety = "2000"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        worker.runDue(); display.runDue();
+        policy.setHdrContent(false, true); worker.runDue(); display.runDue();
+        equal(1, requested[0] ? 1 : 0, "unknown cannot assert HDR despite a true present flag");
+        equal(1000, policy.getMaxBrightnessNits(), "unknown/new SDR request needs fresh baseline");
+        SystemClock.now += 200; frame[0]++; worker.runDue(); display.runDue();
+        equal(1600, policy.getMaxBrightnessNits(), "fresh SDR frame recovers after HDR");
         policy.stop(); worker.runDue(); display.runDue();
         System.out.println("PASS: " + assertions + " reader expiry/generation/recovery assertions");
     }
