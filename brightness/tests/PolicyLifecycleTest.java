@@ -77,7 +77,7 @@ public final class PolicyLifecycleTest {
         equal(160, policy.getMaxBrightnessNits(), "initial conservative cap");
         policy.setDisplayState(Display.STATE_ON);
         worker.runDue(); display.runDue();
-        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "valid cold sample");
+        equal(1600, policy.getMaxBrightnessNits(), "valid cold sample");
         equal(3, io.observers.size(), "three stock mandatory node watches");
         SystemClock.now = 100;
         io.safety = "100";
@@ -90,7 +90,7 @@ public final class PolicyLifecycleTest {
         io.safety = "0";
         io.observers.get(2).onEvent(FileObserver.MODIFY, null);
         worker.runDue(); display.runDue();
-        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "event recovery");
+        equal(1600, policy.getMaxBrightnessNits(), "event recovery");
         SystemClock.now = 2600;
         equal(160, policy.getMaxBrightnessNits(), "elapsed-realtime expiry before queue resumes");
         display.runDue();
@@ -102,7 +102,7 @@ public final class PolicyLifecycleTest {
         equal(100, policy.getMaxBrightnessNits(), "read failure cannot raise prior tight cap");
         SystemClock.now += 1000; io.fail = false; io.board = "31000"; io.safety = "0";
         worker.runDue(); display.runDue();
-        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "valid recovery clears failure");
+        equal(1600, policy.getMaxBrightnessNits(), "valid recovery clears failure");
         SystemClock.now += 1000;
         worker.runDue(); // Old sample is queued on display handler, not applied yet.
         policy.setDisplayState(Display.STATE_OFF);
@@ -110,7 +110,7 @@ public final class PolicyLifecycleTest {
         display.runDue();
         equal(160, policy.getMaxBrightnessNits(), "old generation cannot permit boost after wake");
         worker.runDue(); display.runDue();
-        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "new generation accepted");
+        equal(1600, policy.getMaxBrightnessNits(), "new generation accepted");
         before = io.reads;
         io.observers.get(0).onEvent(FileObserver.MODIFY, null); // old generation's delayed event
         worker.runDue(); display.runDue();
@@ -136,7 +136,7 @@ public final class PolicyLifecycleTest {
         display.runDue();
         equal(160, policy.getMaxBrightnessNits(), "read spanning node deletion cannot grant boost");
         worker.runDue(); display.runDue();
-        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "new watch epoch recovers");
+        equal(1600, policy.getMaxBrightnessNits(), "new watch epoch recovers");
         io.safety = "10";
         io.observers.get(io.observers.size() - 1).onEvent(FileObserver.MODIFY, null);
         worker.runDue(); display.runDue();
@@ -146,7 +146,7 @@ public final class PolicyLifecycleTest {
                 "undispatched watch invalidation preserves tighter prior cap");
         io.safety = "0";
         display.runDue(); worker.runDue(); display.runDue();
-        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(),
+        equal(1600, policy.getMaxBrightnessNits(),
                 "fresh replacement snapshot restores normal cap");
         policy.stop();
         SystemClock.now += 10000;
@@ -170,7 +170,7 @@ public final class PolicyLifecycleTest {
         equal(160, policy.getMaxBrightnessNits(), "config failure");
         brokenConfig.configFail = false; SystemClock.now += 1000;
         worker.runDue(); display.runDue();
-        equal(Float.POSITIVE_INFINITY, policy.getMaxBrightnessNits(), "config load retry");
+        equal(1600, policy.getMaxBrightnessNits(), "config load retry");
         brokenConfig.board = "not-a-number"; SystemClock.now += 1000;
         worker.runDue(); display.runDue();
         equal(160, policy.getMaxBrightnessNits(), "malformed board temperature");
@@ -191,7 +191,7 @@ public final class PolicyLifecycleTest {
         combined.observers.get(2).onEvent(FileObserver.MODIFY, null);
         policy.setAutomaticBrightness(false);
         worker.runDue(); display.runDue();
-        equal(2000, policy.getMaxBrightnessNits(), "manual bypasses OPR but retains stock safety cap");
+        equal(1600, policy.getMaxBrightnessNits(), "manual bypasses OPR but retains stock normal peak bound");
         policy.stop(); worker.runDue(); display.runDue();
 
         // The native color candidate is SDR even though SF reports actual RGB HDR layers.
@@ -220,7 +220,7 @@ public final class PolicyLifecycleTest {
         equal(1600, policy.getMaxBrightnessNits(), "SDR uses original OPR band");
         policy.setHdrContent(true, true); worker.runDue(); display.runDue();
         equal(0, requested[0] ? 1 : 0, "RGB HDR releases ordinary histogram request");
-        equal(2000, policy.getMaxBrightnessNits(), "RGB HDR removes SDR OPR only");
+        equal(1600, policy.getMaxBrightnessNits(), "RGB HDR removes SDR OPR but keeps stock normal peak bound");
         rgb.safety = "100"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
         worker.runDue(); display.runDue();
         equal(100, policy.getMaxBrightnessNits(), "RGB HDR cannot override stock safety limit");
@@ -231,6 +231,26 @@ public final class PolicyLifecycleTest {
         equal(1000, policy.getMaxBrightnessNits(), "unknown/new SDR request needs fresh baseline");
         SystemClock.now += 200; frame[0]++; worker.runDue(); display.runDue();
         equal(1600, policy.getMaxBrightnessNits(), "fresh SDR frame recovers after HDR");
+        // Above the distinct peak lux threshold, entering RGB HDR keeps statistics requested.
+        // It must nevertheless invalidate the old SDR gray and create a new baseline.
+        rgb.safety = "0"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        policy.setAmbientLux(100001);
+        worker.runDue(); display.runDue();
+        equal(1600, policy.getMaxBrightnessNits(), "SDR remains in normal segment even in bright sun");
+        policy.setHdrContent(true, true);
+        worker.runDue(); display.runDue();
+        equal(1, requested[0] ? 1 : 0, "HDR peak requests its own valid gray statistics");
+        equal(1600, policy.getMaxBrightnessNits(), "pre-HDR gray cannot grant peak on new baseline");
+        SystemClock.now += 200; frame[0]++; worker.runDue(); display.runDue();
+        equal(4500, policy.getMaxBrightnessNits(), "fresh dark RGB HDR plus high lux permits stock peak segment");
+        rgb.safety = "100"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        worker.runDue(); display.runDue();
+        equal(100, policy.getMaxBrightnessNits(), "stock safety bound wins over eligible HDR peak");
+        rgb.safety = "0"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        policy.setAmbientLux(100000);
+        worker.runDue(); display.runDue();
+        equal(0, requested[0] ? 1 : 0, "exact peak lux boundary releases HDR statistics");
+        equal(1600, policy.getMaxBrightnessNits(), "exiting peak conditions restores normal bound");
         policy.stop(); worker.runDue(); display.runDue();
         System.out.println("PASS: " + assertions + " reader expiry/generation/recovery assertions");
     }

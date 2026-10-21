@@ -136,6 +136,27 @@ public final class OprClientTest {
         SystemClock.now += 2500;
         equal(1000, rgbClient.cap(true, 30000, true, true), "RGB signal cannot bypass stale response");
         rgbClient.stop(); worker.runDue(); display.runDue();
+
+        Source peak = new Source();
+        OprBrightnessClient peakClient = new OprBrightnessClient(display, worker, () -> {}, peak);
+        peakClient.update(true, true); worker.runDue(); display.runDue();
+        equal(1600, peakClient.peakCap(true, 100001, true, true), "peak baseline only");
+        SystemClock.now += 200; peak.frame++; worker.runDue(); display.runDue();
+        equal(4500, peakClient.peakCap(true, 100001, true, true), "actual RGB HDR has valid dark gray");
+        equal(1600, peakClient.peakCap(true, 100001, false, true), "unknown upstream HDR cannot grant peak");
+        equal(1600, peakClient.peakCap(true, 100001, true, false), "known SDR cannot grant peak");
+        peakClient.update(true, true, true); // Same enable bit, different actual content.
+        equal(1600, peakClient.peakCap(true, 100001, true, true), "same-enable content change revokes peak");
+        worker.runDue(); display.runDue();
+        equal(1600, peakClient.peakCap(true, 100001, true, true), "same cached frame is a new baseline");
+        SystemClock.now += 200; peak.frame++; worker.runDue(); display.runDue();
+        equal(4500, peakClient.peakCap(true, 100001, true, true), "new content advances");
+        peak.epoch++;
+        equal(1600, peakClient.peakCap(true, 100001, true, true), "death revokes peak before queue dispatch");
+        SystemClock.now += 200; worker.runDue(); display.runDue();
+        equal(1600, peakClient.peakCap(true, 100001, true, true), "new Binder epoch needs baseline");
+        peakClient.stop(); worker.runDue(); display.runDue();
+        equal(1600, peakClient.peakCap(true, 100001, true, true), "stop revokes peak");
         System.out.println("PASS: " + assertions + " cached OPR transport/lifecycle assertions");
     }
 }

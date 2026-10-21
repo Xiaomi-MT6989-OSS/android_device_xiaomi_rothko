@@ -79,12 +79,27 @@ The framework also relays its existing actual HDR-layer subscription to the opti
 policy. This includes extended-range RGB content that need not choose PQ/HLG at the
 color output. A known upstream presence/absence takes precedence over the native
 candidate; before its first report the explicit native PQ/HLG candidate is only a
-fallback. Native scene/freshness/death checks still apply. Known HDR releases the
-ordinary histogram request, and returning to SDR requires a new baseline. The
+fallback. Native scene/freshness/death checks still apply. Known HDR below the distinct
+peak lux threshold releases the ordinary histogram request. Above 100000 lux,
+automatic HDR can request statistics for the separate factory peak decision. Every
+actual HDR transition needs a new baseline even if statistics stay enabled. The
 common thermal and independent safety limits remain active. No extra SF/ALS
 subscription, app-name inference, picture/video inference or higher raw maximum
 is introduced. Display-token replacement/removal invalidates the upstream report,
 and delayed callbacks from old registrations are rejected even for a reused token.
+
+The packaged peak branch is also enforced as an additional cap: normally 1600
+calibrated nits; only automatic brightness, actual known HDR layers, lux strictly
+above 100000 and a fresh advanced histogram with gray <=210 can return 4500. This
+mirrors the factory peak predicate (whose `isHdrVideo` checks HDR layers/Dolby, not
+media-file type) with conservative transport/freshness guards. Invalid gray never
+grants peak, consistent with the packaged flag being false. Native histogram
+ownership still requires ON, a live consumer lease and acknowledged OEM enable;
+HDR no longer unconditionally prevents a requested peak sample. Lower thermal or
+safety caps always win. This is a conditional limit, not a brightness target or
+permission to change the current 0.499938 raw maximum. The original Gallery token
+request, 37/35 C gate and up-to-2.25 boost path remain separate unfinished work;
+their limits must not replace the generic HDR ratio map indiscriminately.
 
 `StockOprBrightnessState` consumes the full PQ reply: transport/result, cached frame counter,
 channel 0, stock format 9, 256 bins, and nonzero bin total. A valid black image is

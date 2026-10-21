@@ -40,8 +40,9 @@ public:
         mLeaseUntil = now + kLeaseMs;
     }
     bool wanted(int64_t now) const {
-        return mRequested && now >= 0 && now < mLeaseUntil &&
-               sceneKnown() && !mHdr;
+        // HDR bypasses the ordinary SDR table, but stock's conditional peak still needs
+        // valid gray statistics. The consumer requests them only when its lux/mode need it.
+        return mRequested && now >= 0 && now < mLeaseUntil && sceneKnown();
     }
     bool readable(int64_t now) const {
         return wanted(now) && mHardware && mEnabledGeneration == mGeneration;

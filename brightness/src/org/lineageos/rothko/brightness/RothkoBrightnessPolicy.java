@@ -120,7 +120,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         if (mAutomatic == enabled) return;
         mAutomatic = enabled;
         mLux = Float.NaN; // A previous automatic session cannot authorize a new request.
-        updateOpr();
+        updateOpr(true);
         mOnChanged.run();
     }
 
@@ -138,9 +138,9 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         if (mStopped || (mHdrKnown == known && mHdrPresent == present)) return;
         mHdrKnown = known;
         mHdrPresent = present;
-        // Exiting HDR creates a fresh histogram request/baseline; a pre-HDR frame must not
-        // authorize a higher SDR band. Unknown remains conservative, never an HDR permission.
-        updateOpr();
+        // Every HDR transition creates a new baseline even when high lux keeps the histogram
+        // request enabled. A pre-HDR dark frame cannot authorize peak for the new content.
+        updateOpr(true);
         mOnChanged.run();
     }
 
@@ -152,14 +152,21 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
             return Math.min(mFailureCap, mLastCap);
         }
         mLastCap = Math.min(mState.cap(mAutomatic, mLux, mCondition, mSafetyNits, mNtcEnabled),
-                mOpr.cap(mAutomatic, mLux, mHdrKnown, mHdrPresent));
+                Math.min(mOpr.cap(mAutomatic, mLux, mHdrKnown, mHdrPresent),
+                        mOpr.peakCap(mAutomatic, mLux, mHdrKnown, mHdrPresent)));
         return mLastCap;
     }
 
     private void updateOpr() {
-        mOpr.update(mActive && mAutomatic, mActive && mAutomatic && !mHdrPresent
-                && Float.isFinite(mLux)
-                && mLux > StockOprBrightnessState.AMBIENT_LUX_THRESHOLD);
+        updateOpr(false);
+    }
+
+    private void updateOpr(boolean contentChanged) {
+        float threshold = mHdrKnown && mHdrPresent
+                ? StockOprBrightnessState.PEAK_AMBIENT_LUX_THRESHOLD
+                : StockOprBrightnessState.AMBIENT_LUX_THRESHOLD;
+        mOpr.update(mActive && mAutomatic, mActive && mAutomatic && Float.isFinite(mLux)
+                && mLux > threshold, contentChanged);
     }
 
     private void stopObservers() {
@@ -281,6 +288,7 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         writer.println("    active=" + mActive + " automatic=" + mAutomatic + " lux=" + mLux
                 + " ntcEnabled=" + mNtcEnabled + " valid=" + mValid);
         writer.println("    hdrLayerInfoKnown=" + mHdrKnown + " hdrLayerPresent=" + mHdrPresent);
+        writer.println("    peakCapNits=" + mOpr.peakCap(mAutomatic, mLux, mHdrKnown, mHdrPresent));
         writer.println("    requestedInotifyWatches=" + mWatchRequests);
         writer.println("    sampleWatchEpoch=" + mSampleWatchEpoch
                 + " currentWatchEpoch=" + mWatchInvalidations.get());

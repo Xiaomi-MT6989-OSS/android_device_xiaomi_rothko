@@ -52,7 +52,11 @@ final class OprBrightnessClient {
     }
 
     void update(boolean active, boolean requestHistogram) {
-        if (mStopped || (active == mActive && requestHistogram == mRequested)) return;
+        update(active, requestHistogram, false);
+    }
+
+    void update(boolean active, boolean requestHistogram, boolean contentChanged) {
+        if (mStopped || (!contentChanged && active == mActive && requestHistogram == mRequested)) return;
         mActive = active;
         mRequested = requestHistogram;
         long request = ++mRequest;
@@ -79,9 +83,7 @@ final class OprBrightnessClient {
     float cap(boolean automatic, float lux, boolean frameworkHdrKnown, boolean frameworkHdrPresent) {
         if (!automatic) return Float.POSITIVE_INFINITY;
         long now = SystemClock.elapsedRealtime();
-        if (mStopped || !mActive || mSourceEpoch != mSource.epoch()
-                || mResponseStarted < 0 || now < mResponseStarted
-                || now - mResponseStarted >= StockOprBrightnessState.MAX_AGE_MILLIS) {
+        if (!freshTransport(now)) {
             return StockOprBrightnessState.FALLBACK_NITS;
         }
         // RGB gain-map layers need not choose a PQ/HLG output dataspace. The upstream
@@ -91,6 +93,22 @@ final class OprBrightnessClient {
         // layers intentionally excluded by SF). The candidate is only a fallback before it.
         boolean hdr = frameworkHdrKnown ? frameworkHdrPresent : mHdr;
         return mState.cap(true, lux, mSceneKnown && hdr, now);
+    }
+
+    private boolean freshTransport(long now) {
+        return !mStopped && mActive && mSourceEpoch == mSource.epoch()
+                && mResponseStarted >= 0 && now >= mResponseStarted
+                && now - mResponseStarted < StockOprBrightnessState.MAX_AGE_MILLIS;
+    }
+
+    float peakCap(boolean automatic, float lux, boolean hdrKnown, boolean hdrPresent) {
+        long now = SystemClock.elapsedRealtime();
+        // A dataspace candidate alone cannot grant the special peak. Require actual upstream
+        // HDR layers plus a current native scene and this session's validated histogram.
+        if (!freshTransport(now) || !mSceneKnown || !hdrKnown || !hdrPresent) {
+            return StockOprBrightnessState.NORMAL_MAX_NITS;
+        }
+        return mState.peakCap(automatic, lux, true, now);
     }
 
     private void read() {

@@ -15,6 +15,11 @@ final class StockOprBrightnessState {
     // Packaged framework-ext base and MiuiFrameworkResOverlay; not a guessed HBM lux threshold.
     static final float AMBIENT_LUX_THRESHOLD = 20000f;
     static final float FALLBACK_NITS = 1000f;
+    // Factory adjustBrightnessToPeak + MiuiFrameworkResOverlay and the stock panel map.
+    static final float NORMAL_MAX_NITS = 1600f;
+    static final float PEAK_MAX_NITS = 4500f;
+    static final float PEAK_AMBIENT_LUX_THRESHOLD = 100000f;
+    static final int PEAK_GRAY_THRESHOLD = 210;
     // Adaptation watchdog, not a stock delay or a smoothing/filtering time constant.
     static final long MAX_AGE_MILLIS = 2500;
     private static final int[] GRAY_THRESHOLDS = {
@@ -118,11 +123,25 @@ final class StockOprBrightnessState {
         // The separate stock HDR OPR table is disabled/empty on this device. Never use this SDR
         // table to grant the special HDR peak or identify pictures/videos by application name.
         if (!automatic || hdrScene) return Float.POSITIVE_INFINITY;
-        if (!Float.isFinite(ambientLux) || ambientLux <= AMBIENT_LUX_THRESHOLD || !mActive
-                || !mValid || now < mSampleTime || now - mSampleTime >= MAX_AGE_MILLIS) {
+        if (!Float.isFinite(ambientLux) || ambientLux <= AMBIENT_LUX_THRESHOLD
+                || !hasFreshSample(now)) {
             return FALLBACK_NITS;
         }
         return capForGray(mGray);
+    }
+
+    private boolean hasFreshSample(long now) {
+        return mActive && mValid && now >= mSampleTime && now - mSampleTime < MAX_AGE_MILLIS;
+    }
+
+    float peakCap(boolean automatic, float ambientLux, boolean hdrLayerPresent, long now) {
+        // Stock isHdrVideo() means HDR layer present OR Dolby, not a media-file type check.
+        // The factory "peak for illegal grayscale" flag is false. Only a complete, fresh,
+        // advanced histogram can authorize the special segment; SDR never receives it.
+        if (!automatic || !hdrLayerPresent || !Float.isFinite(ambientLux)
+                || ambientLux <= PEAK_AMBIENT_LUX_THRESHOLD || !hasFreshSample(now)
+                || mGray < 0 || mGray > PEAK_GRAY_THRESHOLD) return NORMAL_MAX_NITS;
+        return PEAK_MAX_NITS;
     }
 
     private static float capForGray(int gray) {

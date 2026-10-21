@@ -197,7 +197,8 @@ jdk = root / "prebuilts/jdk/jdk21/linux-x86/bin"
 classes = output / "classes"
 classes.mkdir(exist_ok=True)
 subprocess.run([str(jdk / "javac"), "-d", str(classes), *map(str, sources)], check=True)
-for test in ("StockBrightnessTest", "PolicyLifecycleTest", "StockOprBrightnessTest", "OprClientTest"):
+for test in ("StockBrightnessTest", "PolicyLifecycleTest", "StockOprBrightnessTest", "OprClientTest",
+             "StockPeakTest"):
     subprocess.run([str(jdk / "java"), "-cp", str(classes),
                     "org.lineageos.rothko.brightness." + test, str(config), str(vectors)], check=True)
 subprocess.run([str(jdk / "java"), "-cp", str(classes),

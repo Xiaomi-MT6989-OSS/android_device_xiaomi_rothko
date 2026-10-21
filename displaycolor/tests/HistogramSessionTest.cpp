@@ -71,8 +71,14 @@ int main() {
     command = session.command(1205);
     check(command && !command->enable);
     session.complete(*command, true);
-    check(!session.command(1205)); // No use of SDR histogram for HDR.
+    command = session.command(1205);
+    check(command && command->enable); // HDR peak may request a new histogram session.
+    session.complete(*command, true);
+    check(session.readable(1205));
+    check(session.publish(session.generation(), sample, 1205));
     session.scene(true, false);
+    command = session.command(1206); check(command && !command->enable);
+    session.complete(*command, true);
     command = session.command(1206); session.complete(*command, true);
     generation = session.generation();
     session.request(2, true, 1206);
