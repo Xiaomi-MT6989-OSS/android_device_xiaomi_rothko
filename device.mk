@@ -271,6 +271,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     wpa_supplicant \
     hostapd \
+    RothkoWifiResourcesOverlay \
     libwifi-hal-wrapper \
     android.hardware.wifi-service
 
