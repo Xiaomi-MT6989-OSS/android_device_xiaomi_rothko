@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- OS3.0.307.0 stock calibration, converted where A16 uses logical brightness. -->
 <resources>
+    <!-- Factory board-temperature and safety-nits bounds apply to both SDR and HDR.
+         Gallery's separate 37/35 C gate is for its explicit OEM boost request. -->
     <string name="config_deviceSpecificBrightnessPolicy" translatable="false">org.lineageos.rothko.brightness.RothkoBrightnessPolicy</string>
     <bool name="config_automatic_brightness_available">true</bool>
     <item name="config_screenBrightnessSettingMinimumFloat" type="dimen" format="float">0.000854597</item>
@@ -20,7 +22,6 @@
     <item name="config_screenBrightnessLegacyBacklightMaximumFloat" type="dimen" format="float">0.499938</item>
     <!-- Keep per-user raw-domain settings; do not restore a shared foldable-display nits value. -->
     <bool name="config_persistBrightnessNitsForDefaultDisplay">false</bool>
-    <bool name="config_hdrBrightnessThermalSafetyEnabled">true</bool>
     <item name="config_brightnessRampRateFast" type="dimen" format="float">0.415903</item>
     <integer name="config_autoBrightnessBrighteningLightDebounce">1000</integer>
     <integer name="config_autoBrightnessDarkeningLightDebounce">1000</integer>

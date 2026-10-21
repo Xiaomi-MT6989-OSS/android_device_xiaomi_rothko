@@ -47,8 +47,18 @@ There is no additional temporal smoothing or interpolated thermal curve.
 
 The common modifier converts nits with the active DDC, caps SDR target and the
 common maximum, and runs before the existing HDR modifier. HDR must continue to
-take the common maximum in both its builder and aggregated state. The standard
-thermal/power/low-power controls and existing HDR thermal gate remain in place.
+take the common maximum in both its builder and aggregated state. Standard
+thermal/power/low-power controls remain in place. The temporary HDR veto requiring
+every Thermal AIDL sensor to report NONE has been removed: it is not the
+stock brightness policy. The factory table, independent safety nits and expiring
+device cap apply to both SDR and HDR; invalid policy loading fails closed.
+
+Stock's 37/35 C hysteresis controls the explicit Gallery whole-display boost
+request. Stock HBM independently accepts actual HDR layers even when Gallery
+boost is disabled. There is no supported basis for classifying every RGB HDR
+layer or gainmap as that private request, or for applying its 2.25 ratio ceiling
+to the standard HDR path. This port keeps the standard HDR entry and does not
+expose the old private Binder transaction or guess eligibility from app names.
 
 ## Explicit adaptation differences and limits
 
@@ -73,8 +83,8 @@ thermal/power/low-power controls and existing HDR thermal gate remain in place.
   These failure cases are deliberate conservative differences from stock's
   possible NaN/retained-value behavior.
 * Only the packaged factory fallback is available. HyperOS cloud configuration,
-  actual game/PowerHAL scene producers, Dolby/camera overrides, the 37/35 C image
-  HDR gate and full peak-video decisions are separate unfinished integration work.
+  actual game/PowerHAL scene producers, Dolby/camera overrides, the additional OEM
+  Gallery boost and full peak decisions are separate integration work.
   Their presence in stock binaries is not evidence that this implementation
   reproduces them. An unchanged sconfig=-1 selects the original default table;
   this jar does not invent game ids or silently write scenario nodes.
