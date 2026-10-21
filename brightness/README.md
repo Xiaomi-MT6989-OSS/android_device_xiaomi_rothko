@@ -12,16 +12,24 @@ user values, converts them together before BrightnessSetting is created and
 retains an absent user setting for new installs. Stored metadata prevents repeat
 migration. Shared default-display nits persistence remains disabled; it is not a
 substitute for the per-user range record. Non-default displays, even-dimmer maps
-and devices without explicit legacy bounds do not opt in. The current raw range
-is unchanged, so this preparation does not alter valid existing brightness values.
+and devices without explicit legacy bounds do not opt in. The current source
+candidate restores the full stock raw range [0.000854597, 1]; legacy project values
+still explicitly describe [0.000854597, 0.499938]. Migration preserves the old HAL
+input, rather than keeping a logical value that would increase physical brightness.
+This source candidate has not been Android-built or deployed.
 
 The stock DDC bytecode uses raw as its logical brightness and *linear* nits/raw
 splines. A16 normalizes raw to logical [0,1] and defaults to monotone interpolation;
 the device XML now explicitly requests linear interpolation. The five calibration
-knots remain stock. Default/dim/ramp values must be interpreted in the correct
-domain before opening the full range: the stock ramp integer conversion uses
-MIUI_BRIGHTNESS_ON (16383 from this model's overlay), not AOSP's 255. Neither those
-integers nor a raw-rate rescaling may be copied blindly into A16's HLG animator.
+knots remain stock. Raw default 0.0749603 and dim 0.000854597 are represented as
+logical 0.07416909 and 0 in the full range. The stock HBM node supplies the 6001 lux
+sunlight admission, zero quota and ratio map; A16 derives standard HDR data from it.
+There is no temporary HDR lux map or copied 0.415903 animation constant.
+
+The candidate retains LineageOS's upstream HLG animation. Factory raw-domain ramp
+math and its separate HDR/SDR per-frame callback are documented research, not a
+claim of identical HyperOS transition timing. Neither MIUI's 14-bit rate integers
+nor a constant rescaling is transplanted into the upstream animator.
 
 ## Sources and scope
 
@@ -88,8 +96,11 @@ expose the old private Binder transaction or guess eligibility from app names.
   Their presence in stock binaries is not evidence that this implementation
   reproduces them. An unchanged sconfig=-1 selects the original default table;
   this jar does not invent game ids or silently write scenario nodes.
-* The current 0.499938 raw maximum remains unchanged. This patch does not enable
-  1600/4500-nit HBM or claim full factory thermal/charging/performance equivalence.
+* The source candidate restores the calibration maximum to raw 1. HBM admission,
+  factory nits caps, freshness and content/peak limits still determine allowable
+  output; the last knot is not an unconditional target. Actual 1600/4500 calibrated
+  nits operation has not been device-validated or instrument-measured. This does
+  not claim full factory thermal/charging/performance equivalence.
 
 ## Checks
 

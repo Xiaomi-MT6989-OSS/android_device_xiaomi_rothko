@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8' standalone='yes' ?>
 <displayConfiguration>
-    <!-- Stock createBacklightConversionSplines uses linear nits/backlight splines even when
-         the XML omits interpolation. A16 needs this attribute to preserve that behavior. -->
+    <!-- Stock nits/backlight calibration is linear in the shipped DDC implementation.
+         A16 needs the explicit interpolation attribute to preserve those segments. -->
     <screenBrightnessMap interpolation="linear">
         <point>
             <value>0.000854597</value>
@@ -24,29 +24,36 @@
             <nits>4500.0</nits>
         </point>
     </screenBrightnessMap>
-    <!-- OS3.0.307.0 calibration is preserved above. The brightness resource raw maximum
-         is capped at the stock normal/HBM boundary 0.499938 (500 calibrated nits).
-         Do not restore the old HBM node: its transition would equal that raw maximum.
-         Higher calibration points are not reachable until OEM high-brightness thermal
-         policy has been restored and validated. -->
-    <hdrBrightnessConfig>
-        <!-- No additional lux-dependent cap within the already bounded normal range. -->
-        <brightnessMap>
-            <point><first>0</first><second>1</second></point>
-        </brightnessMap>
-        <brightnessIncreaseDebounceMillis>0</brightnessIncreaseDebounceMillis>
-        <brightnessDecreaseDebounceMillis>0</brightnessDecreaseDebounceMillis>
-        <screenBrightnessRampIncrease>0.415903</screenBrightnessRampIncrease>
-        <screenBrightnessRampDecrease>0.415903</screenBrightnessRampDecrease>
-        <minimumHdrPercentOfScreenForNbm>0</minimumHdrPercentOfScreenForNbm>
-        <minimumHdrPercentOfScreenForHbm>0</minimumHdrPercentOfScreenForHbm>
-        <allowInLowPowerMode>false</allowInLowPowerMode>
-        <!-- Original rothko ratio ceiling, still limited by the content's desired ratio. -->
+    <!-- Stock sunlight admission and ratio map. A16 HdrBrightnessData derives its
+         standard HDR fallback from this node; keep upstream transition animation.
+         The device policy independently limits ordinary SDR/HDR and conditional peak. -->
+    <highBrightnessMode enabled="true">
+        <!-- Transition point brightness from normal to HBM mode -->
+        <transitionPoint>0.499938</transitionPoint>
+        <!-- Minimum lux to enter HBM -->
+        <minimumLux>6001</minimumLux>
+        <!-- Time limitation for HBM-->
+        <timing>
+            <timeWindowSecs>0</timeWindowSecs>
+            <timeMaxSecs>0</timeMaxSecs>
+            <timeMinSecs>0</timeMinSecs>
+        </timing>
+        <!-- A16 does not consume stock thermalStatusLimit. The stock device policy
+             applies board-temperature/safety nits bounds to SDR and HDR instead. -->
+        <!-- Low power mode limitation for HBM -->
+        <allowInLowPowerMode>true</allowInLowPowerMode>
+        <minimumHdrPercentOfScreen>0</minimumHdrPercentOfScreen>
         <sdrHdrRatioMap>
-            <point><first>2.0</first><second>8.0</second></point>
-            <point><first>1200.0</first><second>8.0</second></point>
+            <point>
+                <sdrNits>2.0</sdrNits>
+                <hdrRatio>8.0</hdrRatio>
+            </point>
+            <point>
+                <sdrNits>1200.0</sdrNits>
+                <hdrRatio>8.0</hdrRatio>
+            </point>
         </sdrHdrRatioMap>
-    </hdrBrightnessConfig>
+    </highBrightnessMode>
     <ambientLightHorizonLong>1500</ambientLightHorizonLong>
     <ambientLightHorizonShort>1000</ambientLightHorizonShort>
 </displayConfiguration>

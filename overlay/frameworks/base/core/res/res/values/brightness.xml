@@ -11,18 +11,17 @@
          Recalculate these two values whenever the raw bounds change. PMS and DDC
          both consume these resources, so keep the conversion here, not in one loader. -->
     <item name="config_screenBrightnessDimFloat" type="dimen" format="float">0.0</item>
-    <item name="config_screenBrightnessSettingDefaultFloat" type="dimen" format="float">0.1484836</item>
-    <!-- AOSP interprets min/max as HAL raw backlight bounds, then normalizes UI 0..1.
-         Limit HDR/automatic brightness to the stock normal range until OEM HBM thermal
-         policy is restored and validated. -->
-    <item name="config_screenBrightnessSettingMaximumFloat" type="dimen" format="float">0.499938</item>
+    <item name="config_screenBrightnessSettingDefaultFloat" type="dimen" format="float">0.07416909</item>
+    <!-- A16 normalizes this full stock raw range to logical 0..1. HBM admission,
+         factory thermal/safety bounds and content caps determine the allowed output;
+         the last calibration knot is not an unconditional brightness target. -->
+    <item name="config_screenBrightnessSettingMaximumFloat" type="dimen" format="float">1.0</item>
     <!-- Previous project releases normalized this raw range to logical 0..1. Persist the
          domain with user brightness values before expanding it; new installs stay unset. -->
     <item name="config_screenBrightnessLegacyBacklightMinimumFloat" type="dimen" format="float">0.000854597</item>
     <item name="config_screenBrightnessLegacyBacklightMaximumFloat" type="dimen" format="float">0.499938</item>
     <!-- Keep per-user raw-domain settings; do not restore a shared foldable-display nits value. -->
     <bool name="config_persistBrightnessNitsForDefaultDisplay">false</bool>
-    <item name="config_brightnessRampRateFast" type="dimen" format="float">0.415903</item>
     <integer name="config_autoBrightnessBrighteningLightDebounce">1000</integer>
     <integer name="config_autoBrightnessDarkeningLightDebounce">1000</integer>
     <!-- Use the stock lux/nits curve; HyperOS raw 14-bit LCD integers are not AOSP 8-bit values. -->
