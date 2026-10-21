@@ -92,9 +92,9 @@ cc_library_static {
     cpp_std: "c++20",
     cflags: ["-Wall", "-Wextra", "-Werror", "-DBINDER_STABILITY_SUPPORT"],
     local_include_dirs: ["controller"],
-    // ui::Dataspace values come from the platform ui headers; ui/GraphicTypes.h
-    // in turn needs the stable AIDL and HIDL graphics-common types.
-    defaults: ["android.hardware.graphics.common-ndk_shared"],
+    // ui::Dataspace values come from the platform ui headers. The stock V4 PQ
+    // client reaches graphics-common V4, so this static controller must use
+    // that same generated AIDL generation rather than the current V7 defaults.
     header_libs: [
         "libsystem_headers",
         "libui_headers",
@@ -121,9 +121,13 @@ cc_library_static {
         "libbinder_ndk",
         "liblog",
         "libutils",
+        "android.hardware.graphics.common-V4-ndk",
         "android.hardware.graphics.common@1.2",
         "vendor.lineage.livedisplay-V1-ndk",
         "vendor.xiaomi.hardware.displayfeature_aidl-V2-ndk",
+        // Static-library shared dependencies do not propagate to the binary;
+        // use the V4 PQ reader's matching graphics-common generation.
+        "android.hardware.graphics.common-V4-ndk",
         "vendor.mediatek.hardware.pq_aidl-V4-ndk",
     ],
 }
