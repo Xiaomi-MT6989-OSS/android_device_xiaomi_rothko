@@ -253,6 +253,8 @@ ro.vendor.mtk_mipc_support=1
 persist.radio.multisim.config=dsds
 persist.vendor.radio.msimmode=dsds
 ro.telephony.sim.count=2
+# Stock RIL needs AP mode 3 for standard UICC application query/enablement.
+ro.vendor.mtk_sim_card_onoff=3
 persist.vendor.radio.smart.data.switch=1
 persist.vendor.radio.flashless.fsm=0
 persist.vendor.radio.flashless.fsm_cst=0
