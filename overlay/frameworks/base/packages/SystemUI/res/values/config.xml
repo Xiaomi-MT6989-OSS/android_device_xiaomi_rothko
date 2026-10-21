@@ -6,4 +6,23 @@
     <bool name="doze_display_state_supported">true</bool>
     <!-- Stock MTK HWC exposes SUSPEND; preserve the standard stable-AOD power state. -->
     <bool name="doze_suspend_display_state_supported">true</bool>
+    <!-- Stock MIUIAod subscribes to wake-up sensor type 33171029. Its values
+         are OEM AOD states, not the generic NIGHT/LOW/HIGH/SUN buckets. -->
+    <string name="doze_brightness_sensor_type" translatable="false">xiaomi.sensor.aod</string>
+    <integer-array name="config_doze_brightness_sensor_to_scrim_opacity">
+        <item>-1</item>
+        <item>-1</item>
+        <item>-1</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+    </integer-array>
+    <integer-array name="config_doze_brightness_sensor_to_wallpaper_scrim_opacity">
+        <item>-1</item>
+        <item>-1</item>
+        <item>-1</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+    </integer-array>
 </resources>

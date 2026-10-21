@@ -56,4 +56,21 @@
     </highBrightnessMode>
     <ambientLightHorizonLong>1500</ambientLightHorizonLong>
     <ambientLightHorizonShort>1000</ambientLightHorizonShort>
+    <!-- Stock DozeBrightnessStrategyImpl uses calibrated 5/60 nit targets.
+         These are backlight values interpolated from this panel's stock map;
+         A16 DisplayDeviceConfig.loadDozeBrightness converts them to framework
+         brightness. Do not replace them with brightness percentages.
+         AOD sensor values 3/5 select low, 4 selects high. Values 0..2 are not
+         brightness buckets; keep brightness and let the proximity path decide
+         whether the display should pause. The dedicated OEM AOD command route
+         is required separately; this table alone does not restore that route. -->
+    <dozeBrightnessSensorValueToBrightness>
+        <item>-1</item>
+        <item>-1</item>
+        <item>-1</item>
+        <item>0.003861124</item>
+        <item>0.058980776</item>
+        <item>0.003861124</item>
+    </dozeBrightnessSensorValueToBrightness>
+    <defaultDozeBrightness>0.003861124</defaultDozeBrightness>
 </displayConfiguration>
