@@ -24,6 +24,8 @@ public final class ModifierPipelineTest {
         static float cap = 160;
         static int stopped;
         static boolean hdrKnown, hdrPresent;
+        static boolean separateSdr;
+        static float sdrCap;
         public Policy(Context c, Handler h, Runnable changed) { }
         public void setDisplayState(int state) { }
         public void setAutomaticBrightness(boolean enabled) { }
@@ -32,6 +34,9 @@ public final class ModifierPipelineTest {
             hdrKnown = known; hdrPresent = present;
         }
         public float getMaxBrightnessNits() { return cap; }
+        public float getMaxSdrBrightnessNits(float common) {
+            return separateSdr ? sdrCap : super.getMaxSdrBrightnessNits(common);
+        }
         public void stop() { stopped++; }
         public void dump(PrintWriter p) { }
     }
@@ -73,6 +78,25 @@ public final class ModifierPipelineTest {
         state = new DisplayBrightnessState.Builder();
         modifier.apply(request, state);
         equal(1, state.getMaxBrightness(), "explicit unlimited policy");
+        // Deliberately simple 2..4500 calibration fixture: tests bound propagation, not the
+        // physical panel spline. A tighter SDR bound must not erase HDR's common headroom.
+        ddc.maxNits = 4500; Policy.cap = 4500; Policy.separateSdr = true; Policy.sdrCap = 1600;
+        state = new DisplayBrightnessState.Builder(); state.setBrightness(1);
+        modifier.apply(request, state);
+        equal(1, state.getMaxBrightness(), "common maximum still permits eligible HDR");
+        equal(1598f / 4498, state.getBrightness(), "SDR target keeps its independent normal bound");
+        aggregate = new BrightnessClamperController.ModifiersAggregatedState();
+        modifier.applyStateChange(aggregate);
+        equal(1, aggregate.mMaxBrightness, "SDR white point does not cap the HDR aggregate");
+        state = new DisplayBrightnessState.Builder(); state.setBrightness(1); state.setMaxBrightness(0.2f);
+        modifier.apply(request, state);
+        equal(0.2f, state.getMaxBrightness(), "stricter external bound preserved for HDR");
+        equal(0.2f, state.getBrightness(), "stricter external bound also wins over SDR target");
+        Policy.sdrCap = Float.NaN;
+        state = new DisplayBrightnessState.Builder(); state.setBrightness(1);
+        modifier.apply(request, state);
+        equal(0, state.getBrightness(), "invalid SDR output cannot grant a higher SDR white point");
+        Policy.separateSdr = false; ddc.maxNits = 500;
         modifier.setHdrContent(true, true);
         equal(1, Policy.hdrKnown && Policy.hdrPresent ? 1 : 0, "actual HDR report reaches provider");
         modifier.setHdrContent(false, false);

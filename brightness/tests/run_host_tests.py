@@ -153,8 +153,9 @@ public class BrightnessInfo { public static final int BRIGHTNESS_MAX_REASON_THER
 public class DisplayManagerInternal { public static class DisplayPowerRequest { public boolean useAutoBrightness; } }
 """,
     "com/android/server/display/DisplayDeviceConfig.java": """package com.android.server.display;
-public class DisplayDeviceConfig { public float[] getNits() { return new float[]{2,500}; }
- public float getBacklightFromNits(float n) { return (n-2)/498; }
+public class DisplayDeviceConfig { public float maxNits=500;
+ public float[] getNits() { return new float[]{2,maxNits}; }
+ public float getBacklightFromNits(float n) { return (n-2)/(maxNits-2); }
  public float getBrightnessFromBacklight(float b) { return b; } }
 """,
     "com/android/server/display/brightness/BrightnessReason.java": """package com.android.server.display.brightness;

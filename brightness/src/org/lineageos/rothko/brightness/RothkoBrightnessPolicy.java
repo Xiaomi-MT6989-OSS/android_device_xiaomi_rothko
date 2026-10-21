@@ -161,6 +161,13 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
         updateOpr(false);
     }
 
+    @Override
+    public float getMaxSdrBrightnessNits(float commonMaxNits) {
+        // Factory adjustBrightnessToPeak only raises the isHdrBrightness=true branch to 1.
+        // The SDR white point keeps the normal segment even when HDR peak is eligible.
+        return Math.min(commonMaxNits, StockOprBrightnessState.NORMAL_MAX_NITS);
+    }
+
     private void updateOpr(boolean contentChanged) {
         float threshold = mHdrKnown && mHdrPresent
                 ? StockOprBrightnessState.PEAK_AMBIENT_LUX_THRESHOLD

@@ -101,6 +101,14 @@ permission to change the current 0.499938 raw maximum. The original Gallery toke
 request, 37/35 C gate and up-to-2.25 boost path remain separate unfinished work;
 their limits must not replace the generic HDR ratio map indiscriminately.
 
+Peak permission applies to HDR only: `getMaxSdrBrightnessNits(commonMaxNits)` keeps
+the SDR white point at min(common cap, 1600). The generic hook uses the same cap
+snapshot for this derivation, restricts the SDR target before HDR conversion and
+preserves the common maximum for HDR. A stricter independent cap wins for both.
+The default method returns the common cap, so other policies keep their original
+behavior. This separation is required before opening the full raw range; raising
+the common maximum alone would incorrectly relax the SDR target too.
+
 `StockOprBrightnessState` consumes the full PQ reply: transport/result, cached frame counter,
 channel 0, stock format 9, 256 bins, and nonzero bin total. A valid black image is
 accepted (all pixels in bin 0); a zeroed read failure is rejected. First-session

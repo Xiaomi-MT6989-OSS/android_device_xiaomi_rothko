@@ -243,9 +243,13 @@ public final class PolicyLifecycleTest {
         equal(1600, policy.getMaxBrightnessNits(), "pre-HDR gray cannot grant peak on new baseline");
         SystemClock.now += 200; frame[0]++; worker.runDue(); display.runDue();
         equal(4500, policy.getMaxBrightnessNits(), "fresh dark RGB HDR plus high lux permits stock peak segment");
+        equal(1600, policy.getMaxSdrBrightnessNits(policy.getMaxBrightnessNits()),
+                "HDR peak cannot raise the ordinary SDR white point");
         rgb.safety = "100"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
         worker.runDue(); display.runDue();
         equal(100, policy.getMaxBrightnessNits(), "stock safety bound wins over eligible HDR peak");
+        equal(100, policy.getMaxSdrBrightnessNits(policy.getMaxBrightnessNits()),
+                "lower stock safety bound applies to SDR as well");
         rgb.safety = "0"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
         policy.setAmbientLux(100000);
         worker.runDue(); display.runDue();
