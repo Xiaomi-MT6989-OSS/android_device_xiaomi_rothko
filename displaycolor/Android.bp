@@ -142,7 +142,12 @@ cc_binary {
     cflags: ["-Wall", "-Wextra", "-Werror"],
     local_include_dirs: ["controller"],
     srcs: ["service.cpp"],
-    static_libs: ["librothko_display_color_controller"],
+    static_libs: [
+        "librothko_display_color_controller",
+        // A static library's private static dependencies are not emitted in the
+        // final executable's link response; the PQ reader must be named here.
+        "librothko_stock_pq_reader",
+    ],
     shared_libs: [
         "libbase",
         "libbinder_ndk",
