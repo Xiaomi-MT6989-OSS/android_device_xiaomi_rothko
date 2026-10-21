@@ -5,6 +5,24 @@ import MIUI services or write thermal, charging or panel nodes. The small generi
 framework hook is separately committed; the class name is selected by the device
 overlay and is empty on other devices.
 
+Brightness settings also opt in to the separate framework raw-range migration:
+legacy project values used [0.000854597, 0.499938] normalized to logical [0,1].
+PersistentDataStore records the current affine range alongside all per-display
+user values, converts them together before BrightnessSetting is created and
+retains an absent user setting for new installs. Stored metadata prevents repeat
+migration. Shared default-display nits persistence remains disabled; it is not a
+substitute for the per-user range record. Non-default displays, even-dimmer maps
+and devices without explicit legacy bounds do not opt in. The current raw range
+is unchanged, so this preparation does not alter valid existing brightness values.
+
+The stock DDC bytecode uses raw as its logical brightness and *linear* nits/raw
+splines. A16 normalizes raw to logical [0,1] and defaults to monotone interpolation;
+the device XML now explicitly requests linear interpolation. The five calibration
+knots remain stock. Default/dim/ramp values must be interpreted in the correct
+domain before opening the full range: the stock ramp integer conversion uses
+MIUI_BRIGHTNESS_ON (16383 from this model's overlay), not AOSP's 255. Neither those
+integers nor a raw-rate rescaling may be copied blindly into A16's HLG animator.
+
 ## Sources and scope
 
 `configs/displayconfig/common_multi_factor_thermal_brightness_control.xml` is an

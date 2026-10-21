@@ -10,6 +10,12 @@
          Limit HDR/automatic brightness to the stock normal range until OEM HBM thermal
          policy is restored. Keep the known logical default/dim values for this batch. -->
     <item name="config_screenBrightnessSettingMaximumFloat" type="dimen" format="float">0.499938</item>
+    <!-- Previous project releases normalized this raw range to logical 0..1. Persist the
+         domain with user brightness values before expanding it; new installs stay unset. -->
+    <item name="config_screenBrightnessLegacyBacklightMinimumFloat" type="dimen" format="float">0.000854597</item>
+    <item name="config_screenBrightnessLegacyBacklightMaximumFloat" type="dimen" format="float">0.499938</item>
+    <!-- Keep per-user raw-domain settings; do not restore a shared foldable-display nits value. -->
+    <bool name="config_persistBrightnessNitsForDefaultDisplay">false</bool>
     <bool name="config_hdrBrightnessThermalSafetyEnabled">true</bool>
     <item name="config_brightnessRampRateFast" type="dimen" format="float">0.415903</item>
     <integer name="config_autoBrightnessBrighteningLightDebounce">1000</integer>
