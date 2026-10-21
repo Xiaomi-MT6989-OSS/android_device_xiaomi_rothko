@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='utf-8' standalone='yes' ?>
 <displayConfiguration>
-    <!-- Global Brightness-Nit mapping -->
-    <screenBrightnessMap>
+    <!-- Stock createBacklightConversionSplines uses linear nits/backlight splines even when
+         the XML omits interpolation. A16 needs this attribute to preserve that behavior. -->
+    <screenBrightnessMap interpolation="linear">
         <point>
             <value>0.000854597</value>
             <nits>2.0</nits>
