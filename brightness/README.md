@@ -136,7 +136,7 @@ grants peak, consistent with the packaged flag being false. Native histogram
 ownership still requires ON, a live consumer lease and acknowledged OEM enable;
 HDR no longer unconditionally prevents a requested peak sample. Lower thermal or
 safety caps always win. This is a conditional limit, not a brightness target or
-permission to change the current 0.499938 raw maximum. The original Gallery token
+an unconditional target at the full-range raw endpoint of 1. The original Gallery token
 request, 37/35 C gate and up-to-2.25 boost path remain separate unfinished work;
 their limits must not replace the generic HDR ratio map indiscriminately.
 
