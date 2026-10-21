@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Brightness values recovered from rothko OS3.0.307.0 stock resources. -->
+<!-- OS3.0.307.0 stock calibration, converted where A16 uses logical brightness. -->
 <resources>
     <string name="config_deviceSpecificBrightnessPolicy" translatable="false">org.lineageos.rothko.brightness.RothkoBrightnessPolicy</string>
     <bool name="config_automatic_brightness_available">true</bool>
     <item name="config_screenBrightnessSettingMinimumFloat" type="dimen" format="float">0.000854597</item>
-    <item name="config_screenBrightnessDimFloat" type="dimen" format="float">0.000854597</item>
-    <item name="config_screenBrightnessSettingDefaultFloat" type="dimen" format="float">0.0749603</item>
+    <!-- DDC normalizes raw [min,max] to logical [0,1]. Stock dim/default are raw
+         0.000854597 / 0.0749603; (raw-min)/(max-min) preserves their HAL input.
+         Recalculate these two values whenever the raw bounds change. PMS and DDC
+         both consume these resources, so keep the conversion here, not in one loader. -->
+    <item name="config_screenBrightnessDimFloat" type="dimen" format="float">0.0</item>
+    <item name="config_screenBrightnessSettingDefaultFloat" type="dimen" format="float">0.1484836</item>
     <!-- AOSP interprets min/max as HAL raw backlight bounds, then normalizes UI 0..1.
          Limit HDR/automatic brightness to the stock normal range until OEM HBM thermal
-         policy is restored. Keep the known logical default/dim values for this batch. -->
+         policy is restored and validated. -->
     <item name="config_screenBrightnessSettingMaximumFloat" type="dimen" format="float">0.499938</item>
     <!-- Previous project releases normalized this raw range to logical 0..1. Persist the
          domain with user brightness values before expanding it; new installs stay unset. -->
