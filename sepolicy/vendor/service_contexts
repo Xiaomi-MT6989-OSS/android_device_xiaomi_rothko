@@ -15,5 +15,6 @@ vendor.xiaomi.hardware.fx.tunnel.IMiFxTunnel/default u:object_r:vendor_fingerpri
 
 vendor.xiaomi.rothko.display.color.IRothkoDisplayColor/default u:object_r:hal_livedisplay_rothko_private_service:s0
 vendor.xiaomi.rothko.display.brightness.IRothkoBrightness/default u:object_r:rothko_brightness_service:s0
+vendor.xiaomi.rothko.display.brightness.IRothkoDozeBrightness/default u:object_r:rothko_brightness_service:s0
 
 vendor.tms.tmsnfc_aidl.ITmsNfc/default u:object_r:tmsnfc_aidl_service:s0

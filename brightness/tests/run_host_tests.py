@@ -126,7 +126,8 @@ public class HandlerThread { public HandlerThread(String n) {} public void start
 public class SystemProperties { public static boolean getBoolean(String k, boolean fallback) { return fallback; } }
 """,
     "android/view/Display.java": """package android.view;
-public class Display { public static final int STATE_OFF=1, STATE_ON=2, DEFAULT_DISPLAY=0; }
+public class Display { public static final int STATE_OFF=1, STATE_ON=2, STATE_DOZE=3,
+ STATE_DOZE_SUSPEND=4, DEFAULT_DISPLAY=0; }
 """,
     "android/content/res/Resources.java": """package android.content.res;
 public class Resources { private final String name; public Resources(String n) { name=n; }
@@ -138,10 +139,25 @@ public class Context { private String name=""; public Context() {} public Contex
 """,
     "android/util/Slog.java": """package android.util;
 public class Slog { public static int e(String t,String m,Throwable e) { return 0; }
+ public static int e(String t,String m) { return 0; }
  public static int w(String t,String m) { return 0; } }
 """,
     "com/android/internal/R.java": """package com.android.internal;
-public class R { public static class string { public static int config_deviceSpecificBrightnessPolicy=1; } }
+public class R { public static class string { public static int config_deviceSpecificBrightnessPolicy=1;
+ public static int config_deviceSpecificDozeBrightnessController=2; } }
+""",
+    "com/android/internal/display/BrightnessSynchronizer.java": """package com.android.internal.display;
+// Android integer/float-domain conversion fixture; production API is checked separately.
+public class BrightnessSynchronizer { public static int brightnessFloatToInt(float v) {
+ if (Float.isNaN(v)) return -1; if (Math.abs(v + 1f) < 0.001f) return 0;
+ return Math.round(1f + 254f * Math.max(0f, Math.min(1f, v))); } }
+""",
+    "vendor/xiaomi/rothko/display/brightness/IRothkoDozeBrightness.java": """package vendor.xiaomi.rothko.display.brightness;
+import android.os.*;
+public interface IRothkoDozeBrightness {
+ IBinder asBinder(); boolean apply(long physicalDisplayId,int mode) throws RemoteException;
+ class Stub { public static IRothkoDozeBrightness asInterface(IBinder b) { return null; } }
+}
 """,
     "android/os/PowerManager.java": """package android.os;
 public class PowerManager { public static final float BRIGHTNESS_MIN=0, BRIGHTNESS_MAX=1; }
@@ -199,6 +215,7 @@ for relative, text in fixtures.items():
 sources += list((tree / "brightness/src").rglob("*.java"))
 sources += list((tree / "brightness/tests").glob("*.java"))
 sources.append(root / "frameworks/base/services/core/java/com/android/server/display/brightness/DeviceBrightnessPolicy.java")
+sources.append(root / "frameworks/base/services/core/java/com/android/server/display/DeviceDozeBrightnessController.java")
 for filename in ("DeviceBrightnessModifier.java", "BrightnessStateModifier.java"):
     sources.append(root / "frameworks/base/services/core/java/com/android/server/display/brightness/clamper" / filename)
 jdk = root / "prebuilts/jdk/jdk21/linux-x86/bin"
@@ -206,7 +223,7 @@ classes = output / "classes"
 classes.mkdir(exist_ok=True)
 subprocess.run([str(jdk / "javac"), "-d", str(classes), *map(str, sources)], check=True)
 for test in ("StockBrightnessTest", "PolicyLifecycleTest", "StockOprBrightnessTest", "OprClientTest",
-             "StockPeakTest"):
+             "StockPeakTest", "DozeBrightnessTest"):
     subprocess.run([str(jdk / "java"), "-cp", str(classes),
                     "org.lineageos.rothko.brightness." + test, str(config), str(vectors)], check=True)
 subprocess.run([str(jdk / "java"), "-cp", str(classes),

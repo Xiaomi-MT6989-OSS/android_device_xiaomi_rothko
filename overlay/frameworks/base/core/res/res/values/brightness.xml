@@ -4,6 +4,7 @@
     <!-- Factory board-temperature and safety-nits bounds apply to both SDR and HDR.
          Gallery's separate 37/35 C gate is for its explicit OEM boost request. -->
     <string name="config_deviceSpecificBrightnessPolicy" translatable="false">org.lineageos.rothko.brightness.RothkoBrightnessPolicy</string>
+    <string name="config_deviceSpecificDozeBrightnessController" translatable="false">org.lineageos.rothko.brightness.RothkoDozeBrightnessController</string>
     <bool name="config_automatic_brightness_available">true</bool>
     <item name="config_screenBrightnessSettingMinimumFloat" type="dimen" format="float">0.000854597</item>
     <!-- DDC normalizes raw [min,max] to logical [0,1]. Stock dim/default are raw

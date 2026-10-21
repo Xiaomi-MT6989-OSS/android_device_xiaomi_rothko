@@ -3,6 +3,8 @@
 #pragma once
 #include <aidl/vendor/lineage/livedisplay/BnDisplayModes.h>
 #include <aidl/vendor/xiaomi/rothko/display/color/BnRothkoDisplayColor.h>
+#include <aidl/vendor/xiaomi/rothko/display/brightness/BnRothkoDozeBrightness.h>
+#include <future>
 #include <atomic>
 #include <condition_variable>
 #include <functional>
@@ -24,6 +26,7 @@ public:
             const std::shared_ptr<bridge::IColorPolicyCallback>& listener) override;
     ndk::ScopedAStatus reportState(const bridge::DisplayState& state) override;
     ndk::ScopedAStatus setMode(int32_t mode, bool makeDefault);
+    bool applyDozeBrightness(int64_t physicalDisplayId, int32_t mode);
     int32_t currentMode() const { return mCurrent.load(); }
     int32_t defaultMode() const { return mDefault.load(); }
     const std::shared_ptr<HistogramService>& histogram() const { return mHistogram; }
@@ -37,6 +40,10 @@ private:
         bool done = false;
         bool ok = false;
         int error = 1;
+    };
+    struct DozeRequest {
+        int32_t mode;
+        std::promise<bool> completion;
     };
     void run();
     void finish(const std::shared_ptr<Request>& request, bool ok, int error);
@@ -52,6 +59,7 @@ private:
     std::shared_ptr<bridge::IColorPolicyCallback> mListener;
     std::optional<bridge::DisplayState> mState;
     std::shared_ptr<Request> mRequest;
+    std::shared_ptr<DozeRequest> mDozeRequest;
     int64_t mSession = 0;
     int64_t mConnection = 0;
     int64_t mLastSequence = 0;
@@ -81,6 +89,16 @@ public:
     ndk::ScopedAStatus getCurrentDisplayMode(live::DisplayMode* mode) override;
     ndk::ScopedAStatus getDefaultDisplayMode(live::DisplayMode* mode) override;
     ndk::ScopedAStatus setDisplayMode(int32_t mode, bool makeDefault) override;
+private:
+    std::shared_ptr<Controller> mController;
+};
+
+class DozeBrightness final : public
+        aidl::vendor::xiaomi::rothko::display::brightness::BnRothkoDozeBrightness {
+public:
+    explicit DozeBrightness(std::shared_ptr<Controller> controller)
+          : mController(std::move(controller)) {}
+    ndk::ScopedAStatus apply(int64_t physicalDisplayId, int32_t mode, bool* applied) override;
 private:
     std::shared_ptr<Controller> mController;
 };

@@ -181,6 +181,25 @@ Controller::~Controller() {
     mStop.store(true);
     mChanged.notify_all();
     if (mWorker.joinable()) mWorker.join();
+    std::lock_guard lock(mMutex);
+    if (mDozeRequest) mDozeRequest->completion.set_value(false);
+}
+
+bool Controller::applyDozeBrightness(int64_t physicalDisplayId, int32_t mode) {
+    // Pinned built-in panel; never route a secondary display to OEM display 0.
+    if (physicalDisplayId != 4627039422300187648LL || mode < 0 || mode > 2) return false;
+    auto request = std::make_shared<DozeRequest>();
+    request->mode = mode;
+    auto completion = request->completion.get_future();
+    {
+        std::lock_guard lock(mMutex);
+        if (mStop.load() || mDozeRequest) return false;
+        mDozeRequest = request;
+    }
+    mChanged.notify_all();
+    // Ordered with actual display power work. No timeout that lets an in-flight
+    // OEM write complete after the caller has advanced to a newer power state.
+    return completion.get();
 }
 
 ndk::ScopedAStatus Controller::setListener(
@@ -397,6 +416,7 @@ void Controller::run() {
         std::shared_ptr<bridge::IColorPolicyCallback> listener;
         std::shared_ptr<Request> queued;
         std::shared_ptr<Request> nextQueued;
+        std::shared_ptr<DozeRequest> doze;
         int64_t session = 0, connection = 0, sceneRevision = 0;
         {
             std::unique_lock lock(mMutex);
@@ -407,6 +427,7 @@ void Controller::run() {
             connection = mConnection;
             sceneRevision = mSceneRevision;
             queued = std::exchange(mRequest, nullptr);
+            doze = std::exchange(mDozeRequest, nullptr);
         }
 
         // 1. Controlled generation. A restarted SurfaceFlinger can reuse the same
@@ -522,6 +543,17 @@ void Controller::run() {
                     restore = true;
                 }
             }
+        }
+
+        // Dedicated doze backlight belongs to LocalDisplayAdapter's ordered
+        // power work, including the request just BEFORE entering suspend. It
+        // cannot be gated on a later SF scene report or an SDR colour policy.
+        // This remains the sole OEM command worker, shared with colour/PQ.
+        if (doze) {
+            const bool ok = backend && observation && !observation->dead->load()
+                    && backend->setFeature(0, 25, doze->mode, 255).isOk()
+                    && !observation->dead->load();
+            doze->completion.set_value(ok);
         }
 
         // 5. A missing/dead SF scene cannot authorize either colour policy or
@@ -835,5 +867,13 @@ ndk::ScopedAStatus DisplayModes::getDefaultDisplayMode(live::DisplayMode* mode) 
 }
 ndk::ScopedAStatus DisplayModes::setDisplayMode(int32_t mode, bool makeDefault) {
     return mController->setMode(mode, makeDefault);
+}
+ndk::ScopedAStatus DozeBrightness::apply(int64_t physicalDisplayId, int32_t mode, bool* applied) {
+    *applied = false;
+    if (AIBinder_getCallingUid() != 1000) {
+        return ndk::ScopedAStatus::fromExceptionCode(EX_SECURITY);
+    }
+    *applied = mController->applyDozeBrightness(physicalDisplayId, mode);
+    return ndk::ScopedAStatus::ok();
 }
 } // namespace rothko::color

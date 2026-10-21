@@ -1,31 +1,58 @@
-# Stock AOD brightness integration status
+# Stock AOD brightness route
 
-The stock MIUIAod brightness controller subscribes to wake-up sensor type
-33171029 (`xiaomi.sensor.aod`). Values 3 and 5 choose its low brightness mode;
-value 4 chooses high. The stock framework calibrates those targets from 5 and
-60 nits using the panel's DDC map. They are not the upstream NIGHT/LOW/HIGH/SUN
-sensor buckets.
+The stock MIUIAod controller subscribes to wake-up sensor type 33171029
+(`xiaomi.sensor.aod`). Events 3 and 5 choose low brightness; event 4 chooses
+high. The DDC calibration derives these targets from 5 and 60 nits, using the
+stock 2..500-nit linear segment. These are not upstream NIGHT/LOW/HIGH/SUN
+buckets. Unknown events retain brightness; proximity still controls AOD pause.
 
-SystemUI now names the actual sensor. The display configuration provides the
-corresponding backlight values and a low default. Unknown/non-brightness events
-retain the current brightness. Existing proximity handling remains responsible
-for pausing AOD. The calibration uses the stock linear segment from 2 to 500
-nits; A16 `DisplayDeviceConfig.loadDozeBrightness` converts these backlight
-values to framework brightness.
+SystemUI selects that sensor. DDC supplies the event mapping and low default.
+A16 `DisplayDeviceConfig.loadDozeBrightness` converts raw backlight values to
+framework brightness. The route compares actual and default brightness after
+`BrightnessSynchronizer.brightnessFloatToInt`, matching stock quantization.
+Screen-off dimming below the low target still selects the panel low mode.
 
-This configuration is only one part of the adaptation. Stock LocalDisplayAdapter
-uses a separate doze brightness path in DOZE/DOZE_SUSPEND, through DisplayFeature
-25 to the original panel driver. It restores normal backlight before resetting
-the applied doze mode to 0. That route is not implemented by these resources.
-In particular, a framework brightness of 0 can still map to a positive ordinary
-backlight; this does not prove the panel's dedicated doze mode is configured.
+## Ordered application
 
-Do not work around a black AOD by keeping the panel ON, disabling suspend, forcing
-ordinary refresh rates, or periodically writing brightness. The driver uses its
-cached doze mode for FOD parameters, so any later route must preserve original
-FodEngine ownership of local high brightness and display readiness.
+The optional framework `DeviceDozeBrightnessController` is selected by a device
+resource and defaults to absent elsewhere. Its constructor performs no IO.
+LocalDisplayAdapter applies it in the existing power-work Runnable outside the
+global display lock, using that Runnable's target state. A power-state change
+also applies the route if the numerical brightness has not changed.
 
-Validation so far: physical-nits interpolation checks, OEM event/scrim mapping,
-AAPT2 resource compilation and whitespace checks. No ROM build or device
-validation of these resource changes has been performed. Dedicated route and
-FOD/pulse/rapid power-transition integration remain pending.
+Only the verified built-in physical display is eligible. DOZE/DOZE_SUSPEND skip
+ordinary backlight and synchronously request stock DisplayFeature 25, cookie
+255: HIGH=1 or LOW=2. On exit, normal backlight is applied first, followed by
+NORMAL=0. The original HAL and driver own the DDIC commands and mode cache.
+FodEngine retains ownership of local high brightness and display readiness.
+
+The device-private IRothkoDozeBrightness transport is separate from read-only
+histogram sampling. Only system_server can call it. It uses the existing sole
+OEM command worker; it is not gated on a later SurfaceFlinger scene report.
+There is no timer, unsolicited replay, direct ioctl, or additional OEM writer.
+A failed reply still requires cleanup, since it cannot prove no panel write
+occurred. Failed cleanup remains pending until the next normal brightness
+application; successful cleanup is not repeatedly sent.
+
+The synchronous request waits for command completion. Abandoning a timed-out
+write could let it run after a newer power transition. Consequently a stalled
+OEM Binder call can delay display power work; this is a runtime validation risk,
+not covered by host tests. Service absence/failure is logged, and is not treated
+as successful panel configuration. Optional service registration failure does
+not crash the existing colour controller.
+
+## Validation and limits
+
+Passed: physical-nits/event mapping checks, AAPT2 resource compilation, fresh
+Java/NDK AIDL generation, native controller/service syntax checks, and compilation
+of the actual LocalDisplayAdapter plus device controller against existing
+platform API artifacts. Host tests cover mode quantization, route selection,
+AOD/pulse exit/re-entry, uncertain failure cleanup, and foreign-display exclusion.
+Host fixtures do not validate Binder scheduling or panel behavior.
+
+No ROM build or deployment has been performed for this route. Pending device
+checks: persistent AOD and minute updates; cover/uncover; suspend/pulse/AOD;
+fully-off and AOD fingerprint first press; wrong-finger release; power-button
+wake; rapid sleep/wake; service restart. Preserve logs on black screen or stuck
+illumination. This route does not establish physical 30 Hz operation and does
+not modify refresh-rate overlay counters, force ON, or disable suspend.

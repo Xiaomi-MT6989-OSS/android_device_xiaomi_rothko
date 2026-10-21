@@ -31,9 +31,15 @@ int main() {
 
     auto controller = ndk::SharedRefBase::make<Controller>();
     auto modes = ndk::SharedRefBase::make<DisplayModes>(controller);
+    auto doze = ndk::SharedRefBase::make<DozeBrightness>(controller);
 
     addService("vendor.lineage.livedisplay.IDisplayModes/default", modes);
     addService("vendor.xiaomi.rothko.display.color.IRothkoDisplayColor/default", controller);
+    const binder_status_t dozeStatus = AServiceManager_addService(doze->asBinder().get(),
+            "vendor.xiaomi.rothko.display.brightness.IRothkoDozeBrightness/default");
+    if (dozeStatus != STATUS_OK) {
+        LOG(ERROR) << "Doze backlight transport registration failed: " << dozeStatus;
+    }
 
     // Optional brightness transport failure must not restart a working colour
     // controller. The consumer fails closed and retries if it is unavailable.
