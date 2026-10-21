@@ -109,6 +109,17 @@ The default method returns the common cap, so other policies keep their original
 behavior. This separation is required before opening the full raw range; raising
 the common maximum alone would incorrectly relax the SDR target too.
 
+The production modifier now takes an immutable `BrightnessCap` snapshot containing
+the common/SDR bounds and dominant cause. A finite factory thermal/safety bound
+that is lower than or equal to the content bound reports THERMAL. Normal/peak
+content limits, and unavailable/stale-input fallback, report DEVICE_POLICY instead;
+they do not assert overheating or add a thermal throttling marker. Both limits
+still constrain brightness, and a preceding stricter protection keeps its own
+cause. A cause-only change also notifies the display controller. Legacy optional
+policies retain the default thermal contract; devices with an empty policy
+resource retain upstream behavior. This is an adaptation reporting distinction,
+not a change to factory thresholds, failure caps or the raw backlight range.
+
 `StockOprBrightnessState` consumes the full PQ reply: transport/result, cached frame counter,
 channel 0, stock format 9, 256 bins, and nonzero bin total. A valid black image is
 accepted (all pixels in bin 0); a zeroed read failure is rejected. First-session

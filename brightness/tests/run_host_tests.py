@@ -147,7 +147,12 @@ public class R { public static class string { public static int config_deviceSpe
 public class PowerManager { public static final float BRIGHTNESS_MIN=0, BRIGHTNESS_MAX=1; }
 """,
     "android/hardware/display/BrightnessInfo.java": """package android.hardware.display;
-public class BrightnessInfo { public static final int BRIGHTNESS_MAX_REASON_THERMAL=1; }
+public class BrightnessInfo {
+ public @interface BrightnessMaxReason {}
+ public static final int BRIGHTNESS_MAX_REASON_NONE=0, BRIGHTNESS_MAX_REASON_THERMAL=1,
+  BRIGHTNESS_MAX_REASON_POWER_IC=2, BRIGHTNESS_MAX_REASON_DEVICE_POLICY=6;
+ public static String briMaxReasonToString(int r) { return Integer.toString(r); }
+}
 """,
     "android/hardware/display/DisplayManagerInternal.java": """package android.hardware.display;
 public class DisplayManagerInternal { public static class DisplayPowerRequest { public boolean useAutoBrightness; } }
@@ -159,16 +164,18 @@ public class DisplayDeviceConfig { public float maxNits=500;
  public float getBrightnessFromBacklight(float b) { return b; } }
 """,
     "com/android/server/display/brightness/BrightnessReason.java": """package com.android.server.display.brightness;
-public class BrightnessReason { public static int MODIFIER_THROTTLED=1; public void addModifier(int m) {} }
+public class BrightnessReason { public static int MODIFIER_THROTTLED=8; private int modifiers;
+ public void addModifier(int m) { modifiers |= m; } public int getModifier() { return modifiers; } }
 """,
     "com/android/server/display/DisplayBrightnessState.java": """package com.android.server.display;
 import com.android.server.display.brightness.BrightnessReason;
 public class DisplayBrightnessState { public static class Builder {
  private float max=1, brightness; private int reason; public boolean slow=true;
+ private final BrightnessReason brightnessReason = new BrightnessReason();
  public void setMaxBrightness(float x) { max=x; } public float getMaxBrightness() { return max; }
  public void setBrightness(float x) { brightness=x; } public float getBrightness() { return brightness; }
  public void setBrightnessMaxReason(int x) { reason=x; } public int getBrightnessMaxReason() { return reason; }
- public void setIsSlowChange(boolean b) { slow=b; } public BrightnessReason getBrightnessReason() { return new BrightnessReason(); }
+ public void setIsSlowChange(boolean b) { slow=b; } public BrightnessReason getBrightnessReason() { return brightnessReason; }
 } }
 """,
     "com/android/server/display/brightness/clamper/BrightnessClamperController.java": """package com.android.server.display.brightness.clamper;

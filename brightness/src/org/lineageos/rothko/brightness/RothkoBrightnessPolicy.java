@@ -5,6 +5,7 @@
 package org.lineageos.rothko.brightness;
 
 import android.content.Context;
+import android.hardware.display.BrightnessInfo;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -146,15 +147,28 @@ public final class RothkoBrightnessPolicy extends DeviceBrightnessPolicy {
 
     @Override
     public float getMaxBrightnessNits() {
+        return getBrightnessCap().maxNits;
+    }
+
+    @Override
+    public BrightnessCap getBrightnessCap() {
         if (!mValid || mState == null || mStopped
                 || mSampleWatchEpoch != mWatchInvalidations.get()
                 || SystemClock.elapsedRealtime() - mSampleTime >= MAX_AGE_MILLIS) {
-            return Math.min(mFailureCap, mLastCap);
+            float failure = Math.min(mFailureCap, mLastCap);
+            return new BrightnessCap(failure, getMaxSdrBrightnessNits(failure),
+                    BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY);
         }
-        mLastCap = Math.min(mState.cap(mAutomatic, mLux, mCondition, mSafetyNits, mNtcEnabled),
-                Math.min(mOpr.cap(mAutomatic, mLux, mHdrKnown, mHdrPresent),
-                        mOpr.peakCap(mAutomatic, mLux, mHdrKnown, mHdrPresent)));
-        return mLastCap;
+        float thermal = mState.cap(mAutomatic, mLux, mCondition, mSafetyNits, mNtcEnabled);
+        float content = Math.min(mOpr.cap(mAutomatic, mLux, mHdrKnown, mHdrPresent),
+                mOpr.peakCap(mAutomatic, mLux, mHdrKnown, mHdrPresent));
+        mLastCap = Math.min(thermal, content);
+        // Preserve the dominant cause in the same snapshot as the bounds. Equal finite limits
+        // retain the real thermal constraint; a normal content segment alone is not overheating.
+        int reason = Float.isFinite(thermal) && thermal <= content
+                ? BrightnessInfo.BRIGHTNESS_MAX_REASON_THERMAL
+                : BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY;
+        return new BrightnessCap(mLastCap, getMaxSdrBrightnessNits(mLastCap), reason);
     }
 
     private void updateOpr() {

@@ -2,12 +2,14 @@
 package com.android.server.display.brightness.clamper;
 
 import android.content.Context;
+import android.hardware.display.BrightnessInfo;
 import android.hardware.display.DisplayManagerInternal.DisplayPowerRequest;
 import android.os.Handler;
 
 import com.android.server.display.DisplayBrightnessState;
 import com.android.server.display.DisplayDeviceConfig;
 import com.android.server.display.brightness.DeviceBrightnessPolicy;
+import com.android.server.display.brightness.BrightnessReason;
 
 import java.io.PrintWriter;
 
@@ -26,6 +28,8 @@ public final class ModifierPipelineTest {
         static boolean hdrKnown, hdrPresent;
         static boolean separateSdr;
         static float sdrCap;
+        static boolean explicitReason;
+        static int reason = BrightnessInfo.BRIGHTNESS_MAX_REASON_THERMAL;
         public Policy(Context c, Handler h, Runnable changed) { }
         public void setDisplayState(int state) { }
         public void setAutomaticBrightness(boolean enabled) { }
@@ -36,6 +40,10 @@ public final class ModifierPipelineTest {
         public float getMaxBrightnessNits() { return cap; }
         public float getMaxSdrBrightnessNits(float common) {
             return separateSdr ? sdrCap : super.getMaxSdrBrightnessNits(common);
+        }
+        public BrightnessCap getBrightnessCap() {
+            return explicitReason ? new BrightnessCap(cap, getMaxSdrBrightnessNits(cap), reason)
+                    : super.getBrightnessCap();
         }
         public void stop() { stopped++; }
         public void dump(PrintWriter p) { }
@@ -57,6 +65,8 @@ public final class ModifierPipelineTest {
         equal(logical160, state.getMaxBrightness(), "nits-to-DDC common max");
         equal(logical160, state.getBrightness(), "SDR obeys cap");
         equal(1, state.getBrightnessMaxReason(), "thermal max reason");
+        equal(BrightnessReason.MODIFIER_THROTTLED, state.getBrightnessReason().getModifier(),
+                "default thermal policy keeps its throttled marker");
         equal(0, state.slow ? 1 : 0, "tightening does not use a slow ramp");
         var aggregate = new BrightnessClamperController.ModifiersAggregatedState();
         modifier.applyStateChange(aggregate);
@@ -74,6 +84,8 @@ public final class ModifierPipelineTest {
         state = new DisplayBrightnessState.Builder();
         modifier.apply(request, state);
         equal(0, state.getMaxBrightness(), "invalid provider output fails closed");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, state.getBrightnessMaxReason(),
+                "invalid provider output is not an observed thermal event");
         Policy.cap = Float.POSITIVE_INFINITY;
         state = new DisplayBrightnessState.Builder();
         modifier.apply(request, state);
@@ -101,6 +113,46 @@ public final class ModifierPipelineTest {
         equal(1, Policy.hdrKnown && Policy.hdrPresent ? 1 : 0, "actual HDR report reaches provider");
         modifier.setHdrContent(false, false);
         equal(0, Policy.hdrKnown || Policy.hdrPresent ? 1 : 0, "display removal propagates unknown");
+
+        Policy.cap = 160; Policy.explicitReason = true;
+        Policy.reason = BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY;
+        state = new DisplayBrightnessState.Builder(); state.setBrightness(1);
+        modifier.apply(request, state);
+        equal(logical160, state.getMaxBrightness(), "content policy still constrains common maximum");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, state.getBrightnessMaxReason(),
+                "content/fallback constraint does not masquerade as overheating");
+        equal(0, state.getBrightnessReason().getModifier(), "content constraint has no thermal marker");
+        aggregate = new BrightnessClamperController.ModifiersAggregatedState();
+        modifier.applyStateChange(aggregate);
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, aggregate.mMaxBrightnessReason,
+                "aggregate carries the same content cause");
+        int beforeReasonChange = changes[0];
+        Policy.reason = BrightnessInfo.BRIGHTNESS_MAX_REASON_THERMAL;
+        aggregate = new BrightnessClamperController.ModifiersAggregatedState();
+        modifier.applyStateChange(aggregate);
+        equal(beforeReasonChange + 1, changes[0], "cause-only change notifies without a numeric change");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_THERMAL, aggregate.mMaxBrightnessReason,
+                "thermal cause replaces content cause at identical nits");
+        Policy.reason = BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY;
+        state = new DisplayBrightnessState.Builder(); state.setMaxBrightness(0.2f);
+        state.setBrightnessMaxReason(BrightnessInfo.BRIGHTNESS_MAX_REASON_POWER_IC);
+        state.getBrightnessReason().addModifier(BrightnessReason.MODIFIER_THROTTLED);
+        modifier.apply(request, state);
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_POWER_IC, state.getBrightnessMaxReason(),
+                "stricter preceding power constraint keeps its cause");
+        equal(BrightnessReason.MODIFIER_THROTTLED, state.getBrightnessReason().getModifier(),
+                "device policy cannot erase another protection's throttling marker");
+        aggregate = new BrightnessClamperController.ModifiersAggregatedState();
+        aggregate.mMaxBrightness = 0.2f;
+        aggregate.mMaxBrightnessReason = BrightnessInfo.BRIGHTNESS_MAX_REASON_POWER_IC;
+        modifier.applyStateChange(aggregate);
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_POWER_IC, aggregate.mMaxBrightnessReason,
+                "stricter aggregate keeps original cause");
+        state = new DisplayBrightnessState.Builder(); state.setMaxBrightness(logical160);
+        state.setBrightnessMaxReason(BrightnessInfo.BRIGHTNESS_MAX_REASON_THERMAL);
+        modifier.apply(request, state);
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_THERMAL, state.getBrightnessMaxReason(),
+                "equal preceding thermal constraint is preserved");
         modifier.stop();
         modifier.setHdrContent(true, true);
         equal(0, Policy.hdrKnown || Policy.hdrPresent ? 1 : 0, "stopped provider receives no report");
@@ -122,6 +174,8 @@ public final class ModifierPipelineTest {
         state = new DisplayBrightnessState.Builder();
         missing.apply(request, state);
         equal(0, state.getMaxBrightness(), "missing configured class does not crash or uncap");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, state.getBrightnessMaxReason(),
+                "class-load failure is not reported as overheating");
         System.out.println("PASS: " + assertions + " common-bound/factory/stop assertions");
     }
 }

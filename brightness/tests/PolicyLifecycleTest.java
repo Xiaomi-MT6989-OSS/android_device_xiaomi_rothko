@@ -2,6 +2,7 @@
 package org.lineageos.rothko.brightness;
 
 import android.os.Handler;
+import android.hardware.display.BrightnessInfo;
 import android.os.FileObserver;
 import android.os.SystemClock;
 import android.view.Display;
@@ -75,9 +76,14 @@ public final class PolicyLifecycleTest {
         RothkoBrightnessPolicy policy = new RothkoBrightnessPolicy(display, worker,
                 () -> events[0]++, io);
         equal(160, policy.getMaxBrightnessNits(), "initial conservative cap");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, policy.getBrightnessCap().reason,
+                "missing initial input is a policy fallback, not observed overheating");
         policy.setDisplayState(Display.STATE_ON);
         worker.runDue(); display.runDue();
         equal(1600, policy.getMaxBrightnessNits(), "valid cold sample");
+        var coldSnapshot = policy.getBrightnessCap();
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, coldSnapshot.reason,
+                "cold normal segment is a content/operating bound");
         equal(3, io.observers.size(), "three stock mandatory node watches");
         SystemClock.now = 100;
         io.safety = "100";
@@ -86,6 +92,11 @@ public final class PolicyLifecycleTest {
         io.observers.get(2).onEvent(FileObserver.MODIFY, null);
         worker.runDue(); display.runDue();
         equal(100, policy.getMaxBrightnessNits(), "inotify refresh before one-second poll");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_THERMAL, policy.getBrightnessCap().reason,
+                "independent daemon safety limit reports thermal cause");
+        equal(1600, coldSnapshot.maxNits, "published bounds snapshot is immutable");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, coldSnapshot.reason,
+                "published cause cannot drift independently of its bounds");
         equal(3, io.reads - before, "modify burst coalesced to one complete sample");
         io.safety = "0";
         io.observers.get(2).onEvent(FileObserver.MODIFY, null);
@@ -93,6 +104,8 @@ public final class PolicyLifecycleTest {
         equal(1600, policy.getMaxBrightnessNits(), "event recovery");
         SystemClock.now = 2600;
         equal(160, policy.getMaxBrightnessNits(), "elapsed-realtime expiry before queue resumes");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, policy.getBrightnessCap().reason,
+                "stale data cannot be labeled a measured thermal event");
         display.runDue();
         io.board = "40000"; io.safety = "100";
         worker.runDue(); display.runDue();
@@ -183,6 +196,14 @@ public final class PolicyLifecycleTest {
         policy.setAmbientLux(30000);
         worker.runDue(); display.runDue();
         equal(1000, policy.getMaxBrightnessNits(), "missing OPR transport bounds looser thermal cap");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, policy.getBrightnessCap().reason,
+                "missing OPR transport does not report thermal cause");
+        combined.safety = "1000";
+        combined.observers.get(2).onEvent(FileObserver.MODIFY, null);
+        worker.runDue(); display.runDue();
+        equal(1000, policy.getBrightnessCap().maxNits, "equal content and thermal cap unchanged");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_THERMAL, policy.getBrightnessCap().reason,
+                "equal real thermal constraint takes priority");
         combined.safety = "100";
         combined.observers.get(2).onEvent(FileObserver.MODIFY, null);
         worker.runDue(); display.runDue();
@@ -243,11 +264,17 @@ public final class PolicyLifecycleTest {
         equal(1600, policy.getMaxBrightnessNits(), "pre-HDR gray cannot grant peak on new baseline");
         SystemClock.now += 200; frame[0]++; worker.runDue(); display.runDue();
         equal(4500, policy.getMaxBrightnessNits(), "fresh dark RGB HDR plus high lux permits stock peak segment");
+        var peakSnapshot = policy.getBrightnessCap();
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_DEVICE_POLICY, peakSnapshot.reason,
+                "peak eligibility itself is not thermal throttling");
+        equal(1600, peakSnapshot.maxSdrNits, "snapshot keeps independent SDR white point");
         equal(1600, policy.getMaxSdrBrightnessNits(policy.getMaxBrightnessNits()),
                 "HDR peak cannot raise the ordinary SDR white point");
         rgb.safety = "100"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
         worker.runDue(); display.runDue();
         equal(100, policy.getMaxBrightnessNits(), "stock safety bound wins over eligible HDR peak");
+        equal(BrightnessInfo.BRIGHTNESS_MAX_REASON_THERMAL, policy.getBrightnessCap().reason,
+                "thermal cause wins together with the lower thermal bound");
         equal(100, policy.getMaxSdrBrightnessNits(policy.getMaxBrightnessNits()),
                 "lower stock safety bound applies to SDR as well");
         rgb.safety = "0"; rgb.observers.get(2).onEvent(FileObserver.MODIFY, null);
