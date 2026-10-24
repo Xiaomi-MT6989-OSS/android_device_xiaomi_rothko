@@ -12,3 +12,5 @@ vendor_restricted_prop(vendor_display_ntc_prop)
 # original hardware services; the framework NFC service only reads them.
 vendor_internal_prop(vendor_nfc_prop)
 vendor_internal_prop(vendor_tms_nfc_prop)
+
+vendor_internal_prop(vendor_batteryantiaging_prop)

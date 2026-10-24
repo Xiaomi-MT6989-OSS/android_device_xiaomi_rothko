@@ -11,6 +11,9 @@ on init
     mkdir /storage/usbotg 0700 root root
 
 on post-fs-data
+    # Private state used by the original battery aging strategies.
+    mkdir /data/vendor/batteryantiaging 0700 root root
+    restorecon_recursive /data/vendor/batteryantiaging
 
 #Camera
     chmod 0660 /dev/MAINAF

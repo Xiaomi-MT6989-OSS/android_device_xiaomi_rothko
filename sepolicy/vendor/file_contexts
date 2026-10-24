@@ -65,3 +65,7 @@
 # Stock Xiaomi charging authentication and thermal control daemons.
 /(vendor|system/vendor)/bin/batterysecret u:object_r:batterysecret_exec:s0
 /(vendor|system/vendor)/bin/mi_thermald u:object_r:mi_thermald_exec:s0
+
+/vendor/bin/hw/vendor\.xiaomi\.hardware\.batteryantiaging-service u:object_r:hal_batteryantiaging_default_exec:s0
+/odm/etc/charger/BAA_config_(common|rothko)\.json u:object_r:batteryantiaging_cfg_file:s0
+/data/vendor/batteryantiaging(/.*)? u:object_r:batteryantiaging_cache_file:s0

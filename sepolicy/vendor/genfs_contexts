@@ -71,3 +71,6 @@ genfscon sysfs /devices/virtual/mi_display/disp_feature/disp-DSI-0/disp_count u:
 
 # Original FOD press-state sysfs node.
 genfscon sysfs /devices/virtual/touch/touch_dev/fod_press_status u:object_r:sysfs_tp_fodstatus:s0
+
+genfscon sysfs /devices/platform/11d02000.i2c/i2c-5/5-0034/11d02000.i2c:mt6375@34:mtk-gauge/power_supply/battery/smart_batt u:object_r:sysfs_rothko_antiaging_control:s0
+genfscon sysfs /devices/platform/11d02000.i2c/i2c-5/5-0034/11d02000.i2c:mt6375@34:mtk-gauge/power_supply/battery/smart_fv u:object_r:sysfs_rothko_antiaging_control:s0

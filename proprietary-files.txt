@@ -3084,3 +3084,17 @@ vendor/lib64/libmiface.so
 vendor/lib64/android.hardware.biometrics.face-V3-ndk.so:vendor/lib64/android.hardware.biometrics.face-V3-ndk-rothko.so;MODULE=android.hardware.biometrics.face-V3-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
 vendor/etc/vintf/manifest/android.hardware.biometrics.face-v3.xml
 vendor/etc/permissions/android.hardware.biometrics.face.xml
+
+# Stock battery aging protection - unchanged rothko OS3.0.307.0 strategies 1/2
+odm/etc/charger/BAA_config_common.json
+odm/etc/charger/BAA_config_rothko.json
+vendor/bin/hw/vendor.xiaomi.hardware.batteryantiaging-service
+vendor/etc/init/vendor.xiaomi.hardware.batteryantiaging-service.rc
+vendor/etc/vintf/manifest/vendor.xiaomi.hardware.batteryantiaging.xml
+vendor/lib64/libbaa_ChargeInfo.so
+vendor/lib64/libbaa_ClosedSourceClass.so
+vendor/lib64/libbaa_ExampleClass.so
+vendor/lib64/libbaa_FreqChgFvDown.so
+vendor/lib64/libbaa_LowSohFvDown.so
+vendor/lib64/libbaa_common.so
+vendor/lib64/vendor.xiaomi.hardware.batteryantiaging-V1-ndk.so

@@ -52,4 +52,12 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <hal format="aidl" optional="true">
+        <name>vendor.xiaomi.hardware.batteryantiaging</name>
+        <version>1</version>
+        <interface>
+            <name>IBatteryAntiAging</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
 </compatibility-matrix>

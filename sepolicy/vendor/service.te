@@ -14,3 +14,5 @@ allow hal_graphics_composer_default vendor_hal_citsensorservice_xiaomi_service:s
 # The TMS NFC binary registers this vendor AIDL extension server alongside
 # the standard android.hardware.nfc.INfc/default instance.
 type tmsnfc_aidl_service, service_manager_type;
+
+type hal_batteryantiaging_service, service_manager_type, hal_service_type, protected_service;

@@ -21,3 +21,8 @@ type vendor_display_runtime_data_file, file_type, data_file_type;
 
 # Persisted default colour profile for the device colour controller.
 type rothko_display_color_data_file, file_type, data_file_type;
+
+# Original battery aging strategy configuration, cache and two FV controls.
+type batteryantiaging_cfg_file, vendor_file_type, file_type;
+type batteryantiaging_cache_file, file_type, data_file_type;
+type sysfs_rothko_antiaging_control, fs_type, sysfs_type;

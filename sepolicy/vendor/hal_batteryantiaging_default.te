@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+# Unmodified stock rothko battery aging service; no user charging-control client.
+type hal_batteryantiaging_default, domain;
+type hal_batteryantiaging_default_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(hal_batteryantiaging_default)
+hal_server_domain(hal_batteryantiaging_default, hal_batteryantiaging)
+hal_attribute_service(hal_batteryantiaging, hal_batteryantiaging_service)
+binder_use(hal_batteryantiaging_default)
+
+r_dir_file(hal_batteryantiaging_default, vendor_configs_file)
+r_dir_file(hal_batteryantiaging_default, batteryantiaging_cfg_file)
+allow hal_batteryantiaging_default vendor_data_file:dir search;
+allow hal_batteryantiaging_default batteryantiaging_cache_file:dir create_dir_perms;
+allow hal_batteryantiaging_default batteryantiaging_cache_file:file create_file_perms;
+
+# Read state via the stock power-supply paths; only the two strategy FV nodes
+# receive write permission. No generic sysfs, input_suspend or thermal writes.
+allow hal_batteryantiaging_default sysfs:dir r_dir_perms;
+r_dir_file(hal_batteryantiaging_default, sysfs_batteryinfo)
+allow hal_batteryantiaging_default sysfs_rothko_antiaging_control:file rw_file_perms;
+allow hal_batteryantiaging_default self:netlink_kobject_uevent_socket {
+    create bind getopt setopt read
+};
+get_prop(hal_batteryantiaging_default, vendor_default_prop)
+set_prop(hal_batteryantiaging_default, vendor_batteryantiaging_prop)
