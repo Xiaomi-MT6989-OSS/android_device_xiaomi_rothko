@@ -8,6 +8,9 @@
     <bool name="config_screen_off_udfps_default_on">true</bool>
     <!-- Power HAL delegates mode 14 to the stock touchfeature service. -->
     <bool name="config_supportDoubleTapWake">true</bool>
+    <!-- Stock wake-up special-trigger: 1 = pickup; 0/2 are not wake events. -->
+    <bool name="config_dozePulsePickup">true</bool>
+    <string name="config_dozePickupSensorType" translatable="false">xiaomi pick up sensor</string>
     <string name="config_dozeUdfpsLongPressSensorType" translatable="false">org.lineageos.sensor.udfps</string>
     <!-- Use the standard doze service for the stock OLED AOD path; AOD remains a user preference. -->
     <string name="config_dozeComponent" translatable="false">com.android.systemui/com.android.systemui.doze.DozeService</string>
