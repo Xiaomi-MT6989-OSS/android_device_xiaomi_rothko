@@ -1,0 +1,3 @@
+# SPDX-License-Identifier: Apache-2.0
+# Let the stock service own touch ioctl/THP details. No direct touch node access.
+hal_client_domain(hal_power_default, hal_touchfeature_xiaomi)

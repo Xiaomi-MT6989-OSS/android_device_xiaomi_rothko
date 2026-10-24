@@ -5,16 +5,9 @@
  */
 
 #include <aidl/android/hardware/power/BnPower.h>
-#include <android-base/file.h>
 #include <android-base/logging.h>
-#include <sys/ioctl.h>
 
-#define SET_CUR_VALUE 0
-#define TOUCH_DOUBLETAP_MODE 14
-#define TOUCH_MAGIC 't'
-#define TOUCH_IOC_SETMODE _IO(TOUCH_MAGIC, SET_CUR_VALUE)
-#define TOUCH_DEV_PATH "/dev/xiaomi-touch"
-#define TOUCH_ID 0
+#include "TouchFeature.h"
 
 namespace aidl {
 namespace google {
@@ -38,10 +31,11 @@ bool isDeviceSpecificModeSupported(Mode type, bool* _aidl_return) {
 bool setDeviceSpecificMode(Mode type, bool enabled) {
     switch (type) {
         case Mode::DOUBLE_TAP_TO_WAKE: {
-            int fd = open(TOUCH_DEV_PATH, O_RDWR);
-            int arg[3] = {TOUCH_ID, TOUCH_DOUBLETAP_MODE, enabled ? 1 : 0};
-            ioctl(fd, TOUCH_IOC_SETMODE, &arg);
-            close(fd);
+            if (!::rothko::touch::setDoubleTapToWake(enabled)) {
+                LOG(ERROR) << "Failed to set stock double-tap wake mode to " << enabled;
+            }
+            // The extension result means handled, not successful. Returning
+            // false would fall through to an unrelated perfmgr hint.
             return true;
         }
         default:

@@ -4,8 +4,10 @@ cc_library_static {
     vendor: true,
     srcs: [
         "power-mode.cpp",
+        "TouchFeature.cpp",
     ],
     shared_libs: [
         "libbase",
+        "libbinder_ndk",
     ],
 }

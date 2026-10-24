@@ -6,6 +6,8 @@
     <!-- Reuse the platform controls for optical keyguard unlock while the panel is off. -->
     <bool name="config_screen_off_udfps_enabled">true</bool>
     <bool name="config_screen_off_udfps_default_on">true</bool>
+    <!-- Power HAL delegates mode 14 to the stock touchfeature service. -->
+    <bool name="config_supportDoubleTapWake">true</bool>
     <string name="config_dozeUdfpsLongPressSensorType" translatable="false">org.lineageos.sensor.udfps</string>
     <!-- Use the standard doze service for the stock OLED AOD path; AOD remains a user preference. -->
     <string name="config_dozeComponent" translatable="false">com.android.systemui/com.android.systemui.doze.DozeService</string>
