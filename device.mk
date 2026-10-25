@@ -94,12 +94,20 @@ PRODUCT_PACKAGES += \
     android.hardware.bluetooth-service.mediatek
 
 # NFC: the stock TMS AIDL HAL implements the frozen android.hardware.nfc V1
-# contract. Advertise only reader and host-card-emulation capabilities here;
-# UICC/eSE off-host routing remains a separate runtime validation.
+# contract. Core reader and host-card-emulation declarations are followed by
+# stock off-host features; UICC/eSE functionality still needs runtime acceptance.
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.nfc.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.hce.xml \
     frameworks/native/data/etc/android.hardware.nfc.hcef.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.hcef.xml
+
+# These four permission XMLs are byte-identical to rothko stock ODM files.
+# Off-host declarations do not replace OMAPI access rules or provision applets.
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.nfc.ese.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/android.hardware.nfc.ese.xml \
+    frameworks/native/data/etc/android.hardware.nfc.uicc.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/android.hardware.nfc.uicc.xml \
+    frameworks/native/data/etc/android.hardware.se.omapi.ese.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/android.hardware.se.omapi.ese.xml \
+    frameworks/native/data/etc/android.hardware.se.omapi.uicc.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/android.hardware.se.omapi.uicc.xml
 
 # Chip information: pinned source script is byte-identical to stock.
 PRODUCT_PACKAGES += \
