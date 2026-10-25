@@ -303,7 +303,9 @@ on boot
 #on property:sys.user.0.ce_available=true
 #    start vendor_tcpdump
 
-on property:ro.debuggable=1
+# Automatic network capture is for engineering builds only. Userdebug keeps
+# the explicit start/stop properties without enabling capture at every boot.
+on property:ro.build.type=eng
     setprop persist.vendor.tcpdump.enable true
     setprop persist.vendor.connsysfw.enable true
 
