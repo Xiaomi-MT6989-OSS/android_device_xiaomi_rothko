@@ -30,9 +30,11 @@ struct FakeIo : StockLimitIo {
     bool applyEnable = true;
     bool loseReadAfterWrite = false;
     bool concurrentOtherChange = false;
+    uint64_t generation = 1;
+    bool replaceDuringWrite = false;
 
-    std::optional<uint32_t> readFlags() override {
-        return readable ? std::optional<uint32_t>(flags) : std::nullopt;
+    std::optional<DriverFlags> readFlags() override {
+        return readable ? std::optional<DriverFlags>({flags, generation}) : std::nullopt;
     }
     bool writePacket(int32_t packet) override {
         ++writes;
@@ -40,6 +42,7 @@ struct FakeIo : StockLimitIo {
         if (!writable) return false;
         if (applyEnable) flags = (flags & ~2u) | ((packet & 1) ? 2u : 0u);
         if (concurrentOtherChange) flags ^= 0x10;
+        if (replaceDuringWrite) ++generation;
         if (loseReadAfterWrite) readable = false;
         return true;
     }
@@ -103,5 +106,20 @@ int main() {
     }
     for (auto& thread : threads) thread.join();
     check(restartedIo.writes == 1, "concurrent duplicate requests serialize to no extra writes");
+
+    ++restartedIo.generation;
+    check(restarted.submit({75, 80}) == SubmitResult::Submitted && restartedIo.writes == 2,
+          "replacement node with identical enable bit must not reuse deduplication cache");
+    restartedIo.replaceDuringWrite = true;
+    check(restarted.submit({85, 90}) == SubmitResult::DriverChanged,
+          "node replacement during submission cannot verify the old write");
+    restartedIo.replaceDuringWrite = false;
+    const auto beforeRetry = restartedIo.writes;
+    check(restarted.submit({85, 90}) == SubmitResult::Submitted &&
+              restartedIo.writes == beforeRetry + 1,
+          "replacement error does not cache the unverified request");
+    check(restarted.submit({85, 90}) == SubmitResult::Unchanged &&
+              restartedIo.writes == beforeRetry + 1,
+          "successful request on the new generation can be deduplicated");
     std::cout << "PASS: " << checks << " stock-limit submission checks\n";
 }

@@ -35,10 +35,17 @@ inline std::optional<int32_t> encodeLimit(const LimitRequest& request) {
 // Deliberately no file implementation or Android service is installed yet.
 // Implementations must report short/failed writes and parse the real flags;
 // flags do not contain record 1's target percentage.
+struct DriverFlags {
+    uint32_t flags;
+    // Identity of the driver/node instance, not an observed target value.
+    // It must change when the I/O binding is replaced or the driver rebinds.
+    uint64_t generation;
+};
+
 class StockLimitIo {
   public:
     virtual ~StockLimitIo() = default;
-    virtual std::optional<uint32_t> readFlags() = 0;
+    virtual std::optional<DriverFlags> readFlags() = 0;
     virtual bool writePacket(int32_t packet) = 0;
 };
 
@@ -49,12 +56,14 @@ enum class SubmitResult {
     ReadFailed,
     WriteFailed,
     VerificationFailed,
+    DriverChanged,
     OtherRecordsChanged,
 };
 
 // Candidate command submission logic, not a hardware target-value getter.
 // Deduplication requires exclusive ownership of record 1. The future service
-// must invalidate on a driver lifecycle change; an external same-enable target
+// must identify driver/node replacement and invalidate on in-place state reset;
+// an external same-enable target
 // overwrite cannot be detected through the stock flags interface.
 class StockLimitController {
   public:
@@ -71,8 +80,9 @@ class StockLimitController {
             return SubmitResult::ReadFailed;
         }
         const bool enabled = request.max != 100;
-        if (mLastSubmitted && *mLastSubmitted == request &&
-            ((*before & kOwnEnable) != 0) == enabled) {
+        if (mLastSubmitted && mLastSubmitted->request == request &&
+            mLastSubmitted->generation == before->generation &&
+            ((before->flags & kOwnEnable) != 0) == enabled) {
             return SubmitResult::Unchanged;
         }
 
@@ -80,16 +90,17 @@ class StockLimitController {
         if (!mIo.writePacket(*packet)) return SubmitResult::WriteFailed;
         const auto after = mIo.readFlags();
         if (!after) return SubmitResult::ReadFailed;
-        if (((*after & kOwnEnable) != 0) != enabled) {
+        if (after->generation != before->generation) return SubmitResult::DriverChanged;
+        if (((after->flags & kOwnEnable) != 0) != enabled) {
             return SubmitResult::VerificationFailed;
         }
-        if ((*before & kOtherEnables) != (*after & kOtherEnables)) {
+        if ((before->flags & kOtherEnables) != (after->flags & kOtherEnables)) {
             // Do not overwrite or roll back another client's concurrent change.
             return SubmitResult::OtherRecordsChanged;
         }
         // This records an acknowledged command plus enable-bit observation.
         // It is private deduplication state, not an independent target readback.
-        mLastSubmitted = request;
+        mLastSubmitted = Submission{request, after->generation};
         return SubmitResult::Submitted;
     }
 
@@ -102,9 +113,13 @@ class StockLimitController {
     static constexpr uint32_t kOwnEnable = 1u << 1;
     // The low bit is a derived global flag; high16 belongs to another record.
     static constexpr uint32_t kOtherEnables = 0xfffcu;
+    struct Submission {
+        LimitRequest request;
+        uint64_t generation;
+    };
     StockLimitIo& mIo;
     std::mutex mMutex;
-    std::optional<LimitRequest> mLastSubmitted;
+    std::optional<Submission> mLastSubmitted;
 };
 
 }  // namespace rothko::charging
