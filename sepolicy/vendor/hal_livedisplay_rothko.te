@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Device colour controller. It serves the LiveDisplay colour-profile interface
-# and is the only client of the stock Xiaomi DisplayFeature service.
+# Device colour controller for the LiveDisplay colour-profile interface.
+# The stock HWC is a separate DisplayFeature client for brightness.
 #
 # The interface label belongs to the shared Lineage policy, which is pulled in
 # automatically by build/make/core/config.mk. That policy also declares a

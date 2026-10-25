@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Device colour controller. It owns the only channel to the stock Xiaomi
-# DisplayFeature service and serves the LiveDisplay colour-profile interface.
+# Device colour controller for the stock Xiaomi colour-profile channel.
+# The HWC has a separate DisplayFeature brightness path.
 service vendor.livedisplay-rothko /vendor/bin/hw/vendor.lineage.livedisplay-service.rothko
     class late_start
     user system
