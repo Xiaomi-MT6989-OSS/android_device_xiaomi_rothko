@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Configuration for the uninstalled stock record-1 LIMIT candidate.
+         These resources neither declare a HAL nor enable charging control. -->
+    <bool name="config_chargingControlEnabled">false</bool>
+    <integer name="config_defaultChargingControlMode">3</integer>
+    <!-- Native charge_monitor uses a fixed five-percentage-point hysteresis. -->
+    <integer name="config_chargingControlBatteryRechargeMargin">5</integer>
+</resources>

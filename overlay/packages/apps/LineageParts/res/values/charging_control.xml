@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-FileCopyrightText: 2026 The LineageOS Project
+    SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Stock record 1 provides percentage limits, not deadline or toggle control.
+         LineageParts appends its existing LIMIT entry only when the HAL exposes
+         fine-grained control. Keep timed modes out of this device's menu. -->
+    <string-array name="charging_control_mode_entries" translatable="false" />
+    <string-array name="charging_control_mode_values" translatable="false" />
+</resources>
