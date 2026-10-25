@@ -32,7 +32,7 @@ inline std::optional<int32_t> encodeLimit(const LimitRequest& request) {
     return (request.max << 16) | 3;
 }
 
-// Deliberately no file implementation or Android service is installed yet.
+// No implementation or Android service is installed by a product yet.
 // Implementations must report short/failed writes and parse the real flags;
 // flags do not contain record 1's target percentage.
 struct DriverFlags {

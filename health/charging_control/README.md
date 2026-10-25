@@ -5,7 +5,8 @@ manifest or product package. It does not change charging on a built device.
 
 `StockLimitController.h` encodes the observed stock `smart_chg` record-1
 protocol and serializes submissions through an injected I/O boundary. It is
-not an AIDL HAL or a file-node implementation. Evidence is recorded in the
+not an AIDL HAL. `StockLimitFileIo.h` is the uninstalled node I/O candidate.
+Evidence is recorded in the
 project's `bringup/phase-b/CHARGING_CONTROL_AUDIT_20261024.zh-CN.md` and
 `research/2026-10-24/charging-control/`.
 
@@ -35,13 +36,19 @@ Exclusive ownership of record 1 and reliable I/O generation tracking are
 prerequisites for the cache. A same-enable target overwrite by another writer cannot be
 detected through the stock flags getter. Audit actual writers and permissions,
 and wire `invalidate()` to relevant in-place driver state resets before enabling
-this code. A new process already has an empty cache. The future node I/O must
-not use a constant generation: replacing its binding or observing driver/node
-replacement must change it. A stable open node and identity checks are a
-possible implementation, still requiring real sysfs lifecycle validation.
+this code. A new process already has an empty cache. The node I/O candidate
+pins an open descriptor, compares its device/inode identity against the path,
+and changes generation after every rebind. `invalidateBinding()` discards a
+binding after an explicit reset without writing. These methods still need
+actual driver reset/reprobe notification wiring and real sysfs validation.
 
-The I/O implementation must validate the actual node identity and parse full
-integer responses; short writes and errors must be failures. It must not use
+The I/O candidate's production constructor uses the stock gauge's verified
+`smart_chg` path, admits only root-owned regular sysfs files without world-write,
+and rejects final-component symlinks. It parses complete nonnegative signed-32
+decimal responses, checks EOF to reject a short valid prefix, and refuses
+oversized input. A write requires a prior binding
+and a record-1 packet; it sends one whole command at offset zero. Errors, short
+writes or EINTR discard the binding without retrying the command. It does not use
 `input_suspend`, modify thermal/FCC/FV settings, or poll charging in a new loop.
 The future HAL must expose only proven capabilities and report an unknown
 target honestly. Lineage provider mode selection, service restart, plugging,
@@ -54,3 +61,14 @@ Compile `tests/StockLimitControllerTest.cpp` with a C++17 host compiler,
 no file or device access. The 26 checks validate the submission logic and
 its error boundaries; they do not execute the stock kernel or validate a
 real Binder service. No ROM build is needed for this check.
+
+`tests/StockLimitFileIoTest.cpp` checks the real POSIX read/write/identity code
+against files it creates under `/tmp`. Only node admission is relaxed in the
+test subclass, plus short-read/short-write/EINTR injection. A strict-policy subclass also
+verifies that production admission rejects those regular filesystem fixtures.
+The 55 assertions (including fixture creation and cleanup) check parsing,
+full command writes, replacements before/during writes,
+explicit invalidation, symlink/FIFO rejection and cleanup. It never constructs
+the production default-path object or opens phone/sysfs nodes. A regular file
+is not a kernel protocol simulator: target/enable behavior, `pwrite` support and
+real sysfs reprobe semantics still require device verification before integration.
