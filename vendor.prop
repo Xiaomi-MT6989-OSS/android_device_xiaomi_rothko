@@ -1,6 +1,8 @@
 # Audio
-aaudio.mmap_policy=0
-aaudio.mmap_exclusive_policy=0
+# Restore stock AUTO MMAP policies. HIDL <= 7.1 is mapped by AudioFlinger
+# into per-device policies using the existing mmap_no_irq ports and routes.
+aaudio.mmap_policy=2
+aaudio.mmap_exclusive_policy=2
 audio.deep_buffer.media=true
 audio.offload.video=true
 audio.offload.min.duration.secs=30
