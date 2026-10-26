@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <!-- Use the platform WifiDisplayAdapter / RemoteDisplay source, not a debug
+         property. Rothko provides STA+P2P, AVC encoding and remote-submix audio. -->
+    <bool name="config_enableWifiDisplay">true</bool>
+    <!-- The stock MTK HDCP helper does not implement the platform HDCP plugin
+         ABI. Do not advertise protected-buffer capture without that bridge. -->
+    <bool name="config_wifiDisplaySupportsProtectedBuffers">false</bool>
+</resources>
