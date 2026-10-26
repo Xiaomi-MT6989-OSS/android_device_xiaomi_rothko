@@ -3111,3 +3111,6 @@ vendor/lib64/libbaa_FreqChgFvDown.so
 vendor/lib64/libbaa_LowSohFvDown.so
 vendor/lib64/libbaa_common.so
 vendor/lib64/vendor.xiaomi.hardware.batteryantiaging-V1-ndk.so
+
+# Factory network location provider; module properties stay in the device tree.
+product/priv-app/MetokNLP/MetokNLP.apk;EXTRACT_ONLY;FILEGROUP=MetokNLP-stock

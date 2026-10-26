@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0 -->
+<permissions>
+    <!-- Same package and permission set as OS3.0.307.0 product policy. -->
+    <privapp-permissions package="com.xiaomi.metoknlp">
+        <permission name="android.permission.INSTALL_LOCATION_PROVIDER" />
+        <permission name="android.permission.INTERACT_ACROSS_USERS" />
+        <permission name="android.permission.READ_PHONE_STATE" />
+        <permission name="android.permission.LOCAL_MAC_ADDRESS" />
+        <permission name="android.permission.MODIFY_PHONE_STATE" />
+        <permission name="android.permission.MANAGE_USERS" />
+        <permission name="android.permission.BATTERY_STATS" />
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+        <permission name="android.permission.LOCATION_HARDWARE" />
+    </privapp-permissions>
+</permissions>

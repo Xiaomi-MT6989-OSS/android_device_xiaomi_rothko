@@ -318,3 +318,6 @@ PRODUCT_COPY_FILES += \
 # Original convenience-strength IFace HAL; service and feature XML come from stock.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/init/init.rothko.face.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.rothko.face.rc
+
+# Restore the factory network location provider without MIUI framework dependencies.
+$(call inherit-product, $(LOCAL_PATH)/network-location.mk)

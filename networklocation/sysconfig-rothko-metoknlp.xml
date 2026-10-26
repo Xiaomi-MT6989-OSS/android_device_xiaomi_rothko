@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0 -->
+<config>
+    <!-- Stock is platform-signed on HyperOS. Keep that original signature here,
+         and scope framework-provider hidden API access to this preloaded package. -->
+    <hidden-api-whitelisted-app package="com.xiaomi.metoknlp" />
+</config>

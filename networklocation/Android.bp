@@ -1,0 +1,39 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+android_app_import {
+    name: "MetokNLP",
+    owner: "xiaomi",
+    apk: "//vendor/xiaomi/rothko:MetokNLP-stock",
+    product_specific: true,
+    privileged: true,
+    presigned: true,
+    preprocessed: true,
+    // The signed factory APK stores its DEX compressed. Keep its bytes/signature;
+    // JNI storage, 4 KiB zip alignment and v2/v3 signatures were checked separately.
+    skip_preprocessed_apk_checks: true,
+    uses_libs: ["com.android.location.provider"],
+    dex_preopt: {
+        enabled: false,
+    },
+    required: [
+        "privapp-permissions-rothko-metoknlp",
+        "sysconfig-rothko-metoknlp",
+    ],
+}
+
+prebuilt_etc {
+    name: "privapp-permissions-rothko-metoknlp",
+    src: "privapp-permissions-rothko-metoknlp.xml",
+    filename_from_src: true,
+    sub_dir: "permissions",
+    product_specific: true,
+}
+
+prebuilt_etc {
+    name: "sysconfig-rothko-metoknlp",
+    src: "sysconfig-rothko-metoknlp.xml",
+    filename_from_src: true,
+    sub_dir: "sysconfig",
+    product_specific: true,
+}
