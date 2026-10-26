@@ -1,0 +1,6 @@
+# Copyright (C) 2026 The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+
+# The stock TEE supplicant powers/accesses the THN31 embedded secure element.
+# Match OS3.0.307.0 vendor policy's tee_34_0 -> secure_element_device_34_0 rule.
+allow tee secure_element_device:chr_file { ioctl read write open };
