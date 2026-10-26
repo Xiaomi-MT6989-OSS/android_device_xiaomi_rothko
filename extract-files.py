@@ -90,6 +90,9 @@ blob_fixups: blob_fixups_user_type = {
         'vendor/lib64/libcodec2_vpp_qt_plugin.so',
         'vendor/lib64/libcodec2_vpp_rs_plugin.so',
         'vendor/lib64/libmisoundfx_ext.so',
+        'vendor/lib64/soundfx/libswspatializer.so',
+        'vendor/lib64/libswspatializer_ext.so',
+        'vendor/lib64/libdlbpreg.so',
         'vendor/lib64/libsfplugin_ccodec_utils.so',
         'vendor/lib64/libstagefright_bufferqueue_helper.so',
     ): blob_fixup()

@@ -137,6 +137,11 @@
                 </mixPort>
                 <mixPort name="hifi_playback" role="source"/>
                 <mixPort name="hifi_input" role="sink"/>
+                <!-- Exact PCM profile from rothko stock's spatializer-capable policy. -->
+                <mixPort name="spatializer output" role="source" flags="AUDIO_OUTPUT_FLAG_SPATIALIZER">
+                    <profile name="sa" format="AUDIO_FORMAT_PCM_32_BIT"
+                             samplingRates="44100 48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+                </mixPort>
             </mixPorts>
             <devicePorts>
                 <!-- Output devices declaration, i.e. Sink DEVICE PORT -->
@@ -278,17 +283,17 @@
             <!-- route declaration, i.e. list all available sources for a given sink -->
             <routes>
                 <route type="mix" sink="Earpiece"
-                       sources="primary output,deep_buffer,voip_rx,mmap_no_irq_out,fast,Voice Call In"/>
+                       sources="primary output,deep_buffer,voip_rx,mmap_no_irq_out,fast,Voice Call In,spatializer output"/>
                 <route type="mix" sink="Speaker"
-                       sources="primary output,deep_buffer,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In"/>
+                       sources="primary output,deep_buffer,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In,spatializer output"/>
                 <route type="mix" sink="Wired Headset"
-                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In"/>
+                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In,spatializer output"/>
                 <route type="mix" sink="Wired Headphones"
-                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In"/>
+                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In,spatializer output"/>
                 <route type="mix" sink="USB Device Out"
-                       sources="primary output,deep_buffer,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In,hifi_playback"/>
+                       sources="primary output,deep_buffer,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In,hifi_playback,spatializer output"/>
                 <route type="mix" sink="USB Headset Out"
-                       sources="primary output,deep_buffer,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In,hifi_playback"/>
+                       sources="primary output,deep_buffer,fast,compress_offload,FM Tuner In,voip_rx,Voice Call In,hifi_playback,spatializer output"/>
                 <route type="mix" sink="BT SCO"
                        sources="primary output,deep_buffer,fast,compress_offload,voip_rx,Voice Call In"/>
                 <route type="mix" sink="BT SCO Headset"
@@ -304,11 +309,11 @@
                 <route type="mix" sink="HDMI"
                        sources="hdmi_mix_output"/>
                 <route type="mix" sink="BT A2DP Out"
-                       sources="primary output,deep_buffer,fast,compress_offload"/>
+                       sources="primary output,deep_buffer,fast,compress_offload,spatializer output"/>
                 <route type="mix" sink="BT A2DP Headphones"
-                       sources="primary output,deep_buffer,fast,compress_offload"/>
+                       sources="primary output,deep_buffer,fast,compress_offload,spatializer output"/>
                 <route type="mix" sink="BT A2DP Speaker"
-                       sources="primary output,deep_buffer,fast,compress_offload"/>
+                       sources="primary output,deep_buffer,fast,compress_offload,spatializer output"/>
                 <route type="mix" sink="Telephony Tx"
                        sources="Built-In Mic,Built-In Back Mic,Wired Headset Mic,BT SCO Headset Mic,USB Device In,USB Headset In,incall_music_uplink"/>
                 <route type="mix" sink="primary input"

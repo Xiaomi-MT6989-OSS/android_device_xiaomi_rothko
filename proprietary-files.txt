@@ -61,6 +61,19 @@ vendor/lib64/libmtkspparser.so
 vendor/lib64/libnxp_extamp_intf.so
 
 
+# Audio Spatializer
+vendor/etc/hrtf5c.bin
+vendor/lib64/soundfx/libspatializer.so
+vendor/lib64/soundfx/libswspatializer.so
+vendor/lib64/libswspatializer_ext.so
+vendor/lib64/libdapparamstorage.so
+vendor/lib64/libspatializerparamstorage.so
+vendor/lib64/libdlbpreg.so
+vendor/lib64/vendor.dolby.hardware.dms@2.0.so
+vendor/etc/dolby/dax-default-spatializer.xml
+vendor/etc/dolby/dax-fs19xx-spatializer.xml
+
+
 # Audio Configs
 vendor/etc/audio_param/ansparam.bin
 vendor/etc/audio_param/AudioParamOptions_mgvi.xml

@@ -10,7 +10,10 @@ persist.vendor.audio.auto.scenario=true
 persist.vendor.audio.misound.disable=true
 persist.vendor.audio.misoundasc=false
 ro.audio.monitorRotation=true
-audio.deero.audio.spatializer_enabled=true
+# Standard AudioService entry, backed by the stock effects registered below.
+ro.audio.spatializer_enabled=true
+vendor.audio.spatializer_enable_stereo=true
+ro.vendor.audio.spatializer.support.speaker=true
 ro.config.media_vol_steps=30
 ro.config.media_vol_default=20
 ro.config.vc_call_vol_default=4

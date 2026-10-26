@@ -4,6 +4,11 @@
     <mixPorts>
         <!-- A2DP Audio Ports -->
         <mixPort name="a2dp output" role="source"/>
+        <!-- SpatializerThread renders stereo PCM into the existing software A2DP HAL. -->
+        <mixPort name="spatializer output" role="source" flags="AUDIO_OUTPUT_FLAG_SPATIALIZER">
+            <profile name="sa" format="AUDIO_FORMAT_PCM_16_BIT"
+                     samplingRates="44100 48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+        </mixPort>
         <!-- Hearing AIDs Audio Ports -->
         <mixPort name="hearing aid output" role="source">
             <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
@@ -45,11 +50,11 @@
     </devicePorts>
     <routes>
         <route type="mix" sink="BT A2DP Out"
-               sources="a2dp output"/>
+               sources="a2dp output,spatializer output"/>
         <route type="mix" sink="BT A2DP Headphones"
-               sources="a2dp output"/>
+               sources="a2dp output,spatializer output"/>
         <route type="mix" sink="BT A2DP Speaker"
-               sources="a2dp output"/>
+               sources="a2dp output,spatializer output"/>
         <route type="mix" sink="BT Hearing Aid Out"
                sources="hearing aid output"/>
         <route type="mix" sink="BT Le Audio Out HS"
