@@ -10,8 +10,8 @@
 
 ## 正式源码选择
 
-- 仅把源码 hostapd 替换为原厂 `hostapd-rothko` 模块，安装路径仍为 `/vendor/bin/hw/hostapd`。
-- 原厂 init 与 VINTF XML 原字节保留；hostapd 为 AIDL V1，运行对照已确认当前 framework 的版本门控可使用该接口。
+- 仅把源码 hostapd 替换为原厂 `hostapd` prebuilt 模块（`prefer: true` 覆盖同名源码模块），安装路径仍为 `/vendor/bin/hw/hostapd`。
+- 原厂 init 原字节保留，原厂 VINTF XML 由 DEVICE_MANIFEST_FILE 合并进 vendor manifest；hostapd 为 AIDL V1，运行对照已确认当前 framework 的版本门控可使用该接口。
 - 标准 V1 和小米 V1 接口库使用独立 SONAME/模块名，避免与上游生成库冲突。
 - 原厂 `libcrypto-rothko-wifi.so` / `libssl-rothko-wifi.so` 仅由该原厂依赖闭包引用，不替换公共 libcrypto/libssl；libssl 对 libcrypto 的引用也重定向到私有库。
 - 来源、SHA256、SONAME 与 DT_NEEDED 重定向记录在 `stock-runtime-compat.json`，提取列表在 `proprietary-files.txt`。沿用现有 extract-utils fixup 机制。
@@ -28,3 +28,11 @@
 源码候选仍需下一次用户授权的统一构建完成 Soong/ELF/VINTF/镜像核验，再验证保留数据启动、WPA3/混合模式/WPA2 热点实际联网和重启回归。手机目前已回退到原有镜像的 hostapd，不是持久部署本次修复。STA 模式须获得 WPA3 路由器或外部测试证据后独立验收。
 
 内部脱敏证据：`out/bringup/wpa3-20261027/stock-hostapd-attempt-02.log`、`runtime-stock-hostapd/runtime-proof-02.txt`、`runtime-stock-hostapd/restored-proof.txt`、`production-source-audit.json`。
+
+## 统一构建验收补充
+
+最终候选 `out/bringup/wpa3-20261027/build-06` 成功，114 个增量步骤，退出码 0，正常 VINTF/SELinux 检查通过；15 份冻结镜像的 AVB 链验证通过。直接读取最终 vendor EROFS 镜像核对原厂 daemon、四份私有库与 init 字节一致，合并 manifest 恰有一个 AIDL V1 IHostapd/default，且源码 supplicant 保留。尚未刷入验收，release_approved=false。
+
+构建接入最终方式：清空 BOARD_HOSTAPD_DRIVER，使上游源码 hostapd 与其非更新 APEX 禁用；vendor 同名 prefer prebuilt 提供 hostapd。V1 XML 与 stock 原字节相同，由 configs/wifi/android.hardware.wifi.hostapd.xml 合并，不通过 PRODUCT_COPY_FILES 或另一个同路径 fragment 安装。提取清单中的原厂 XML 仅 EXTRACT_ONLY 留档。上游 manifest 的试验性 V1 修改已撤销，external/wpa_supplicant_8 最终内容无净变更。运行逻辑均来自设备树/vendor。
+
+此前几轮失败属于构建集成：Android 16 禁止复制 VINTF、同路径重复安装、以及覆盖模块后未选入 manifest；这些均已在最终镜像中逐项排除。提取清单模块名和 manifest 留档标记已同步，避免重新提取复现早期接入方式。

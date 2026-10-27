@@ -3116,9 +3116,9 @@ vendor/lib64/vendor.xiaomi.hardware.batteryantiaging-V1-ndk.so
 product/priv-app/MetokNLP/MetokNLP.apk;EXTRACT_ONLY;FILEGROUP=MetokNLP-stock
 
 # Stock WPA3 SoftAP daemon - validated SAE H2E and hunting-and-pecking
-vendor/bin/hw/hostapd;MODULE=hostapd-rothko
+vendor/bin/hw/hostapd;MODULE=hostapd
 vendor/etc/init/hostapd.android.rc
-vendor/etc/vintf/manifest/android.hardware.wifi.hostapd.xml
+vendor/etc/vintf/manifest/android.hardware.wifi.hostapd.xml;EXTRACT_ONLY;FILEGROUP=hostapd-stock-manifest
 vendor/lib64/android.hardware.wifi.hostapd-V1-ndk.so:vendor/lib64/android.hardware.wifi.hostapd-V1-ndk-rothko.so;MODULE=android.hardware.wifi.hostapd-V1-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
 vendor/lib64/vendor.xiaomi.hardware.wifi.hostapd-V1-ndk.so:vendor/lib64/vendor.xiaomi.hardware.wifi.hostapd-V1-ndk-rothko.so;MODULE=vendor.xiaomi.hardware.wifi.hostapd-V1-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
 apex/com.android.vndk.v34/lib64/libcrypto.so:vendor/lib64/libcrypto-rothko-wifi.so;MODULE=libcrypto_rothko_wifi;FIX_SONAME;TRYSRCFIRST
