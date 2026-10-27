@@ -64,3 +64,34 @@ Do not publish raw coordinates, radio identifiers or location histories.
 
 Static analysis and successful compilation do not establish backend availability,
 correct coordinates, all-region coverage or complete multi-user behavior.
+
+## JNI install layout (2026-10-27 correction)
+
+The signed APK requests `extractNativeLibs=true`. PackageAbiHelperImpl explicitly
+skips native extraction for a non-updated system app, and app_import does not
+install JNI. An uncompressed/aligned ZIP member alone is therefore insufficient:
+the first build had an empty nativeLibraryDir and the AMap callback timed out.
+
+A controlled same-version update of the exact factory APK let PackageManager
+extract its libraries. libapssdk then appeared in the process maps; a foreground
+network-only current-location request returned a fresh fix in 681ms and a 1s
+continuous request returned in 8ms. Before this change, valid foreground requests
+had timed out at 30s / 20s. The update was removed with keep-data and the product
+APK restored after the comparison. No global policy was disabled.
+
+The permanent build extracts four reviewed arm64 ELF members with an isolated
+host tool, checks APK/member SHA256 and ELF architecture, and installs unchanged
+native prebuilt modules under /product/lib64/metoknlp. Standard install_symlink
+modules expose them under the app's own lib/arm64 directory, as used by native
+JNI installation on system apps. They are not added to a public-library list.
+The app requires all four links. The factory signature, compressed DEX, default
+location/privacy controls and NDK dependencies remain intact; no Android platform
+source patch is needed. Verify this exact preinstalled layout on the next build;
+the updated-APK comparison does not by itself accept the final image layout.
+
+The original shell-only test and the first locked-screen Activity run were
+background-throttled to 30 minutes and cannot be used as standalone failure
+proof. Later unlocked foreground runs explicitly reached the provider at 0s/1s
+and reproduced the defect. The AppOps package/UID mismatch and ordinary Wi-Fi
+scan throttling remain separate observations; they were still present during the
+successful JNI comparison, so they are not grounds to weaken permission checks.
