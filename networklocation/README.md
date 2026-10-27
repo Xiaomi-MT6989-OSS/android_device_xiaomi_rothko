@@ -115,3 +115,18 @@ The final image must have exactly one package and the permission XML must share
 its partition. Recheck the package source path and native library mappings on
 the next device acceptance; the installed phone still has the previous product
 image until that flash occurs.
+
+## Runtime acceptance follow-up (2026-10-27)
+
+The system_ext preinstalled APK and native mapping have now been verified on
+the device. Initial foreground requests timed out despite the JNI being loaded;
+the same APK update comparison also timed out in that session. Therefore JNI
+absence is a confirmed packaging defect, not established as the sole failure
+cause. A single location-master off/on control restored a code-5 SDK request
+(result 0, 633ms; app callback 675ms). A later normal reboot returned network
+locations without toggling settings. The latter SDK path reused a similar-Wi-Fi
+cache, so callback timestamp age alone is not proof of a fresh backend request.
+Forward and reverse geocoding each returned one result for fixed public test
+inputs. All diagnostic packages were removed and the original enabled location
+setting retained. Initial timeout reproducibility and cold-start robustness are
+still open; no boot-time toggle workaround is shipped and release is not approved.
