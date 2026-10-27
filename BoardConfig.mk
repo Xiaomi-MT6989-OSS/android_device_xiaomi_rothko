@@ -67,6 +67,7 @@ TARGET_SCREEN_DENSITY := 520
 # HIDL
 DEVICE_MANIFEST_FILE += $(DEVICE_PATH)/manifest.xml
 DEVICE_MANIFEST_FILE += $(DEVICE_PATH)/configs/fingerprint/fod-aidl.xml
+DEVICE_MANIFEST_FILE += $(DEVICE_PATH)/configs/wifi/android.hardware.wifi.hostapd.xml
 # The connected CN device reports hardware SKU rothko. Preserve its stock
 # radio/secure-element overrides as the ODM base for this single-device tree.
 ODM_MANIFEST_FILES += $(DEVICE_PATH)/manifest_odm.xml
