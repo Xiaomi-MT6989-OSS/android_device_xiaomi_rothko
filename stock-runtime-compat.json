@@ -1006,6 +1006,76 @@
         "libm.so",
         "libdl.so"
       ]
+    },
+    {
+      "old_soname": "android.hardware.wifi.hostapd-V1-ndk.so",
+      "new_soname": "android.hardware.wifi.hostapd-V1-ndk-rothko.so",
+      "module": "android.hardware.wifi.hostapd-V1-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.wifi.hostapd-V1-ndk.so",
+      "destination": "vendor/lib64/android.hardware.wifi.hostapd-V1-ndk-rothko.so",
+      "source": "vendor/lib64/android.hardware.wifi.hostapd-V1-ndk.so",
+      "stock_sha256": "46b09ff0880351b61e173a17bd153acf442bf934179300315ae14d21a9abf63c",
+      "new_selection": "vendor/lib64/android.hardware.wifi.hostapd-V1-ndk.so:vendor/lib64/android.hardware.wifi.hostapd-V1-ndk-rothko.so;MODULE=android.hardware.wifi.hostapd-V1-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "libcutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "vendor.xiaomi.hardware.wifi.hostapd-V1-ndk.so",
+      "new_soname": "vendor.xiaomi.hardware.wifi.hostapd-V1-ndk-rothko.so",
+      "module": "vendor.xiaomi.hardware.wifi.hostapd-V1-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/vendor.xiaomi.hardware.wifi.hostapd-V1-ndk.so",
+      "destination": "vendor/lib64/vendor.xiaomi.hardware.wifi.hostapd-V1-ndk-rothko.so",
+      "source": "vendor/lib64/vendor.xiaomi.hardware.wifi.hostapd-V1-ndk.so",
+      "stock_sha256": "f6c29d1425ac54d157ae4159e31bb7be1c65f9e71663e5b8fafeefa153b20212",
+      "new_selection": "vendor/lib64/vendor.xiaomi.hardware.wifi.hostapd-V1-ndk.so:vendor/lib64/vendor.xiaomi.hardware.wifi.hostapd-V1-ndk-rothko.so;MODULE=vendor.xiaomi.hardware.wifi.hostapd-V1-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "needed": [
+        "libbinder_ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libcrypto.so",
+      "new_soname": "libcrypto-rothko-wifi.so",
+      "module": "libcrypto_rothko_wifi",
+      "old_destination": "vendor/lib64/libcrypto.so",
+      "destination": "vendor/lib64/libcrypto-rothko-wifi.so",
+      "source": "apex/com.android.vndk.v34/lib64/libcrypto.so",
+      "stock_sha256": "a089ce777ab85af0eb41e912bb48740b200a191d9cd7a74ea8b5c32e3be3e2be",
+      "new_selection": "apex/com.android.vndk.v34/lib64/libcrypto.so:vendor/lib64/libcrypto-rothko-wifi.so;MODULE=libcrypto_rothko_wifi;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libssl.so",
+      "new_soname": "libssl-rothko-wifi.so",
+      "module": "libssl_rothko_wifi",
+      "old_destination": "vendor/lib64/libssl.so",
+      "destination": "vendor/lib64/libssl-rothko-wifi.so",
+      "source": "apex/com.android.vndk.v34/lib64/libssl.so",
+      "stock_sha256": "98099d93f8898ea6128d58cb45aec81f779f1b6a98f78e8940db6fa4fb3b3964",
+      "new_selection": "apex/com.android.vndk.v34/lib64/libssl.so:vendor/lib64/libssl-rothko-wifi.so;MODULE=libssl_rothko_wifi;FIX_SONAME;TRYSRCFIRST",
+      "from_stock_apex": true,
+      "needed": [
+        "libcrypto.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
     }
   ],
   "consumers": {
@@ -1374,6 +1444,15 @@
     "vendor/lib64/android.hardware.biometrics.face-V3-ndk-rothko.so": {
       "android.hardware.biometrics.common-V3-ndk.so": "android.hardware.biometrics.common-V3-ndk-rothko.so",
       "android.hardware.keymaster-V4-ndk.so": "android.hardware.keymaster-V4-ndk-rothko.so"
+    },
+    "vendor/bin/hw/hostapd": {
+      "android.hardware.wifi.hostapd-V1-ndk.so": "android.hardware.wifi.hostapd-V1-ndk-rothko.so",
+      "vendor.xiaomi.hardware.wifi.hostapd-V1-ndk.so": "vendor.xiaomi.hardware.wifi.hostapd-V1-ndk-rothko.so",
+      "libcrypto.so": "libcrypto-rothko-wifi.so",
+      "libssl.so": "libssl-rothko-wifi.so"
+    },
+    "vendor/lib64/libssl-rothko-wifi.so": {
+      "libcrypto.so": "libcrypto-rothko-wifi.so"
     }
   },
   "limits": [

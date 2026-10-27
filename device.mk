@@ -275,10 +275,10 @@ PRODUCT_PACKAGES += \
     init.insmod.sh \
     init.insmod.mt6989.cfg
 
-# Wi-Fi
+# Wi-Fi: stock hostapd and its private VNDK34 TLS closure are inherited
+# from vendor; keep the source supplicant until client-mode WPA3 is verified.
 PRODUCT_PACKAGES += \
     wpa_supplicant \
-    hostapd \
     RothkoWifiResourcesOverlay \
     libwifi-hal-wrapper \
     android.hardware.wifi-service
