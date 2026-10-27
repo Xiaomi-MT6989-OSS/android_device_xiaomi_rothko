@@ -5,7 +5,7 @@ android_app_import {
     name: "MetokNLP",
     owner: "xiaomi",
     apk: "//vendor/xiaomi/rothko:MetokNLP-stock",
-    product_specific: true,
+    system_ext_specific: true,
     privileged: true,
     presigned: true,
     preprocessed: true,
@@ -31,7 +31,7 @@ prebuilt_etc {
     src: "privapp-permissions-rothko-metoknlp.xml",
     filename_from_src: true,
     sub_dir: "permissions",
-    product_specific: true,
+    system_ext_specific: true,
 }
 
 prebuilt_etc {
@@ -39,7 +39,7 @@ prebuilt_etc {
     src: "sysconfig-rothko-metoknlp.xml",
     filename_from_src: true,
     sub_dir: "sysconfig",
-    product_specific: true,
+    system_ext_specific: true,
 }
 
 // Preinstalled extractNativeLibs=true apps are not unpacked by PackageManager.
@@ -51,10 +51,12 @@ python_binary_host {
     srcs: ["extract-metok-jni.py"],
 }
 
+// CanUseSdk() excludes product/vendor image variants. Keep this OEM extension
+// and its app-local JNI together in system_ext, using the normal NDK variants.
 cc_defaults {
     name: "rothko-metok-jni-defaults",
     owner: "xiaomi",
-    product_specific: true,
+    system_ext_specific: true,
     compile_multilib: "64",
     relative_install_path: "metoknlp",
     sdk_version: "current",
@@ -86,9 +88,9 @@ cc_prebuilt_library_shared {
 
 install_symlink {
     name: "MetokNLP-jni-link-libapssdk",
-    product_specific: true,
+    system_ext_specific: true,
     installed_location: "priv-app/MetokNLP/lib/arm64/libapssdk.so",
-    symlink_target: "/product/lib64/metoknlp/libapssdk.so",
+    symlink_target: "/system_ext/lib64/metoknlp/libapssdk.so",
     required: ["metoknlp_libapssdk"],
 }
 
@@ -113,9 +115,9 @@ cc_prebuilt_library_shared {
 
 install_symlink {
     name: "MetokNLP-jni-link-libmiui_apssdk",
-    product_specific: true,
+    system_ext_specific: true,
     installed_location: "priv-app/MetokNLP/lib/arm64/libmiui_apssdk.so",
-    symlink_target: "/product/lib64/metoknlp/libmiui_apssdk.so",
+    symlink_target: "/system_ext/lib64/metoknlp/libmiui_apssdk.so",
     required: ["metoknlp_libmiui_apssdk"],
 }
 
@@ -140,9 +142,9 @@ cc_prebuilt_library_shared {
 
 install_symlink {
     name: "MetokNLP-jni-link-libnlocSDK7d",
-    product_specific: true,
+    system_ext_specific: true,
     installed_location: "priv-app/MetokNLP/lib/arm64/libnlocSDK7d.so",
-    symlink_target: "/product/lib64/metoknlp/libnlocSDK7d.so",
+    symlink_target: "/system_ext/lib64/metoknlp/libnlocSDK7d.so",
     required: ["metoknlp_libnlocSDK7d"],
 }
 
@@ -164,8 +166,8 @@ cc_prebuilt_library_shared {
 
 install_symlink {
     name: "MetokNLP-jni-link-libmievent",
-    product_specific: true,
+    system_ext_specific: true,
     installed_location: "priv-app/MetokNLP/lib/arm64/libmievent.so",
-    symlink_target: "/product/lib64/metoknlp/libmievent.so",
+    symlink_target: "/system_ext/lib64/metoknlp/libmievent.so",
     required: ["metoknlp_libmievent"],
 }

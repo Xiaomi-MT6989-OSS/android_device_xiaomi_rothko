@@ -33,7 +33,7 @@ testing. This is not a new offline location database.
   alignment and JNI storage were separately checked with existing SDK tools;
   the upstream preprocessed checker confirms this exception is necessary.
 - Install the same nine privileged permissions from the stock product policy,
-  in the same product partition as the app. Do not grant the requested but
+  in the same system_ext partition as the app. Do not grant the requested but
   cross-signature `INTERACT_ACROSS_USERS_FULL` permission.
 - Include the stable `com.android.location.provider` Java shared library and
   declare it in `uses_libs`. The platform-generated library declaration must be
@@ -54,7 +54,7 @@ remain authoritative. No always-on location client is added.
 
 ## Unified-build acceptance
 
-Check the product APK's exact hash/signature, permissions, library XML and
+Check the installed APK's exact hash/signature, permissions, library XML and
 sysconfig. After a normal boot verify package scan, network/geocoder binding
 and provider registration without exceptions or denials. Then request an actual
 non-GNSS fix and forward/reverse geocode, verify coordinate/provider attribution,
@@ -81,7 +81,7 @@ APK restored after the comparison. No global policy was disabled.
 
 The permanent build extracts four reviewed arm64 ELF members with an isolated
 host tool, checks APK/member SHA256 and ELF architecture, and installs unchanged
-native prebuilt modules under /product/lib64/metoknlp. Standard install_symlink
+native prebuilt modules under /system_ext/lib64/metoknlp. Standard install_symlink
 modules expose them under the app's own lib/arm64 directory, as used by native
 JNI installation on system apps. They are not added to a public-library list.
 The app requires all four links. The factory signature, compressed DEX, default
@@ -95,3 +95,23 @@ proof. Later unlocked foreground runs explicitly reached the provider at 0s/1s
 and reproduced the defect. The AppOps package/UID mismatch and ordinary Wi-Fi
 scan throttling remain separate observations; they were still present during the
 successful JNI comparison, so they are not grounds to weaken permission checks.
+
+## Partition correction after dependency-graph review
+
+The original filegroup still extracts the factory product APK. Installation is
+now in system_ext: the APK, both permission/sysconfig declarations, native
+prebuilts and private app symlinks move together. No vendor input changes.
+Soong CanUseSdk() excludes vendor/product native image variants; therefore a
+product JNI prebuilt cannot obtain the ordinary SDK libstdc++ dependency merely
+by setting sdk_version. The first graph check rejected that declaration.
+The system_ext extension uses the normal core/SDK variant and native namespace,
+without adding product_available to bionic, duplicating STL implementations,
+skipping ELF checks or rewriting DT_NEEDED. Public-library lists stay unchanged.
+
+After an incremental partition relocation remove only the three obsolete
+module-owned staged product files before building images, so a stale product
+APK cannot shadow the new system_ext provider. Do not clean the build tree.
+The final image must have exactly one package and the permission XML must share
+its partition. Recheck the package source path and native library mappings on
+the next device acceptance; the installed phone still has the previous product
+image until that flash occurs.
