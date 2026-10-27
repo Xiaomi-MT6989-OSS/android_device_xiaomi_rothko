@@ -130,3 +130,17 @@ Forward and reverse geocoding each returned one result for fixed public test
 inputs. All diagnostic packages were removed and the original enabled location
 setting retained. Initial timeout reproducibility and cold-start robustness are
 still open; no boot-time toggle workaround is shipped and release is not approved.
+
+## Controlled network acceptance refinement
+
+The user later recalled that Wi-Fi might have been disconnected during the
+initial failing runs. Their connectivity was not captured, so their exact cause
+is not established. A new normal-reboot test recorded validated Wi-Fi before
+and after reboot and passed without any location-setting change. Disabling only
+Wi-Fi then left no NetworkAgent; the engine explicitly reported no network and
+reproduced the 30s/20s timeouts. Restoring validated Wi-Fi restored network fixes
+without toggling location or restarting the provider. These paths pass on the
+formal preinstalled build. There is currently no reproduced initialization defect
+under the controlled connected condition, and no extra workaround is justified.
+SDK cache reuse is distinguished from a new backend query; cellular-only, region
+and multi-user coverage remain separate. No rebuild is needed for these findings.
