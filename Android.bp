@@ -11,3 +11,11 @@ soong_namespace {
         "vendor/xiaomi/rothko",
     ],
 }
+
+// The source is generated as a filegroup by extract-utils from the original
+// vendor manifest. Preserve the existing Soong VINTF processing on regeneration.
+vintf_fragment {
+    name: "nfc-service-tms.xml",
+    src: ":rothko_tms_nfc_manifest",
+    vendor: true,
+}

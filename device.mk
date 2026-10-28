@@ -96,6 +96,8 @@ PRODUCT_PACKAGES += \
 # NFC: the stock TMS AIDL HAL implements the frozen android.hardware.nfc V1
 # contract. Core reader and host-card-emulation declarations are followed by
 # stock off-host features; UICC/eSE functionality still needs runtime acceptance.
+PRODUCT_PACKAGES += nfc-service-tms.xml
+
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.nfc.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.hce.xml \

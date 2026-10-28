@@ -274,12 +274,11 @@
     {
       "old_soname": "libcamera2ndk_vendor.so",
       "new_soname": "libcamera2ndk_vendor-rothko.so",
-      "module": "libcamera2ndk_vendor_vendorcompat",
+      "module": "libcamera2ndk_vendor_rothko",
       "old_destination": "vendor/lib64/libcamera2ndk_vendor.so",
       "destination": "vendor/lib64/libcamera2ndk_vendor-rothko.so",
       "source": "vendor/lib64/libcamera2ndk_vendor.so",
       "stock_sha256": "b3cfb8e7a9ab3ee4cf97e6a12ca3e02a3360f5df01f1e9e65d911ab6681b3ccc",
-      "new_selection": "vendor/lib64/libcamera2ndk_vendor.so:vendor/lib64/libcamera2ndk_vendor-rothko.so;MODULE=libcamera2ndk_vendor_vendorcompat;FIX_SONAME;TRYSRCFIRST",
       "from_stock_apex": false,
       "needed": [
         "libbinder_ndk.so",
@@ -300,7 +299,10 @@
         "libc.so",
         "libm.so",
         "libdl.so"
-      ]
+      ],
+      "provider_kind": "source",
+      "stock_blob_selected": false,
+      "historical_stock_selection": "vendor/lib64/libcamera2ndk_vendor.so:vendor/lib64/libcamera2ndk_vendor-rothko.so;MODULE=libcamera2ndk_vendor_vendorcompat;FIX_SONAME;TRYSRCFIRST"
     },
     {
       "old_soname": "libcodec2_hidl@1.0.so",

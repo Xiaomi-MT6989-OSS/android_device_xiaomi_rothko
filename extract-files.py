@@ -15,6 +15,7 @@ from tinyxml2_isolation import blob_fixup_tinyxml2_isolation
 from vibrator_instance_fixup import blob_fixup_vibrator_instance
 from allocator_v2_isolation import blob_fixup_allocator_v2_isolation
 from audio_param_fixup import blob_fixup_hp_impedance
+from nfc_manifest_fixup import blob_fixup_nfc_manifest
 
 namespace_imports = [
     'device/xiaomi/rothko',
@@ -74,7 +75,6 @@ blob_fixups: blob_fixups_user_type = {
         'vendor/lib64/hw/sensors.mediatek.V2.0.so',
         'vendor/lib64/libaudio_aidl_conversion_common_ndk.so',
         'vendor/lib64/libaudioclient_aidl_conversion.so',
-        'vendor/lib64/libcamera2ndk_vendor.so',
         'vendor/lib64/libcodec2_mtk_c2store.so',
         'vendor/lib64/libcodec2_mtk_vdec.so',
         'vendor/lib64/libcodec2_mtk_venc.so',
@@ -115,6 +115,8 @@ runtime_modules = {
     row['new_soname'][:-3]: row['module']
     for row in runtime_compat['libraries']
 }
+
+# The runtime map also names source providers that replaced old stock clients.
 
 
 def lib_fixup_runtime_compat(lib, partition, *args, **kwargs):
@@ -191,6 +193,11 @@ separate_fixups['odm/etc/init/vendor.novatek.hardware.visdisplaysrv-service.rc']
         .regex_replace('chmod 0666 /dev/vis_display_spidev', 'chmod 0660 /dev/vis_display_spidev')
 )
 blob_fixups = separate_fixups
+
+# Source and Soong-processed installed forms must regenerate the same fragment.
+blob_fixups['vendor/etc/vintf/manifest/nfc-service-tms.xml'] = (
+    blob_fixup().call(blob_fixup_nfc_manifest, need_tmp_dir=False)
+)
 
 module = ExtractUtilsModule(
     'rothko',

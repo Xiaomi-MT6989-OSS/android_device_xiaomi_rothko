@@ -257,7 +257,7 @@ vendor/lib64/libcamalgo.utility.so
 vendor/lib64/libcamalgo.vsdofUtil.so
 vendor/lib64/libcamalgo.warp.so
 vendor/lib64/libcamalgo.WarpMapResizer.so
-vendor/lib64/libcamera2ndk_vendor.so:vendor/lib64/libcamera2ndk_vendor-rothko.so;MODULE=libcamera2ndk_vendor_vendorcompat;FIX_SONAME;TRYSRCFIRST
+# The A16 source client provides this SONAME; no unused stock client is extracted.
 vendor/lib64/libcameraloadcalibrationfiles.so
 vendor/lib64/libcameraopt.so
 vendor/lib64/libcameraplatforminfoxiaomi.so
@@ -2585,7 +2585,8 @@ odm/etc/libnfc-tms.conf
 odm/etc/libnfc-tms_RF_EC2.conf
 vendor/bin/hw/android.hardware.nfc-service-tms
 vendor/etc/init/nfc-service-tms.rc
-vendor/etc/vintf/manifest/nfc-service-tms.xml
+# Keep Soong VINTF processing through the device-owned module, not an XML copy.
+vendor/etc/vintf/manifest/nfc-service-tms.xml;EXTRACT_ONLY;FILEGROUP=rothko_tms_nfc_manifest
 vendor/lib64/7816-3-T1.so
 vendor/lib64/nfc_nci.thn31nfc.tms.so
 vendor/lib64/tms-cos-dl-common.so
