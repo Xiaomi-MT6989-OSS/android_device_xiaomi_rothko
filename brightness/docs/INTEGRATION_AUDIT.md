@@ -36,10 +36,13 @@ vendor.disable.thermalhal.control path can explicitly clear cooling requests;
 the property defaults false and is not set in the reviewed device property files.
 Do not enable that property to make the service "read only".
 
-Before changing notification flags, establish the stock HAL's sensor names,
-units, severity thresholds, hysteresis and callback contract. The current JSON
-is device-maintained, not an unchanged stock thermal_info_config.json. Guessing
-new thresholds or enabling unverified ones would contradict the stock-policy goal.
+Follow-up ELF analysis matched all six HotThreshold arrays to stock constants;
+see `STOCK_THERMAL_HAL.md`. This resolves their numerical provenance, but not
+all sensor mapping, units, hysteresis and callback semantics. The current JSON
+is device-maintained, not an unchanged stock thermal_info_config.json. The source
+HAL's monitoring path may also write kernel trip points: do not simply enable
+flags without reviewing that ownership. Guessing new thresholds would contradict
+the stock-policy goal.
 The stock daemon, framework thermal notification service and display brightness
 policy require separate runtime validation.
 
