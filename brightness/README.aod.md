@@ -50,9 +50,17 @@ platform API artifacts. Host tests cover mode quantization, route selection,
 AOD/pulse exit/re-entry, uncertain failure cleanup, and foreign-display exclusion.
 Host fixtures do not validate Binder scheduling or panel behavior.
 
-No ROM build or deployment has been performed for this route. Pending device
-checks: persistent AOD and minute updates; cover/uncover; suspend/pulse/AOD;
-fully-off and AOD fingerprint first press; wrong-finger release; power-button
-wake; rapid sleep/wake; service restart. Preserve logs on black screen or stuck
-illumination. This route does not establish physical 30 Hz operation and does
-not modify refresh-rate overlay counters, force ON, or disable suspend.
+The initial route-only checks above preceded deployment. Subsequent unified
+images also include the opted-in SystemUI draw/present protection. User testing
+confirmed persistent AOD across repeated idle intervals and room-light changes,
+plus fully-off/AOD/power-button fingerprint paths, wrong-finger rejection and
+no stuck local illumination. These combined results do not isolate the effect
+of this backlight route from the draw/present change.
+
+Still pending: complete proximity/cover and minute-update tracing, service
+failure/restart injection, rapid-transition stress and idle-power measurement.
+Preserve logs on black screen or stuck illumination. Physical 30 Hz operation
+remains unverified; the observed developer refresh-rate overlay still reports
+60 Hz. Neither this route nor the draw protection overrides the refresh counter,
+forces ON, or permanently disables suspend. See the project review
+`source-release/ADAPTATION_REVIEW_04_DISPLAY_AOD.zh-CN.md` for evidence boundaries.
