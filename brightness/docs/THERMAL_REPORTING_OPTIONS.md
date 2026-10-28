@@ -99,3 +99,41 @@ Still pending: actual virtual raw-read/unit conversion, initial and subsequent
 callback delivery, watcher/error/restart behaviour, polling cost and Android/device
 integration. The candidate remains outside the selected product configuration.
 Do not use these 209 checks to mark the thermal reporting gap repaired.
+
+## Read-chain checks exposed an existing parser defect
+
+The second host harness compiles the real ThermalFiles translation unit as well
+as the original configuration parser. It extracts unchanged readThermalSensor,
+readDataByType, readTemperature, getSeverityReference, fillCurrentTemperatures,
+initializeSensorMap and severity function bodies. Sensor-status structures and
+the temperature-conversion macro are copied unchanged from the production header.
+Android I/O, clock, statistics and Temperature value/transport boundaries are
+fixtures; this is not the complete service or an AIDL ABI test.
+
+The result is **50 passing and 19 failing assertions**, with a failing exit code
+retained. Passing checks cover 35000 raw -> 35 C once, six public entries in the
+initial callback-filtered snapshot, BATTERY type filtering, hot/falling severity
+and pending-notification flags, missing/empty file errors, and cache expiration
+without smoothing. A pending flag is not proof that Binder received a callback.
+
+The failure is in the existing std::atof physical-reading conversion, not the
+identity formula. For each public type, "garbage" becomes 0, "85000junk" becomes
+approximately 85 C, and "inf" becomes infinity, all returned as valid readings.
+A further check shows malformed input clearing a previously established CPU hot
+severity. An original-configuration control also accepts garbage as zero, proving
+that the defect predates the candidate. No real temperatures or thermal events
+were injected; all inputs are host fake files.
+
+This prevents treating the device-JSON proposal as a complete robust solution.
+JSON cannot make atof reject malformed input. A justified follow-up source fix
+would strictly parse the complete trimmed physical input, reject nonfinite values
+and propagate a read error before updating cache/severity. Existing numeric and
+kernel-sentinel semantics must be retained; do not invent temperature bounds,
+replace failure with zero, or add a filter. libbase ParseFloat checks full-string
+consumption, range and errno, but still needs an explicit finite-value check for
+NaN. Such a generic reader fix belongs in an independent, narrow HAL change,
+not a framework thermal-policy patch or a proprietary binary modification.
+
+The shared HAL source and selected product JSON remain unchanged at this audit
+stage. Actual watcher/notification dispatch, read-error retry, restart and cost
+checks are still required, independently of the proposed parsing correction.
