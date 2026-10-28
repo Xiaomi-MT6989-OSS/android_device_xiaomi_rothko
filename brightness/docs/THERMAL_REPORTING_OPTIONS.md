@@ -137,3 +137,24 @@ not a framework thermal-policy patch or a proprietary binary modification.
 The shared HAL source and selected product JSON remain unchanged at this audit
 stage. Actual watcher/notification dispatch, read-error retry, restart and cost
 checks are still required, independently of the proposed parsing correction.
+
+## Narrow reader correction implemented, not deployed
+
+hardware/mediatek commit affc75f replaces the physical reader's atof with libbase
+ParseFloat plus an explicit finite check. A local parsed value is assigned only
+after validation. Failed reads return ERROR before cache/severity updates. This
+is a general source-reader correction; it changes neither thresholds nor stock
+cooling ownership and requires no framework or proprietary-binary patch.
+
+The expanded real-reader host suite now passes 118 assertions, including the
+previous 19 failures, NaN/negative infinity/overflow/blank input, valid zero and
+negative temperatures, whitespace, existing kernel sentinel conversion, and
+preservation of the last successful cache and hot severity on a failed fresh read.
+The original six-entry configuration also rejects malformed data with this fix.
+These remain host boundary checks; watcher dispatch and failed-read retry are
+separate pending checks. The device reporting candidate is still not selected.
+
+The dependency manifest pins the upstream MediaTek base, not this unpublished
+local commit. Reproduction must apply the independently exported correction after
+that base; do not assume an upstream checkout includes the fix. No ROM was built
+or deployed as part of this source correction.
