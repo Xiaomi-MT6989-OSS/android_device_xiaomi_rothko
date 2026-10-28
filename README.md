@@ -10,6 +10,12 @@ pinned MTK/Xiaomi dependencies recorded in the project manifests. Extract
 blobs with this branch's `extract-files.py` and the corresponding stock dump;
 do not substitute an OS2 vendor repository or revive the old KeyMint fixups.
 
+Device-local IMS/audio/modem inputs have a separate pinned recipe:
+`extract-device-prebuilts.py` and `DEVICE_PREBUILTS.md`. It complements the
+vendor/ODM extractor. See `EXTRACTION_FIXUPS.md` for reviewed fixups and the
+factory/product-tree input differences; installed-phone extraction is not yet
+validated. Always extract into a new directory before reviewing the results.
+
 The branch is for offline configuration/build validation. First boot,
 recovery, encryption, boot-control/misc behavior, module CRCs, thermal/power
 configuration and hardware operation have not been validated. A successful
