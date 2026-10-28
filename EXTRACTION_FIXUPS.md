@@ -48,3 +48,24 @@ build a system or access a phone. It checks direct filesystem inputs only;
 source fallback selection, extraction cleanup, installed APK signing, optimized
 JARs, full payload coverage, image metadata and final build/runtime validation
 remain separate requirements.
+
+
+## Factory and product-tree input paths
+
+The MetokNLP filegroup keeps the signed factory APK unchanged. Its extraction
+source is the factory product path and its destination is the actual system_ext
+installation path; extract-utils tries the destination then the source. This
+allows the same recipe to read either an unpacked factory dump or this product
+build without a second APK copy or a general fallback that accepts unknown data.
+
+The factory hostapd fragment is already retained byte-for-byte as
+`configs/wifi/android.hardware.wifi.hostapd.xml` and merged by BoardConfig.
+The unused extraction filegroup is excluded: it was not installed separately
+and could not be recovered at that path from a Lineage product directory.
+The hostapd daemon, libraries, runtime declaration and security capabilities
+are not changed by this source-input cleanup.
+
+These path rules have been checked using the integration reproduction tool
+against a prepared product tree. That tool separately maps recovery/root;
+product-tree checks do not claim extraction from an installed phone or every
+signature/optimization variant.
