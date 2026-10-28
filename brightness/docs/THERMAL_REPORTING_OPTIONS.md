@@ -193,3 +193,35 @@ The two minimal shared corrections must be replayed after the pinned upstream
 base in order (affc75f then 59892c1). The identity-reporting device configuration
 remains a candidate, and no claim of stock-policy equivalence or deployment is
 made from these host results.
+
+## Subscription lifetime and real callback-queue checks
+
+The original register/unregister/send methods and CallbackSetting definition were
+tested with the real read helper and queued/Binder boundary fixtures. Thirteen
+checks passed, but unregistering a callback and registering it for a different
+type before draining its queued first snapshot delivered the stale type as well.
+hardware/mediatek commit 1480fd5 adds a unique shared token to each registration;
+the queued handler must match the same registration lifetime. All 14 checks then
+pass, including initial type filters, all-type delivery, duplicate/null rejection,
+cancelled pending work and dead/failed-client removal. These are transport-fixture
+checks, not remote Binder validation.
+
+The real nested Looper class has a separate defect: aborted_ was uninitialized,
+and the outer while condition read it without the mutex used by shutdown. A
+standalone harness compiled that actual class/constructor and method bodies with
+real host threads. The reused-nonzero-storage case and twenty FIFO/construction/
+destruction rounds produced 2 passes/20 failures on the original host build.
+Commit 278b978 initializes the flag and checks shutdown only under the queue mutex;
+all 22 checks pass after the fix. This is a bounded host regression, not a race
+detector, an Android init restart test or proof of full HAL object teardown.
+
+The existing init contract starts the source HAL via vendor.thermal.link_ready=1,
+after the thermal symlink oneshot. The HAL scans actual thermal zones itself.
+No init change or extra stock daemon has been selected based on these host checks.
+Full constructor readiness, HAL/helper destruction ordering, framework reconnect,
+runtime permissions and polling cost remain separate acceptance boundaries.
+
+There are now four independent shared-source fixes to replay after the pinned
+base: affc75f, 59892c1, 1480fd5 and 278b978, in that order. They address demonstrated
+generic reader/notification defects, not device-specific thermal thresholds or
+factory cooling policy. The device identity-reporting candidate remains unselected.
