@@ -104,3 +104,42 @@ REA evidence for getter and MPq path:
 Supplementary bounded LLVM/ELF evidence is in the project audit directory
 `out/adaptation-principle-audit-20261028/color-mode-chain-02`. This follow-up
 changes documentation only; the compatibility fallback remains unresolved.
+
+
+## HWC/PQ submission boundary
+
+Bounded stock HWC assembly establishes the distinction between parameter
+acceptance and later submission. HWCDisplay::setColorModeWithRenderIntent
+(0x13ee10) checks advertised mode/intent capability, stores the selection at
+0x13f010/0x13f014 and marks a dirty bit before returning success. That success
+branch does not call PQ or wait for presentation.
+
+The later HWCDispatcher::PhyPostHandler::set obtains getPqDevice at 0xdb58c,
+calls its vptr slot 0x58 at 0xdb5ac and stores its result in the job at 0xdb5b0.
+Relocations of both IPqDevice and PqDeviceDrm resolve this slot to
+IPqDevice::setDisplayPqMode. Its locked implementation at 0x14d9e0 invokes the
+V4 PQ vptr slot 0x4a0: the proxy relocation resolves to
+setColorModeWithFenceMPq. It checks Binder status and the returned Result,
+returns a fence/error, and does not wait for that returned fence in this body.
+The PQ implementation may obtain a DRM fence and enqueue work for its sync
+thread. A request, an accepted mode, a submitted job and a signalled fence are
+therefore distinct observations.
+
+The existing SF bridge reports setActiveColorMode's software acceptance; it
+must not be described as this later job/fence result. A presentation fence by
+itself also does not identify a Rothko mode request or prove successful custom
+LUT upload. Conversely, ordinary Settings operation should not be redesigned
+around an invented physical-LUT ACK contract that stock does not expose.
+
+Do not have this controller independently call setColorModeWithFence or allocate
+PQ/DRM fences to manufacture acknowledgement. HWC owns that frame submission
+path; an extra writer would need sequencing evidence and can interfere with
+HDR/power transitions. Nor should an SF composition hook wait synchronously for
+these fences. First establish why intended callbacks are absent/late in the
+existing single-writer route, retaining request-generation, scene and software
+HWC acceptance checks. The missing-echo fallback remains an explicit audit gap.
+
+Evidence: `out/adaptation-principle-audit-20261028/color-mode-chain-03`, including
+bounded function bodies, vtable/proxy corroboration and direct-versus-indirect
+call search limits. This is static analysis, not a phone validation or a new
+completion implementation.
