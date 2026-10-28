@@ -39,6 +39,7 @@ std::shared_ptr<IDisplayFeature> IDisplayFeature::fromBinder(const ndk::SpAIBind
 }
 struct Oem final:df::IDisplayFeature {
     std::shared_ptr<df::IDisplayFeatureCallback> callback;
+    std::atomic<bool> autoEcho{true};
     ScopedAStatus notifyBrightness(int32_t)override{return ScopedAStatus::ok();}
     ScopedAStatus registerCallback(int32_t,const std::shared_ptr<df::IDisplayFeatureCallback>& c)override{callback=c;return ScopedAStatus::ok();}
     void emit(int32_t event,int32_t value){callback->displayfeatureInfoChanged(event,value,0,0,0);}
@@ -58,6 +59,11 @@ struct Oem final:df::IDisplayFeature {
         }
         if(cookie==255&&feature>=0&&feature<=2&&sceneNeedsRetry.load())
             modeBeforeSceneRetry.store(true);
+        if(cookie==255&&feature>=0&&feature<=2&&autoEcho.load()){
+            emit(10000,0);
+            const int intents[]={258,256,257};
+            emit(30000,intents[feature]);
+        }
         return ScopedAStatus::ok();
     }
     ScopedAStatus setFunction(int32_t,int32_t,int32_t,int32_t)override{return ScopedAStatus::ok();}
@@ -79,15 +85,27 @@ struct Gate {
 } gate, oemGate;
 void hostHistogramDrive(){gate.pass();}
 void hostOemFeature(int32_t feature,int32_t cookie){if(feature==0&&cookie==255)oemGate.pass();}
+std::weak_ptr<Controller> hostController;
 struct Listener:bridge::IColorPolicyCallback {
     std::mutex mutex;
     int clears=0;
     int policies=0;
     int64_t lastPolicy=0;
     int32_t lastIntent=-1;
+    std::atomic<bool> autoAccept{true};
     ScopedAStatus onPolicy(int64_t,int64_t id,int32_t intent,bool)override{
-        std::lock_guard l(mutex);if(intent==-1)++clears;
-        else {++policies;lastPolicy=id;lastIntent=intent;}
+        {
+            std::lock_guard l(mutex);if(intent==-1)++clears;
+            else {++policies;lastPolicy=id;lastIntent=intent;}
+        }
+        if(intent>=0&&autoAccept.load())if(auto c=hostController.lock()){
+            bridge::DisplayState accepted;
+            {std::lock_guard l(c->mMutex);accepted=*c->mState;accepted.sequence=c->mLastSequence+1;}
+            accepted.profileKnown=true;accepted.profileRejected=false;
+            accepted.policyRequestId=id;accepted.renderIntent=intent;
+            accepted.dataspace=1;accepted.hwcResult=0;
+            c->reportState(accepted);
+        }
         return ScopedAStatus::ok();
     }
     int count(){std::lock_guard l(mutex);return clears;}
@@ -101,7 +119,7 @@ template<class F> void until(F f,const char* message){
 void check(bool v,const char* message){if(!v)throw std::runtime_error(message);}
 bridge::DisplayState scene(int64_t session,int64_t conn,int64_t seq,int output=1){
     bridge::DisplayState s;
-    s.sfSession=session;s.connection=conn;s.sequence=seq;s.physicalId=4627039422300187648LL;
+    s.sfSession=session;s.connection=conn;s.sequence=seq*100;s.physicalId=4627039422300187648LL;
     s.connected=s.synchronizedState=s.contentKnown=s.enabled=s.managed=s.powerKnown=s.accepted=true;
     s.lastAttempted=2;s.outputCandidate=s.sdrCandidate=output;return s;
 }
@@ -109,7 +127,7 @@ struct Fixture {
     std::shared_ptr<Oem> backend=std::make_shared<Oem>();
     std::shared_ptr<Controller> c;
     std::shared_ptr<Listener> listener=std::make_shared<Listener>();
-    Fixture(){oem=backend.get();c=std::make_shared<Controller>();c->setListener(10,1,listener);c->reportState(scene(10,1,1));until([&]{return c->mReady.load();},"initial restore failed");}
+    Fixture(){oem=backend.get();c=std::make_shared<Controller>();hostController=c;c->setListener(10,1,listener);c->reportState(scene(10,1,1));until([&]{return c->mReady.load();},"initial restore failed");}
     ~Fixture(){gate.release();oemGate.release();c.reset();oem=nullptr;}
     std::shared_ptr<Controller::Request> queued(){
         std::shared_ptr<Controller::Request> r;
@@ -217,45 +235,47 @@ void failedSceneMustBeRetried(){
           "failed scene batch was cached as delivered; mode applied before retry");
     check(histogramSceneKnown.load(),"scene recovery left histogram sampling disabled");
 }
-void echoWindowStartsAfterReturn(){
+void lateEchoStillWaitsForAcceptance(){
     Fixture f;
-    oemGate.arm();
-    auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,false);});
-    oemGate.wait();
-    std::this_thread::sleep_for(450ms); // Longer than the production echo window.
-    oemGate.release();
-    const bool early=call.wait_for(100ms)==std::future_status::ready;
-    const bool ok=call.get().isOk();
-    check(ok&&!early,"OEM IPC consumed the post-return echo observation window");
-}
-void lateEchoWithoutGamutChange(){
-    Fixture f;
-    oemGate.arm();
-    auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,false);});
-    oemGate.wait();
-    f.backend->emit(10000,0);
-    oemGate.release();
-    check(call.get().isOk(),"compatibility fallback failed");
+    f.backend->autoEcho.store(false);
     const int before=f.listener->policyCount();
-    f.backend->emit(30000,256); // Another mode is not this request's echo.
+    auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,false);});
+    check(call.wait_for(550ms)!=std::future_status::ready,
+          "missing echo was accepted by an elapsed-time fallback");
+    check(f.c->currentMode()!=1&&f.c->defaultMode()==3,
+          "missing echo changed current/default mode");
+    f.backend->emit(10000,0);
+    f.backend->emit(30000,256);
     std::this_thread::sleep_for(100ms);
     check(f.listener->policyCount()==before,"unmatched late echo published a policy");
     f.backend->emit(30000,258);
-    until([&]{return f.listener->policyCount()>before;},
-          "matching late echo lost without another gamut notification");
-    check(f.listener->policy().second==258,"late echo published wrong intent");
-    std::this_thread::sleep_for(100ms);
-    check(f.listener->policyCount()==before+1,"late echo repeatedly republished policy");
+    check(call.wait_for(2s)==std::future_status::ready&&call.get().isOk(),
+          "matching late echo and SF acceptance did not complete request");
+    check(f.listener->policyCount()==before+1,"late echo not published exactly once");
+}
+void missingEchoCannotSaveDefault(){
+    Fixture f;
+    f.backend->autoEcho.store(false);
+    auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,true);});
+    check(call.wait_for(550ms)!=std::future_status::ready,
+          "default request completed before observing an echo or apply timeout");
+    check(call.wait_for(10s)==std::future_status::ready&&!call.get().isOk(),
+          "request without an echo did not fail within apply deadline");
+    check(f.c->currentMode()==-1&&f.c->defaultMode()==3,
+          "unknown OEM outcome changed current/default mode");
 }
 void echoWaitsForSoftwareAcceptance(){
     Fixture f;
+    f.backend->autoEcho.store(false);
+    f.listener->autoAccept.store(false);
+    const int before=f.listener->policyCount();
     oemGate.arm();
     auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,false);});
     oemGate.wait();
     f.backend->emit(10000,0);
     f.backend->emit(30000,258);
     oemGate.release();
-    until([&]{return f.listener->policyCount()>0;},"echo did not publish policy");
+    until([&]{return f.listener->policyCount()>before;},"echo did not publish policy");
     check(call.wait_for(100ms)!=std::future_status::ready,"echo bypassed SF/HWC acceptance");
     auto accepted=scene(10,1,2);
     accepted.profileKnown=true;
@@ -274,8 +294,8 @@ int main(int argc,char** argv){
             {"stale-completion",oldCompletionCannotReleaseNew},{"late-oem",lateOemReturn},
             {"same-identity",repeatedIdentityCancelsQueued},{"persistence-failure",persistenceFailureKeepsActualSeparate},
             {"failed-scene-retry",failedSceneMustBeRetried},
-            {"post-return-echo-window",echoWindowStartsAfterReturn},
-            {"late-echo-no-gamut-change",lateEchoWithoutGamutChange},
+            {"late-echo-acceptance",lateEchoStillWaitsForAcceptance},
+            {"missing-echo-default",missingEchoCannotSaveDefault},
             {"echo-software-acceptance",echoWaitsForSoftwareAcceptance}}){
         if(which!="all"&&which!=name)continue;
         ++ran;

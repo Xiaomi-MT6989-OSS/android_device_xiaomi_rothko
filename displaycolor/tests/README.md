@@ -21,16 +21,18 @@ stale completion while a newer request owns admission, delayed OEM return after
 replacement, replacement reusing external connection identifiers, and persistence
 failure reported separately from the accepted current mode, and a failed scene
 notification retried before a mode write with sampling eligibility restored, and
-the echo observation window starting after a delayed synchronous OEM return,
-a matching late intent without a second gamut notification (including rejection
-of a different intent and avoiding repeated publication), and timely echo waiting
-for the matching SF/HWC software acceptance before completing the caller.
+a matching late intent after the former 400 ms window (including rejection of a
+different intent and exactly one publication), a missing echo timing out without
+changing current/default mode, and timely echo waiting for matching SF/HWC
+software acceptance before completing the caller.
 
 These tests execute the real worker/request code. The fake Binder transport does
 not model Android IPC, death delivery or transaction queues. The fake OEM backend
-normally returns success without echo, exercising the existing 400 ms fallback.
-Two scenarios inject events through the actual registered production callback;
-the SF acceptance scenario supplies a synthetic scene report. These cannot
+normally injects intent/gamut through the actual registered callback, and the
+fake policy listener supplies synthetic SF/HWC acceptance reports. Specific
+scenarios disable each automatic response to exercise late/missing events and
+pending acceptance. The missing-echo case uses the real nine-second deadline.
+These cannot
 prove LUT application, echo/HWC acknowledgement, panel correctness, successful
 persistence/durability, HistogramService behaviour or UI lifecycle correctness.
 The persistence case covers failure only. Real device regression remains required.

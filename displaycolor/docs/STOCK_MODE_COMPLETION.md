@@ -5,6 +5,11 @@ Scope: rothko OS3.0.307.0 stock displayfeature HAL, SHA-256
 This is static evidence, not a new device test. Addresses identify research
 locations in that exact artifact, never production memory offsets.
 
+Current implementation: the 400 ms compatibility-success path described in
+the historical findings below has been removed. Timely and delayed echoes use
+one software-confirmation path. See the final section for the replacement and
+remaining validation limits.
+
 ## Established facts
 
 * Feature IDs 0, 1 and 2 dispatch via the table at 0x21d10, branch base 0x30b80,
@@ -165,3 +170,31 @@ events do not publish a policy. All eleven host cases pass. Binder delivery,
 actual LUT application and visual behaviour still require phone validation.
 The missing-echo compatibility success and its persistence semantics remain an
 open audit issue; this repair does not turn the fallback into acknowledgement.
+
+## Remove elapsed-time success
+
+The Settings client calls setDisplayMode with makeDefault=true. The SDK maps a
+successful void setter to success, so the former fallback could report and save
+an unconfirmed selection. There is no stock evidence that 400 ms means success.
+
+The controller now retains the request until its matching post-boundary intent,
+valid gamut and matching same-scene SF/HWC software acceptance. That condition
+alone updates current mode and permits default persistence. Missing evidence
+fails at the existing nine-second apply timeout, clears current to unknown and
+preserves the saved default. A blocked Binder call is not cancellable: timeout
+checks run when the worker resumes, with the independent twelve-second caller
+timeout still protecting the caller.
+
+The separate post-fallback late-echo tracker is no longer needed: delayed echoes
+stay inside the original request and cannot lose policy publication merely
+because the old 400 ms window passed. Gamut-only updates after confirmation keep
+their existing path. No new stock writer, stock binary or upstream change is used.
+
+Host fakes now automatically deliver callback and software-acceptance evidence
+for ordinary scenarios; missing/late-event cases disable those responses.
+The former implementation fails both new no-premature-completion cases. The
+updated implementation passes all eleven scenarios, including the real apply
+timeout and persistence failure after software confirmation. File persistence
+success, real Binder queues/death, physical LUT application and phone behaviour
+remain unvalidated. In particular, actual callback absence can now expose an
+unavailable Settings state instead of false success; its root cause remains open.

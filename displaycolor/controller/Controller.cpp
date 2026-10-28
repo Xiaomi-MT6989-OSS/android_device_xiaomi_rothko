@@ -37,9 +37,6 @@ constexpr int kUnavailable = 1, kTimeout = 2, kPersistence = 3;
 // the intent echo arrives seconds after the request, not immediately.
 constexpr auto kRequestTimeout = 12000ms;
 constexpr auto kApplyTimeout = 9000ms;
-// Observation window for requests that return from the stock backend without
-// an intent echo. Expiry below records backend acceptance, not a hardware ACK.
-constexpr auto kEchoGrace = 400ms;
 constexpr auto kRepublishTimeout = 1500ms;
 constexpr auto kPollInterval = 25ms;
 constexpr auto kLookupInterval = 1000ms;
@@ -389,13 +386,12 @@ void Controller::run() {
     int32_t confirmedMode = -1;
     int32_t confirmedIntent = 0;
     uint64_t publishedWcgVersion = 0;
-    bool awaitingLateEcho = false;
     int64_t activeSession = 0, activeConnection = 0;
     uint64_t activeGeneration = 0;
     uint64_t intentBoundary = 0;
     bool restore = true, policyActive = false;
     int32_t previousPower = -1;
-    Clock::time_point deadline{}, echoDeadline{}, nextLookup{}, nextSceneAttempt{};
+    Clock::time_point deadline{}, nextLookup{}, nextSceneAttempt{};
 
     // Registration can change while this worker is blocked in OEM IPC. State
     // from the old iteration must not become the new connection's ready/current.
@@ -444,7 +440,6 @@ void Controller::run() {
         confirmedMode = -1;
         confirmedIntent = 0;
         publishedWcgVersion = 0;
-        awaitingLateEcho = false;
         clearPolicyNow();
     };
 
@@ -484,7 +479,6 @@ void Controller::run() {
             confirmedMode = -1;
             confirmedIntent = 0;
             publishedWcgVersion = 0;
-            awaitingLateEcho = false;
             policyActive = false;
             restore = true;
             previousPower = -1;
@@ -755,7 +749,6 @@ void Controller::run() {
                 continue;
             }
             intentBoundary = observation->intents.load(std::memory_order_acquire);
-            awaitingLateEcho = false;
             pendingPolicy = 0;
             pendingIntent = applying->intent;
             deadline = Clock::now() + kApplyTimeout;
@@ -774,14 +767,13 @@ void Controller::run() {
                 failPending(kUnavailable, true);
                 continue;
             }
-            // Do not consume the observation window inside synchronous OEM IPC.
-            // The overall apply/caller deadlines still bound the whole request.
-            echoDeadline = Clock::now() + kEchoGrace;
             restore = false;
         }
 
         if (applying) {
             // 11. Confirm the OEM mode echo, then the SF/HWC acceptance.
+            // Binder OK only acknowledges dispatch into the asynchronous stock
+            // pipeline. Elapsed time must not confirm or persist a user mode.
             if (Clock::now() >= deadline) {
                 // A restore timeout must not poison attribution for the user's
                 // next request of the same mode.
@@ -792,30 +784,6 @@ void Controller::run() {
                     observation->intents.load(std::memory_order_acquire) > intentBoundary &&
                     observation->lastIntent.load() == pendingIntent &&
                     mUnresolvedIntent.load() != pendingIntent;
-            // Compatibility fallback: a missing echo is currently accepted after
-            // this window. Stock Binder OK does not propagate HAL integer errors;
-            // neither it nor elapsed time establishes application or a LUT ACK.
-            if (!echoedNow && Clock::now() >= echoDeadline) {
-                LOG(INFO) << "mode " << applying->id << " accepted by compatibility fallback"
-                          << " after OEM RPC return; application unverified";
-                setCurrent(applying->id);
-                bool ok = true;
-                if (pending && pending->makeDefault && !pending->abandoned.load()) {
-                    ok = persistDefault(applying->id,
-                                        [&] { return pending->abandoned.load(); });
-                }
-                confirmedMode = applying->id;
-                confirmedIntent = pendingIntent;
-                publishedWcgVersion = observation->wcgVersion.load();
-                awaitingLateEcho = true;
-                finish(pending, ok, kPersistence);
-                pending = nullptr;
-                applying = nullptr;
-                applyScene.reset();
-                setApplying(nullptr);
-                setReady(true);
-                continue;
-            }
             if (!pendingPolicy && echoedNow && observation->wcg.load() >= 0) {
                 pendingPolicy = mPolicySequence.fetch_add(1);
                 publishPolicy(activeGeneration, activeConnection, pendingPolicy, pendingIntent,
@@ -859,26 +827,18 @@ void Controller::run() {
             continue;
         }
 
-        // 12. A matching intent may arrive after compatibility acceptance,
-        //     without another gamut event. Publish it once the gamut is known.
-        //     Gamut-only updates also republish the same accepted intent. Neither
-        //     notification is a physical LUT completion acknowledgement.
+        // 12. The OEM gamut can change after software confirmation. Publish
+        //     the same confirmed intent without reopening the completed request.
         if (!pending && confirmedMode >= 0 && previous && sameScene(*previous, *state) &&
             sameGeneration(*state, activeSession, activeConnection)) {
             const uint64_t version = observation->wcgVersion.load();
             const int32_t wcg = observation->wcg.load();
-            const bool lateEcho = awaitingLateEcho &&
-                    observation->intents.load(std::memory_order_acquire) > intentBoundary &&
-                    observation->lastIntent.load() == confirmedIntent &&
-                    mUnresolvedIntent.load() != confirmedIntent;
-            if (!pendingPolicy && (lateEcho || version != publishedWcgVersion) &&
-                (wcg == 0 || wcg == 1)) {
+            if (!pendingPolicy && version != publishedWcgVersion && (wcg == 0 || wcg == 1)) {
                 pendingPolicy = mPolicySequence.fetch_add(1);
                 pendingIntent = confirmedIntent;
                 applyScene = state;
                 deadline = Clock::now() + kRepublishTimeout;
                 publishedWcgVersion = version;
-                if (lateEcho) awaitingLateEcho = false;
                 publishPolicy(activeGeneration, activeConnection, pendingPolicy,
                               confirmedIntent, wcg == 1);
                 policyActive = true;
