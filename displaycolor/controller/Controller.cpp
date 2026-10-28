@@ -755,7 +755,6 @@ void Controller::run() {
             pendingPolicy = 0;
             pendingIntent = applying->intent;
             deadline = Clock::now() + kApplyTimeout;
-            echoDeadline = Clock::now() + kEchoGrace;
             setApplying(pending);
             setReady(false);
             applyScene = state;
@@ -771,6 +770,9 @@ void Controller::run() {
                 failPending(kUnavailable, true);
                 continue;
             }
+            // Do not consume the observation window inside synchronous OEM IPC.
+            // The overall apply/caller deadlines still bound the whole request.
+            echoDeadline = Clock::now() + kEchoGrace;
             restore = false;
         }
 
@@ -786,11 +788,12 @@ void Controller::run() {
                     observation->intents.load(std::memory_order_acquire) > intentBoundary &&
                     observation->lastIntent.load() == pendingIntent &&
                     mUnresolvedIntent.load() != pendingIntent;
-            // The stock service only emits the intent callback for a subset of
-            // requests. This fallback records the successful backend transaction;
-            // it does not establish a physical LUT or SF/HWC acknowledgement.
+            // Compatibility fallback: a missing echo is currently accepted after
+            // this window. Stock Binder OK does not propagate HAL integer errors;
+            // neither it nor elapsed time establishes application or a LUT ACK.
             if (!echoedNow && Clock::now() >= echoDeadline) {
-                LOG(INFO) << "mode " << applying->id << " accepted by the stock backend";
+                LOG(INFO) << "mode " << applying->id << " accepted by compatibility fallback"
+                          << " after OEM RPC return; application unverified";
                 setCurrent(applying->id);
                 bool ok = true;
                 if (pending && pending->makeDefault && !pending->abandoned.load()) {

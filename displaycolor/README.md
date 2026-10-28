@@ -90,9 +90,11 @@ Source/evidence contracts:
 The original V2 protocol has no request token or hardware LUT acknowledgement.
 These private request/revision identifiers must not be described as OEM ACKs.
 HWC software acceptance is distinct from panel appearance. The current missing-
-echo fallback records successful OEM transaction acceptance after a 400 ms
-observation window, not a physical LUT acknowledgement. This fallback still
-needs further protocol review. Unavailable current state is returned
+echo fallback accepts a mode after a 400 ms post-return observation window.
+This is compatibility behaviour, not proof of mode application: the stock server
+returns Binder OK even on missing dispatch and does not propagate HAL integer
+errors. The fallback still needs protocol redesign backed by original behaviour.
+The overall apply/caller deadlines continue to cover synchronous OEM call time. Unavailable current state is returned
 as unavailable, rather than replaced by the saved boot preference; the SDK/UI
 support explicit retry. The default getter remains separately available.
 

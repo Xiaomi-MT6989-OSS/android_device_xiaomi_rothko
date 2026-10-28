@@ -208,6 +208,17 @@ void failedSceneMustBeRetried(){
           "failed scene batch was cached as delivered; mode applied before retry");
     check(histogramSceneKnown.load(),"scene recovery left histogram sampling disabled");
 }
+void echoWindowStartsAfterReturn(){
+    Fixture f;
+    oemGate.arm();
+    auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,false);});
+    oemGate.wait();
+    std::this_thread::sleep_for(450ms); // Longer than the production echo window.
+    oemGate.release();
+    const bool early=call.wait_for(100ms)==std::future_status::ready;
+    const bool ok=call.get().isOk();
+    check(ok&&!early,"OEM IPC consumed the post-return echo observation window");
+}
 int main(int argc,char** argv){
     std::string which=argc>1?argv[1]:"all";
     int failed=0,ran=0;
@@ -216,7 +227,8 @@ int main(int argc,char** argv){
             {"restore-queue",requestDuringRestore},
             {"stale-completion",oldCompletionCannotReleaseNew},{"late-oem",lateOemReturn},
             {"same-identity",repeatedIdentityCancelsQueued},{"persistence-failure",persistenceFailureKeepsActualSeparate},
-            {"failed-scene-retry",failedSceneMustBeRetried}}){
+            {"failed-scene-retry",failedSceneMustBeRetried},
+            {"post-return-echo-window",echoWindowStartsAfterReturn}}){
         if(which!="all"&&which!=name)continue;
         ++ran;
         try{test();std::cout<<"PASS "<<name<<'\n';}
