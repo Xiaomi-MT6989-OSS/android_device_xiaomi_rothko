@@ -13,6 +13,7 @@
 #include <android/binder_manager.h>
 #include <chrono>
 #include <fcntl.h>
+#include <limits>
 #include <stdio.h>
 #include <ui/GraphicTypes.h>
 #include <unistd.h>
@@ -205,19 +206,30 @@ ndk::ScopedAStatus Controller::setListener(
         int64_t session, int64_t connection,
         const std::shared_ptr<bridge::IColorPolicyCallback>& listener) {
     if (session <= 0 || connection <= 0 || !listener) return unavailable(kUnavailable);
-    std::lock_guard lock(mMutex);
-    mListener = listener;
-    mSession = session;
-    mConnection = connection;
-    mLastSequence = 0;
-    mLastPublished = 0;
-    mState.reset();
-    mRequest.reset();
-    mReady.store(false);
-    mCurrent.store(-1);
-    mReportLogged = false;
-    mHistogram->newSf(session, connection);
-    mHistogram->scene(false, false, ++mSceneRevision);
+    std::shared_ptr<Request> cancelled;
+    {
+        std::lock_guard lock(mMutex);
+        if (mGeneration == std::numeric_limits<uint64_t>::max()) return unavailable(kUnavailable);
+        ++mGeneration;
+        cancelled = std::exchange(mActiveRequest, nullptr);
+        if (cancelled) cancelled->abandoned.store(true);
+        mApplyingRequest.reset();
+        mListener = listener;
+        mSession = session;
+        mConnection = connection;
+        mLastSequence = 0;
+        mLastPublished = 0;
+        mState.reset();
+        mRequest.reset();
+        mReady.store(false);
+        mCurrent.store(-1);
+        mReportLogged = false;
+        mHistogram->newSf(session, connection);
+        mHistogram->scene(false, false, ++mSceneRevision);
+    }
+    // Wake the replaced caller without waiting for the OEM worker to return.
+    // finish() is identity-checked and must run outside mMutex.
+    finish(cancelled, false, kUnavailable);
     LOG(INFO) << "listener attached session=" << session << " connection=" << connection;
     mChanged.notify_all();
     return ndk::ScopedAStatus::ok();
@@ -253,23 +265,20 @@ ndk::ScopedAStatus Controller::reportState(const bridge::DisplayState& state) {
 
 ndk::ScopedAStatus Controller::setMode(int32_t mode, bool makeDefault) {
     if (!findMode(mode)) return ndk::ScopedAStatus::fromExceptionCode(EX_ILLEGAL_ARGUMENT);
-    if (!mReady.load() || mBusy.exchange(true)) {
-        LOG(WARNING) << "setMode " << mode << " refused: ready=" << mReady.load()
-                     << " busy=" << mBusy.load();
-        return unavailable(kUnavailable);
-    }
-    LOG(INFO) << "setMode " << mode << " accepted";
     auto request = std::make_shared<Request>();
     request->mode = mode;
     request->makeDefault = makeDefault;
     {
         std::lock_guard lock(mMutex);
-        if (mRequest) {
-            mBusy.store(false);
+        if (mStop.load() || !mReady.load() || mActiveRequest) {
             return unavailable(kUnavailable);
         }
+        request->generation = mGeneration;
+        request->connection = mConnection;
+        mActiveRequest = request;
         mRequest = request;
     }
+    LOG(INFO) << "setMode " << mode << " accepted";
     mChanged.notify_all();
     std::unique_lock lock(request->mutex);
     if (!request->changed.wait_for(lock, kRequestTimeout, [&] { return request->done; })) {
@@ -284,19 +293,19 @@ void Controller::abandonFromCaller(const std::shared_ptr<Request>& request, int3
     // A timeout is uncertain: it is not cancellation, and a late callback cannot
     // be attributed to this request. Record the intent so a later confirmation of
     // the very same value is refused rather than silently accepted.
-    request->abandoned.store(true);
-    const Mode* mode = findMode(modeId);
-    if (mode && mApplyingMode.load() == modeId) mUnresolvedIntent.store(mode->intent);
     // Clear the SurfaceFlinger-side policy from this thread. The OEM worker may
     // be blocked inside a vendor call and must not be required to make progress.
-    int64_t connection = 0;
     {
         std::lock_guard lock(mMutex);
-        connection = mConnection;
+        if (request->generation != mGeneration || mActiveRequest != request) return;
+        request->abandoned.store(true);
+        const Mode* mode = findMode(modeId);
+        if (mode && mApplyingRequest == request) mUnresolvedIntent.store(mode->intent);
+        mActiveRequest.reset();
+        mReady.store(false);
     }
-    publishPolicy(connection, mPolicySequence.fetch_add(1), -1, true);
-    mReady.store(false);
-    mBusy.store(false);
+    publishPolicy(request->generation, request->connection,
+                  mPolicySequence.fetch_add(1), -1, true);
     mChanged.notify_all();
     LOG(WARNING) << "Display mode request abandoned; OEM outcome unknown";
 }
@@ -305,24 +314,32 @@ void Controller::finish(const std::shared_ptr<Request>& request, bool ok, int er
     if (!request) return;
     {
         std::lock_guard lock(request->mutex);
+        if (request->done) return;
         request->ok = ok;
         request->error = error;
         request->done = true;
     }
-    mBusy.store(false);
+    {
+        std::lock_guard lock(mMutex);
+        if (mActiveRequest == request) mActiveRequest.reset();
+        if (mApplyingRequest == request) mApplyingRequest.reset();
+    }
     request->changed.notify_all();
 }
 
-void Controller::publishPolicy(int64_t connection, int64_t request, int32_t intent, bool wcg) {
+void Controller::publishPolicy(uint64_t generation, int64_t connection, int64_t request,
+                               int32_t intent, bool wcg) {
     std::shared_ptr<bridge::IColorPolicyCallback> listener;
     {
         std::lock_guard lock(mMutex);
-        if (connection != mConnection || request <= mLastPublished) return;
+        if (generation != mGeneration || connection != mConnection ||
+                request <= mLastPublished) return;
         mLastPublished = request;
         listener = mListener;
     }
     if (listener && !listener->onPolicy(connection, request, intent, wcg).isOk()) {
-        mReady.store(false);
+        std::lock_guard lock(mMutex);
+        if (generation == mGeneration) mReady.store(false);
     }
 }
 
@@ -365,6 +382,7 @@ void Controller::run() {
     std::optional<bridge::DisplayState> previous;   // last OEM notification batch
     std::optional<bridge::DisplayState> applyScene; // scene when the apply started
     std::shared_ptr<Request> pending;
+    std::shared_ptr<Request> nextQueued;
     const Mode* applying = nullptr;
     int64_t pendingPolicy = 0;
     int32_t pendingIntent = 0;
@@ -372,16 +390,35 @@ void Controller::run() {
     int32_t confirmedIntent = 0;
     uint64_t publishedWcgVersion = 0;
     int64_t activeSession = 0, activeConnection = 0;
+    uint64_t activeGeneration = 0;
     uint64_t intentBoundary = 0;
     bool restore = true, policyActive = false;
     int32_t previousPower = -1;
     Clock::time_point deadline{}, echoDeadline{}, nextLookup{};
 
+    // Registration can change while this worker is blocked in OEM IPC. State
+    // from the old iteration must not become the new connection's ready/current.
+    auto setReady = [&](bool ready) {
+        std::lock_guard lock(mMutex);
+        if (activeGeneration == mGeneration) mReady.store(ready);
+    };
+    auto setCurrent = [&](int32_t mode) {
+        std::lock_guard lock(mMutex);
+        if (activeGeneration == mGeneration) mCurrent.store(mode);
+    };
+    auto setApplying = [&](const std::shared_ptr<Request>& request) {
+        std::lock_guard lock(mMutex);
+        if (activeGeneration == mGeneration) mApplyingRequest = request;
+    };
+    auto currentGeneration = [&]() {
+        std::lock_guard lock(mMutex);
+        return activeGeneration == mGeneration;
+    };
     auto clearPolicyNow = [&]() {
         if (!policyActive) return;
         policyActive = false;
         pendingPolicy = 0;
-        publishPolicy(activeConnection, mPolicySequence.fetch_add(1), -1, true);
+        publishPolicy(activeGeneration, activeConnection, mPolicySequence.fetch_add(1), -1, true);
     };
     // `unattributed` is true only when an OEM mode request was actually issued
     // and its callback can no longer be matched to it.
@@ -398,10 +435,10 @@ void Controller::run() {
             if (unattributed) mUnresolvedIntent.store(applying->intent);
             applying = nullptr;
         }
-        mApplyingMode.store(-1);
+        setApplying(nullptr);
         applyScene.reset();
-        mCurrent.store(-1);
-        mReady.store(false);
+        setCurrent(-1);
+        setReady(false);
         pendingPolicy = 0;
         confirmedMode = -1;
         confirmedIntent = 0;
@@ -414,9 +451,9 @@ void Controller::run() {
         std::optional<bridge::DisplayState> state;
         std::shared_ptr<bridge::IColorPolicyCallback> listener;
         std::shared_ptr<Request> queued;
-        std::shared_ptr<Request> nextQueued;
         std::shared_ptr<DozeRequest> doze;
         int64_t session = 0, connection = 0, sceneRevision = 0;
+        uint64_t generation = 0;
         {
             std::unique_lock lock(mMutex);
             mChanged.wait_for(lock, kPollInterval);
@@ -424,6 +461,7 @@ void Controller::run() {
             listener = mListener;
             session = mSession;
             connection = mConnection;
+            generation = mGeneration;
             sceneRevision = mSceneRevision;
             queued = std::exchange(mRequest, nullptr);
             doze = std::exchange(mDozeRequest, nullptr);
@@ -431,8 +469,10 @@ void Controller::run() {
 
         // 1. Controlled generation. A restarted SurfaceFlinger can reuse the same
         //    connection ordinal, so the session identity is part of the key.
-        if (session != activeSession || connection != activeConnection || !listener) {
-            if (applying) failPending(kUnavailable, true);
+        if (generation != activeGeneration || !listener) {
+            if (pending || applying) failPending(kUnavailable, applying != nullptr);
+            finish(std::exchange(nextQueued, nullptr), false, kUnavailable);
+            activeGeneration = generation;
             activeSession = session;
             activeConnection = connection;
             previous.reset();
@@ -457,7 +497,8 @@ void Controller::run() {
         if (queued) {
             const Mode* mode = findMode(queued->mode);
             const bool ambiguous = mode && mUnresolvedIntent.load() == mode->intent;
-            if (ambiguous || !state || !sdrReady(*state)) {
+            if (queued->abandoned.load() || queued->generation != activeGeneration ||
+                    ambiguous || !state || !sdrReady(*state)) {
                 LOG(WARNING) << "queued mode " << queued->mode << " rejected: ambiguous="
                              << ambiguous << " state=" << (state ? 1 : 0)
                              << " sdrReady=" << (state ? sdrReady(*state) : 0);
@@ -479,6 +520,10 @@ void Controller::run() {
             pending = std::exchange(nextQueued, nullptr);
         }
 
+        if (pending && pending->abandoned.load()) {
+            failPending(kTimeout, applying != nullptr);
+        }
+
         // 3. OEM backend death invalidates the whole generation of correlation.
         if (observation && observation->dead->load()) {
             mHistogram->backend(nullptr);
@@ -489,8 +534,8 @@ void Controller::run() {
             backend.reset();
             previous.reset();
             restore = true;
-            mReady.store(false);
-            mCurrent.store(-1);
+            setReady(false);
+            setCurrent(-1);
             clearPolicyNow();
         }
 
@@ -561,7 +606,7 @@ void Controller::run() {
             // Also perform histogram cleanup when the scene disappears; it
             // does not depend on a colour request or a pending mode change.
             if (backend) mHistogram->drive(*backend, sceneRevision);
-            mReady.store(false);
+            setReady(false);
             if (pending && !applying) {
                 finish(pending, false, kUnavailable);
                 pending = nullptr;
@@ -642,7 +687,7 @@ void Controller::run() {
         // 9. A user mode may only be requested while real SDR content is up.
         //    Without an SF observation there is no content signal to gate on.
         if (state && !sdrReady(*state)) {
-            mReady.store(false);
+            setReady(false);
             clearPolicyNow();
             if (pending) {
                 finish(pending, false, kUnavailable);
@@ -691,10 +736,18 @@ void Controller::run() {
             pendingIntent = applying->intent;
             deadline = Clock::now() + kApplyTimeout;
             echoDeadline = Clock::now() + kEchoGrace;
-            mApplyingMode.store(applying->id);
-            mReady.store(false);
+            setApplying(pending);
+            setReady(false);
             applyScene = state;
+            if (!currentGeneration() || (pending && pending->abandoned.load())) {
+                failPending(kUnavailable, false);
+                continue;
+            }
             if (!backend->setFeature(0, applying->feature, 2, 255).isOk()) {
+                failPending(kUnavailable, true);
+                continue;
+            }
+            if (!currentGeneration() || (pending && pending->abandoned.load())) {
                 failPending(kUnavailable, true);
                 continue;
             }
@@ -718,7 +771,7 @@ void Controller::run() {
             // it does not establish a physical LUT or SF/HWC acknowledgement.
             if (!echoedNow && Clock::now() >= echoDeadline) {
                 LOG(INFO) << "mode " << applying->id << " accepted by the stock backend";
-                mCurrent.store(applying->id);
+                setCurrent(applying->id);
                 bool ok = true;
                 if (pending && pending->makeDefault && !pending->abandoned.load()) {
                     ok = persistDefault(applying->id,
@@ -731,13 +784,13 @@ void Controller::run() {
                 pending = nullptr;
                 applying = nullptr;
                 applyScene.reset();
-                mApplyingMode.store(-1);
-                mReady.store(true);
+                setApplying(nullptr);
+                setReady(true);
                 continue;
             }
             if (!pendingPolicy && echoedNow && observation->wcg.load() >= 0) {
                 pendingPolicy = mPolicySequence.fetch_add(1);
-                publishPolicy(activeConnection, pendingPolicy, pendingIntent,
+                publishPolicy(activeGeneration, activeConnection, pendingPolicy, pendingIntent,
                               observation->wcg.load() == 1);
                 policyActive = true;
             }
@@ -756,7 +809,7 @@ void Controller::run() {
                     }
                     if (!state->synchronizedState) continue;
                     LOG(INFO) << "mode " << applying->id << " confirmed";
-                    mCurrent.store(applying->id);
+                    setCurrent(applying->id);
                     bool ok = true;
                     if (pending && pending->makeDefault && !pending->abandoned.load()) {
                         ok = persistDefault(applying->id,
@@ -769,10 +822,10 @@ void Controller::run() {
                     pending = nullptr;
                     applying = nullptr;
                     applyScene.reset();
-                    mApplyingMode.store(-1);
+                    setApplying(nullptr);
                     policyActive = false;
                     pendingPolicy = 0;
-                    mReady.store(true);
+                    setReady(true);
                 }
             }
             continue;
@@ -791,7 +844,8 @@ void Controller::run() {
                 applyScene = state;
                 deadline = Clock::now() + kRepublishTimeout;
                 publishedWcgVersion = version;
-                publishPolicy(activeConnection, pendingPolicy, confirmedIntent, wcg == 1);
+                publishPolicy(activeGeneration, activeConnection, pendingPolicy,
+                              confirmedIntent, wcg == 1);
                 policyActive = true;
             }
             if (pendingPolicy && applyScene &&
@@ -808,7 +862,7 @@ void Controller::run() {
                 }
             }
         }
-        mReady.store(true);
+        setReady(true);
     }
 }
 

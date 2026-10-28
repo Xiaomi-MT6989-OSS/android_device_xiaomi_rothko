@@ -34,6 +34,8 @@ private:
     struct Request {
         int32_t mode;
         bool makeDefault;
+        uint64_t generation = 0;
+        int64_t connection = 0;
         std::mutex mutex;
         std::condition_variable changed;
         std::atomic<bool> abandoned{false};
@@ -47,7 +49,8 @@ private:
     };
     void run();
     void finish(const std::shared_ptr<Request>& request, bool ok, int error);
-    void publishPolicy(int64_t connection, int64_t request, int32_t intent, bool wcg);
+    void publishPolicy(uint64_t generation, int64_t connection, int64_t request,
+            int32_t intent, bool wcg);
     // Atomic policy clear for the caller thread. The OEM worker may be blocked
     // in a vendor call, so a timeout must not depend on it making progress.
     void abandonFromCaller(const std::shared_ptr<Request>& request, int32_t mode);
@@ -59,7 +62,12 @@ private:
     std::shared_ptr<bridge::IColorPolicyCallback> mListener;
     std::optional<bridge::DisplayState> mState;
     std::shared_ptr<Request> mRequest;
+    // Admission ownership is separate from the worker's queue. Only finishing
+    // this exact request may free its slot; a stale completion cannot free a new one.
+    std::shared_ptr<Request> mActiveRequest;
+    std::shared_ptr<Request> mApplyingRequest;
     std::shared_ptr<DozeRequest> mDozeRequest;
+    uint64_t mGeneration = 0;
     int64_t mSession = 0;
     int64_t mConnection = 0;
     int64_t mLastSequence = 0;
@@ -71,10 +79,7 @@ private:
     std::atomic<int32_t> mCurrent{-1};
     std::atomic<int32_t> mDefault{3};
     std::atomic<bool> mReady{false};
-    std::atomic<bool> mBusy{false};
     std::atomic<bool> mStop{false};
-    // The user mode currently being requested from the OEM, for abort accounting.
-    std::atomic<int32_t> mApplyingMode{-1};
     // An OEM mode request whose outcome we cannot attribute to any callback.
     // A later confirmation of this exact intent is ambiguous and is refused.
     std::atomic<int32_t> mUnresolvedIntent{-1};

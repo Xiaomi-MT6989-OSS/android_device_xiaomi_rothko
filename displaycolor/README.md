@@ -91,10 +91,21 @@ The original V2 protocol has no request token or hardware LUT acknowledgement.
 These private request/revision identifiers must not be described as OEM ACKs.
 HWC software acceptance is distinct from panel appearance. The current missing-
 echo fallback records successful OEM transaction acceptance after a 400 ms
-observation window, not a physical LUT acknowledgement. This path and request
-generation/queue races need further review. Unavailable current state is returned
+observation window, not a physical LUT acknowledgement. This fallback still
+needs further protocol review. Unavailable current state is returned
 as unavailable, rather than replaced by the saved boot preference; the SDK/UI
 support explicit retry. The default getter remains separately available.
+
+Each listener registration starts an internal generation, even if its external
+session/connection identifiers are reused. Accepted user requests retain that
+generation and connection. Replacement completes the displaced caller with an
+error; a stale timeout cannot clear the replacement listener's policy. Admission
+ownership is tied to the request object, and completion is idempotent. A request
+queued during automatic restoration survives worker iterations. Worker updates
+to current/ready are generation-checked around OEM IPC. Already-issued OEM calls
+cannot be cancelled; this does not provide transactional cancellation of panel
+state or filesystem persistence. Host regression coverage and its limits are
+documented in `tests/README.md`.
 
 Remaining validation includes failed/late callbacks, rapid transitions, backend
 death or a live-but-stalled Binder peer, persistence failures, HDR/power return,
