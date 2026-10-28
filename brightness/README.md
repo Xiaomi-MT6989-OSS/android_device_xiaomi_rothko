@@ -16,7 +16,9 @@ and devices without explicit legacy bounds do not opt in. The current source
 candidate restores the full stock raw range [0.000854597, 1]; legacy project values
 still explicitly describe [0.000854597, 0.499938]. Migration preserves the old HAL
 input, rather than keeping a logical value that would increase physical brightness.
-This source candidate has not been Android-built or deployed.
+Earlier device tests verified manual/automatic brightness and visible HDR boost.
+Those observations do not establish deployment of every current source revision,
+full-range physical calibration, or equivalence to all factory thermal decisions.
 
 The stock DDC bytecode uses raw as its logical brightness and *linear* nits/raw
 splines. A16 normalizes raw to logical [0,1] and defaults to monotone interpolation;
@@ -193,3 +195,7 @@ still required. On-device validation must inspect dumpsys display input/cap/reas
 confirm normal/auto/HDR/power-save behavior at natural temperatures, OFF/AOD/FOD
 regression, expiry/recovery, and actual final backlight. Never fake temperatures
 or directly exercise cooling/charging nodes to manufacture a passing test.
+
+See `docs/INTEGRATION_AUDIT.md` for the current separation of factory daemon,
+framework brightness bounds and Thermal AIDL reporting, including unverified
+notification semantics. Keeping stock files is not proof of complete stock policy.

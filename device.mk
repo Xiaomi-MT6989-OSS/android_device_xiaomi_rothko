@@ -123,7 +123,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.memtrack-service.mediatek
 
-# HDR: stock calibration, bounded to normal brightness by the matching resource overlay.
+# Display: stock calibration with device-owned thermal/content bounds for SDR and HDR.
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/displayconfig/display_id_4627039422300187648.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/displayconfig/display_id_4627039422300187648.xml
 
