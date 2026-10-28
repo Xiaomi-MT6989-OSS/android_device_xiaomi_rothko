@@ -218,3 +218,18 @@ Two host tests reproduce the former behaviour and pass after the repair; all
 thirteen scenarios pass. This models a returned transport error, not a blocked
 Binder call, actual process death or guaranteed successful peer cleanup. Those
 remain separate runtime validation concerns.
+
+## Caller timeout while OEM IPC is blocked
+
+The caller timeout now invalidates current under the same generation/admission
+lock that marks its request abandoned. Previously it only cleared readiness,
+leaving getCurrentDisplayMode able to return the old mode until worker cleanup.
+The worker can remain blocked indefinitely, so that cleanup is not a reliable
+way to communicate unknown state. The saved default remains unchanged.
+
+A host gate holds the real worker inside the fake OEM call, invokes the real
+caller timeout handler, and checks the public current-mode getter before
+releasing the gate. It also checks that late OEM return does not confirm/save
+the abandoned selection. This case fails before the repair; all fourteen cases
+pass afterward. It does not simulate a real kernel/Binder stall or guarantee
+that the timeout thread's separate policy-clear transaction cannot block.

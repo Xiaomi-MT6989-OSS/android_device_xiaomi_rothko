@@ -311,6 +311,28 @@ void gamutDeliveryFailureInvalidatesCurrent(){
     check(!service.getCurrentDisplayMode(&mode).isOk()&&f.c->defaultMode()==3,
           "delivery failure exposed an available current mode or changed default");
 }
+void callerTimeoutInvalidatesBlockedCurrent(){
+    Fixture f;
+    oemGate.arm();
+    auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,true);});
+    oemGate.wait();
+    std::shared_ptr<Controller::Request> request;
+    {std::lock_guard l(f.c->mMutex);request=f.c->mActiveRequest;}
+    check(request!=nullptr,"blocked OEM request lost admission ownership");
+    // Invoke the real caller deadline handler while OEM IPC is still blocked.
+    // This avoids sleeping for 12 seconds without changing production timing.
+    f.c->abandonFromCaller(request,1);
+    live::DisplayMode mode;
+    DisplayModes service(f.c);
+    const bool unavailable=!service.getCurrentDisplayMode(&mode).isOk();
+    const bool unchanged=f.c->defaultMode()==3;
+    oemGate.release();
+    const bool ok=call.get().isOk();
+    check(unavailable&&unchanged,
+          "caller timeout exposed stale current mode while OEM remained blocked");
+    check(!ok&&f.c->currentMode()==-1&&f.c->defaultMode()==3,
+          "late OEM return confirmed or saved the abandoned request");
+}
 int main(int argc,char** argv){
     std::string which=argc>1?argv[1]:"all";
     int failed=0,ran=0;
@@ -324,7 +346,8 @@ int main(int argc,char** argv){
             {"missing-echo-default",missingEchoCannotSaveDefault},
             {"echo-software-acceptance",echoWaitsForSoftwareAcceptance},
             {"policy-delivery-failure",policyDeliveryFailureCompletesCaller},
-            {"gamut-delivery-failure",gamutDeliveryFailureInvalidatesCurrent}}){
+            {"gamut-delivery-failure",gamutDeliveryFailureInvalidatesCurrent},
+            {"blocked-caller-timeout",callerTimeoutInvalidatesBlockedCurrent}}){
         if(which!="all"&&which!=name)continue;
         ++ran;
         try{test();std::cout<<"PASS "<<name<<'\n';}

@@ -300,6 +300,9 @@ void Controller::abandonFromCaller(const std::shared_ptr<Request>& request, int3
         if (mode && mApplyingRequest == request) mUnresolvedIntent.store(mode->intent);
         mActiveRequest.reset();
         mReady.store(false);
+        // The worker may remain blocked after this caller has timed out.
+        // Its eventual cleanup must not be needed to invalidate stale current.
+        mCurrent.store(-1);
     }
     publishPolicy(request->generation, request->connection,
                   mPolicySequence.fetch_add(1), -1, true);
