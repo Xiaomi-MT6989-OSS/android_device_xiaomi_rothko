@@ -120,3 +120,6 @@ with retries bounded to the existing one-second backend recovery cadence. A
 successful batch restores sampling eligibility only for the still-current scene
 revision and listener generation. This is IPC failure recovery, not brightness
 filtering or proof that a physical LUT has applied.
+
+See `docs/STOCK_MODE_COMPLETION.md` for the stock asynchronous mode path and
+why its getter or HAL integer cannot be used as completion shortcuts.
