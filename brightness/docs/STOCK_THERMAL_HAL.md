@@ -59,3 +59,38 @@ or patch a V1 fragment to advertise V3.
 This assessment does not yet change the product HAL selection or thresholds.
 Next resolve the kernel-family branch and notification producer, then assess
 dependency/ABI and lifecycle integration before building or deploying a candidate.
+
+## Archived stock route and producer boundary
+
+A retained rooted stock collection contains 70 contiguous thermal_zone indices,
+including soc_max but neither mtktscpu nor ap_ntc. Applying the bounded detection
+logic to those names selects mode 3, hence the init socket route. This is a
+reconstruction from a past collection, not observation of a currently running HAL.
+
+thermal_core has a confirmed socket sender: 0x33d60 creates an AF_UNIX stream
+socket, copies /dev/socket/thermal_hal_socket, connects at 0x33e00 and sends at
+0x33e8c. Its message strings include thermal_hal_notify and thermal_hal_update.
+Nevertheless, its stock init service is commented out and a retained stock ps
+snapshot lists the thermal HAL, mi_thermald and system_ext thermald, without
+thermal_core. That snapshot does not rule out short-lived processes or another
+producer. Do not enable thermal_core merely to satisfy this socket dependency.
+Restoring the HAL alone is not yet a demonstrated callback repair.
+
+The separate, running system_ext/bin/thermald is a kernel-signal alert bridge.
+Its main at 0x4520 opens clsd_pid and clmutt_tmd_pid under /proc/driver/thermal,
+registers a signal handler and writes its PID (0x4664/0x46e0). Signal branches
+construct THERMAL_WARNING and THERMAL_DIAG intents for ActivityManager delivery.
+It is not interchangeable with the HAL's socket-event producer. This daemon is
+not selected by the current product; equivalent alert handling has not been
+established. Receiver compatibility must be reviewed before reusing its native
+Binder parcel path. Do not claim that the absence removes every kernel or
+standard-framework overtemperature protection.
+
+Three contracts therefore need separate completion: standard thermal callbacks,
+kernel/vendor alert delivery into Android, and mi_thermald's cooling/scenario
+control. Existing brightness host tests do not cover the first two contracts.
+
+Finally, framework dumpsys may print "ThermalHAL AIDL 3" using the framework's
+compiled IThermal.VERSION. It is not proof that the remote service implements V3;
+use actual interface version/metadata instead. The stored stock dump and V1 ELF
+must not be treated as a contradiction solely on that label.
