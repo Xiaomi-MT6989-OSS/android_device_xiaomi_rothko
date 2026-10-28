@@ -54,3 +54,29 @@ The service's pending-transaction diagnostic is not a Binder timeout mechanism.
 Do not remove hooks, weaken lockout, alter sensor strength or add direct panel
 commands merely to simplify this layering. No new firmware build or device test
 has been performed in this audit stage.
+
+## Protocol provenance and user-stop review
+
+Archived stock framework/SurfaceFlinger caller analysis links extension transaction
+1 to the descriptor's two integer arguments. Conditions 1/2 report overlay and
+fade existence, condition 3 carries composer power mode, condition 4 uses paired
+enroll/auth start and stop states, condition 5 carries real lockout, and condition
+7 permits the original keyguard low-brightness path. It is not a direct command
+to manufacture panel HBM. The stock and selected FOD touch-control property is
+2.0. Condition 6's separate light-monitor path is not used by this bridge; do not
+enable extra commands merely because the native daemon accepts their numbers.
+
+SystemUI's config_udfpsReportOverlayLifecycle defaults false and the device
+overlay opts in. The hidden lifecycle event is consumed by the framework instead
+of forwarding it as a stock HAL UI-ready event. These distinctions must remain
+when minimizing shared patches.
+
+Device commit 6134492 restricts onUserStopping cancellation to the current user,
+checking the user on the serialized FOD handler. Previously, stopping a background
+user/profile also cancelled the foreground request. A host test of the unchanged
+callback method body and real state machine reproduced two failures, then passed
+all six checks after the correction: unrelated/old-user stop preserves capture,
+current-user stop cancels it, and late overlay events cannot reactivate it.
+Handler/TargetUser are fixtures; this is not Android multi-user/profile or
+work-profile application-authentication acceptance. No lockout or authentication
+decision was changed.
