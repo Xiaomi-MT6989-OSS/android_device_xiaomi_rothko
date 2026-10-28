@@ -128,3 +128,36 @@ Current decision: retain the working daemon/control and brightness-cap paths;
 do not add the raw stock alert executable or thermal_core as an unverified fix.
 The Thermal HAL notification route and the alert bridge remain explicit open
 integration items, with no new upstream or binary patch made for this finding.
+
+## Cross-check against the stock framework
+
+The original framework.jar's DEX IActivityManager$Stub static constants identify
+broadcastIntent as 22, broadcastIntentWithFeature as 23, and transaction 12 as
+logFgsApiStateChanged. Direct DEX encoded-static-value parsing and the existing
+Android dexdump tool independently agree. Thus the native daemon's constant 12
+does not match the normal broadcast transaction even in the saved stock framework.
+The discrepancy is not solely an Android 16 port regression. We have not observed
+execution of this branch or excluded stock Binder interception; do not claim
+that the entire stock alert system was broken. Treat this particular executable
+as a potential legacy client, not a requirement to reproduce it unchanged.
+
+Exact action literals were absent from the DEX members of ten selected stock
+artifacts: MiuiSystemUI, HyperPhone, services, miui-services, mediatek-services,
+mediatek-framework, mediatek-common, mediatek-telephony-common, MtkTeleService and
+MtkTelecom. This bounded check does not exclude other receivers or dynamically
+generated action strings. REA's Android package inspection was unavailable
+because its JADX MCP JAR was not configured; the native evidence remains valid.
+
+The source HAL has a separate, concrete reporting gap: readTemperature returns
+before calculating throttlingStatus when is_watch is false. With the current
+six unmonitored entries, explicit temperature queries therefore do not evaluate
+the configured severity thresholds either. Callback registration's initial
+snapshot also filters out entries without send_cb. Correct threshold arrays and
+visible temperature readings alone do not establish framework thermal reporting.
+
+Next integration choice must close severity reporting and sustained notifications
+without taking over stock cooling/trip ownership. Reusing the original V1 HAL is
+still conditional on establishing its socket event source; the old alert daemon
+is not that source. Enabling source-HAL monitoring remains conditional on an
+explicit review of its trip writes. Neither service selection nor thresholds
+have been changed during this audit.

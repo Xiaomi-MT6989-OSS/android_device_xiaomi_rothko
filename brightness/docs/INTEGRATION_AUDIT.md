@@ -8,7 +8,7 @@ This records static source/material review, not new device validation.
 | Factory daemon | Stock mi_thermald, its init file and selected vendor/ODM thermal configurations | Identical bytes do not prove runtime permissions, scenario producers or policy selection |
 | Display thermal bounds | Device Java policy consumes the unchanged factory multi-factor XML and read-only sysfs outputs | Freshness/invalid-input restrictions are conservative port safeguards; cloud and Gallery boost are not reproduced |
 | Framework integration | Optional device-policy class, bounds before HDR, common maximum retained by HDR modifier | Separate upstream hooks are necessary for runtime inputs; an overlay alone cannot implement them |
-| Thermal AIDL | Source-built MediaTek service plus device thermal_info_config.json | Its reporting thresholds and notification behaviour are not established as factory-equivalent |
+| Thermal AIDL | Source-built MediaTek service plus device thermal_info_config.json | Six hot-threshold arrays match stock; severity evaluation and sustained notification delivery are incomplete with the current monitoring configuration |
 
 The selected extraction list contains 44 thermal-related entries. All maintained
 files matched the saved stock artifacts byte for byte in this audit. The factory
@@ -29,6 +29,8 @@ bindings. In the current hardware/mediatek parser, callback and power-hint flags
 default false; no hard/PID binding enables throttling. Consequently is_watch is
 false. The watcher skips these entries and dispatches callbacks only for send_cb.
 Explicit temperature reads and sustained framework notifications are distinct.
+Additionally, readTemperature skips severity calculation for unmonitored entries;
+querying a numerical temperature does not establish correct throttling status.
 
 The source HAL contains cooling writes, but this configuration alone does not
 prove it is actively applying a competing cooling policy. Its
