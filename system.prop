@@ -1,9 +1,3 @@
-# Main rear/front JPEG_R: compose stock SDR JPEG with same-frame HLG P010.
-# Other provider IDs keep the native path.
-ro.camera.compositeJpegRIds=0,1
-# Stock JPEG pixels follow JPEG_ORIENTATION; the companion P010 does not.
-ro.camera.compositeJpegRRotateIds=0,1
-
 # FUSE passthrough
 persist.sys.fuse.passthrough.enable=true
 
