@@ -15,17 +15,22 @@ scheduling and invoking the actual caller timeout handler without a 12-second
 wall-clock delay. Android build files and production class visibility are unchanged.
 Host open/openat always fail, preventing access to production /data paths.
 
-The nine scenarios cover stale timeout after listener replacement, queued
+The eleven scenarios cover stale timeout after listener replacement, queued
 caller completion on replacement, a request admitted during automatic restore,
 stale completion while a newer request owns admission, delayed OEM return after
 replacement, replacement reusing external connection identifiers, and persistence
 failure reported separately from the accepted current mode, and a failed scene
 notification retried before a mode write with sampling eligibility restored, and
-the echo observation window starting after a delayed synchronous OEM return.
+the echo observation window starting after a delayed synchronous OEM return,
+a matching late intent without a second gamut notification (including rejection
+of a different intent and avoiding repeated publication), and timely echo waiting
+for the matching SF/HWC software acceptance before completing the caller.
 
 These tests execute the real worker/request code. The fake Binder transport does
 not model Android IPC, death delivery or transaction queues. The fake OEM backend
-returns success without echo, exercising the existing 400 ms fallback; it cannot
+normally returns success without echo, exercising the existing 400 ms fallback.
+Two scenarios inject events through the actual registered production callback;
+the SF acceptance scenario supplies a synthetic scene report. These cannot
 prove LUT application, echo/HWC acknowledgement, panel correctness, successful
 persistence/durability, HistogramService behaviour or UI lifecycle correctness.
 The persistence case covers failure only. Real device regression remains required.

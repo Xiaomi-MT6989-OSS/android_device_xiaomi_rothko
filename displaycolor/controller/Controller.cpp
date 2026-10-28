@@ -389,6 +389,7 @@ void Controller::run() {
     int32_t confirmedMode = -1;
     int32_t confirmedIntent = 0;
     uint64_t publishedWcgVersion = 0;
+    bool awaitingLateEcho = false;
     int64_t activeSession = 0, activeConnection = 0;
     uint64_t activeGeneration = 0;
     uint64_t intentBoundary = 0;
@@ -443,6 +444,7 @@ void Controller::run() {
         confirmedMode = -1;
         confirmedIntent = 0;
         publishedWcgVersion = 0;
+        awaitingLateEcho = false;
         clearPolicyNow();
     };
 
@@ -482,6 +484,7 @@ void Controller::run() {
             confirmedMode = -1;
             confirmedIntent = 0;
             publishedWcgVersion = 0;
+            awaitingLateEcho = false;
             policyActive = false;
             restore = true;
             previousPower = -1;
@@ -752,6 +755,7 @@ void Controller::run() {
                 continue;
             }
             intentBoundary = observation->intents.load(std::memory_order_acquire);
+            awaitingLateEcho = false;
             pendingPolicy = 0;
             pendingIntent = applying->intent;
             deadline = Clock::now() + kApplyTimeout;
@@ -803,6 +807,7 @@ void Controller::run() {
                 confirmedMode = applying->id;
                 confirmedIntent = pendingIntent;
                 publishedWcgVersion = observation->wcgVersion.load();
+                awaitingLateEcho = true;
                 finish(pending, ok, kPersistence);
                 pending = nullptr;
                 applying = nullptr;
@@ -854,19 +859,26 @@ void Controller::run() {
             continue;
         }
 
-        // 12. The OEM gamut state can change after the mode confirm. Republish
-        //     the same confirmed intent with the new gamut; a gamut-only update
-        //     never invalidates the confirmed user mode.
+        // 12. A matching intent may arrive after compatibility acceptance,
+        //     without another gamut event. Publish it once the gamut is known.
+        //     Gamut-only updates also republish the same accepted intent. Neither
+        //     notification is a physical LUT completion acknowledgement.
         if (!pending && confirmedMode >= 0 && previous && sameScene(*previous, *state) &&
             sameGeneration(*state, activeSession, activeConnection)) {
             const uint64_t version = observation->wcgVersion.load();
             const int32_t wcg = observation->wcg.load();
-            if (!pendingPolicy && version != publishedWcgVersion && (wcg == 0 || wcg == 1)) {
+            const bool lateEcho = awaitingLateEcho &&
+                    observation->intents.load(std::memory_order_acquire) > intentBoundary &&
+                    observation->lastIntent.load() == confirmedIntent &&
+                    mUnresolvedIntent.load() != confirmedIntent;
+            if (!pendingPolicy && (lateEcho || version != publishedWcgVersion) &&
+                (wcg == 0 || wcg == 1)) {
                 pendingPolicy = mPolicySequence.fetch_add(1);
                 pendingIntent = confirmedIntent;
                 applyScene = state;
                 deadline = Clock::now() + kRepublishTimeout;
                 publishedWcgVersion = version;
+                if (lateEcho) awaitingLateEcho = false;
                 publishPolicy(activeGeneration, activeConnection, pendingPolicy,
                               confirmedIntent, wcg == 1);
                 policyActive = true;
@@ -877,8 +889,8 @@ void Controller::run() {
                         state->profileRejected && state->policyRequestId == pendingPolicy;
                 const bool observed =
                         state->profileKnown && state->policyRequestId == pendingPolicy;
-                // A gamut-only republish has no OEM echo to wait for; any
-                // terminal outcome simply stops tracking it.
+                // These post-acceptance updates do not reopen the completed
+                // caller request; any terminal outcome stops tracking them.
                 if (rejected || observed || Clock::now() >= deadline) {
                     pendingPolicy = 0;
                     policyActive = false;

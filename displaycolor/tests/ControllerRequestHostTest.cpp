@@ -38,8 +38,10 @@ std::shared_ptr<IDisplayFeature> IDisplayFeature::fromBinder(const ndk::SpAIBind
 }
 }
 struct Oem final:df::IDisplayFeature {
+    std::shared_ptr<df::IDisplayFeatureCallback> callback;
     ScopedAStatus notifyBrightness(int32_t)override{return ScopedAStatus::ok();}
-    ScopedAStatus registerCallback(int32_t,const std::shared_ptr<df::IDisplayFeatureCallback>&)override{return ScopedAStatus::ok();}
+    ScopedAStatus registerCallback(int32_t,const std::shared_ptr<df::IDisplayFeatureCallback>& c)override{callback=c;return ScopedAStatus::ok();}
+    void emit(int32_t event,int32_t value){callback->displayfeatureInfoChanged(event,value,0,0,0);}
     ScopedAStatus sendMessage(int32_t,int32_t,const std::string&)override{return ScopedAStatus::ok();}
     ScopedAStatus sendPanelCommand(const std::string&)override{return ScopedAStatus::ok();}
     ScopedAStatus sendPostProcCommand(int32_t,int32_t)override{return ScopedAStatus::ok();}
@@ -80,10 +82,17 @@ void hostOemFeature(int32_t feature,int32_t cookie){if(feature==0&&cookie==255)o
 struct Listener:bridge::IColorPolicyCallback {
     std::mutex mutex;
     int clears=0;
-    ScopedAStatus onPolicy(int64_t,int64_t,int32_t intent,bool)override{
-        std::lock_guard l(mutex);if(intent==-1)++clears;return ScopedAStatus::ok();
+    int policies=0;
+    int64_t lastPolicy=0;
+    int32_t lastIntent=-1;
+    ScopedAStatus onPolicy(int64_t,int64_t id,int32_t intent,bool)override{
+        std::lock_guard l(mutex);if(intent==-1)++clears;
+        else {++policies;lastPolicy=id;lastIntent=intent;}
+        return ScopedAStatus::ok();
     }
     int count(){std::lock_guard l(mutex);return clears;}
+    int policyCount(){std::lock_guard l(mutex);return policies;}
+    std::pair<int64_t,int32_t> policy(){std::lock_guard l(mutex);return {lastPolicy,lastIntent};}
 };
 template<class F> void until(F f,const char* message){
     auto deadline=std::chrono::steady_clock::now()+2s;
@@ -219,6 +228,43 @@ void echoWindowStartsAfterReturn(){
     const bool ok=call.get().isOk();
     check(ok&&!early,"OEM IPC consumed the post-return echo observation window");
 }
+void lateEchoWithoutGamutChange(){
+    Fixture f;
+    oemGate.arm();
+    auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,false);});
+    oemGate.wait();
+    f.backend->emit(10000,0);
+    oemGate.release();
+    check(call.get().isOk(),"compatibility fallback failed");
+    const int before=f.listener->policyCount();
+    f.backend->emit(30000,256); // Another mode is not this request's echo.
+    std::this_thread::sleep_for(100ms);
+    check(f.listener->policyCount()==before,"unmatched late echo published a policy");
+    f.backend->emit(30000,258);
+    until([&]{return f.listener->policyCount()>before;},
+          "matching late echo lost without another gamut notification");
+    check(f.listener->policy().second==258,"late echo published wrong intent");
+    std::this_thread::sleep_for(100ms);
+    check(f.listener->policyCount()==before+1,"late echo repeatedly republished policy");
+}
+void echoWaitsForSoftwareAcceptance(){
+    Fixture f;
+    oemGate.arm();
+    auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,false);});
+    oemGate.wait();
+    f.backend->emit(10000,0);
+    f.backend->emit(30000,258);
+    oemGate.release();
+    until([&]{return f.listener->policyCount()>0;},"echo did not publish policy");
+    check(call.wait_for(100ms)!=std::future_status::ready,"echo bypassed SF/HWC acceptance");
+    auto accepted=scene(10,1,2);
+    accepted.profileKnown=true;
+    accepted.policyRequestId=f.listener->policy().first;
+    accepted.renderIntent=258;accepted.dataspace=1;accepted.hwcResult=0;
+    f.c->reportState(accepted);
+    check(call.wait_for(2s)==std::future_status::ready&&call.get().isOk(),
+          "matching SF/HWC acceptance did not complete request");
+}
 int main(int argc,char** argv){
     std::string which=argc>1?argv[1]:"all";
     int failed=0,ran=0;
@@ -228,7 +274,9 @@ int main(int argc,char** argv){
             {"stale-completion",oldCompletionCannotReleaseNew},{"late-oem",lateOemReturn},
             {"same-identity",repeatedIdentityCancelsQueued},{"persistence-failure",persistenceFailureKeepsActualSeparate},
             {"failed-scene-retry",failedSceneMustBeRetried},
-            {"post-return-echo-window",echoWindowStartsAfterReturn}}){
+            {"post-return-echo-window",echoWindowStartsAfterReturn},
+            {"late-echo-no-gamut-change",lateEchoWithoutGamutChange},
+            {"echo-software-acceptance",echoWaitsForSoftwareAcceptance}}){
         if(which!="all"&&which!=name)continue;
         ++ran;
         try{test();std::cout<<"PASS "<<name<<'\n';}

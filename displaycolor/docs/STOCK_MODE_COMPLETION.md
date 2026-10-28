@@ -143,3 +143,25 @@ Evidence: `out/adaptation-principle-audit-20261028/color-mode-chain-03`, includi
 bounded function bodies, vtable/proxy corroboration and direct-versus-indirect
 call search limits. This is static analysis, not a phone validation or a new
 completion implementation.
+
+## Late callback consumption
+
+Host regression exposed a device-controller omission: after the 400 ms
+compatibility return, a matching intent event alone was ignored when a valid
+gamut value was already known. The worker only watched for another gamut
+version. This explains a possible missed policy update; it does not establish
+the cause of every missing callback on a phone.
+
+The controller now tracks that late echo until it publishes the matching
+accepted intent once. It retains the existing SDR scene, SF generation and
+unresolved-intent guards. Starting another mode application, failure or listener
+replacement clears this tracking. No OEM command is added and the completed
+caller request is not reopened. Gamut notifications remain independent inputs.
+
+The byte-identical Controller.cpp host test fails before this change and passes
+after it. A separate timely-echo test verifies that the caller stays pending
+until its matching synthetic SF/HWC software acceptance. Wrong-intent late
+events do not publish a policy. All eleven host cases pass. Binder delivery,
+actual LUT application and visual behaviour still require phone validation.
+The missing-echo compatibility success and its persistence semantics remain an
+open audit issue; this repair does not turn the fallback into acknowledgement.
