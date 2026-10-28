@@ -94,3 +94,37 @@ Finally, framework dumpsys may print "ThermalHAL AIDL 3" using the framework's
 compiled IThermal.VERSION. It is not proof that the remote service implements V3;
 use actual interface version/metadata instead. The stored stock dump and V1 ELF
 must not be treated as a contradiction solely on that label.
+
+## Alert sender cannot be copied unchanged
+
+The stock system_ext thermald broadcast path targets service "activity" and
+descriptor "android.app.IActivityManager". At 0x442c it passes constant 12 to
+the Binder virtual call at 0x443c, with request/reply Parcel pointers and zero
+flags, matching IBinder::transact's signature and slot 0x28.
+
+The local last-built framework.jar's IActivityManager$Stub constants instead
+identify broadcastIntent as 25, broadcastIntentWithFeature as 26, and
+logFgsApiStateChanged as 12. Both the executable instructions and the generated
+class were inspected. This is a concrete incompatibility in the native alert
+client, independent of whether its ELF dependencies resolve. No transaction was
+executed to demonstrate it and no thermal event was injected.
+
+Do not reorder the upstream AIDL to accommodate this private native client.
+Nor is changing 12 to 25 alone a validated repair: the client manually writes
+Intent/Bundle/argument fields, and the expected MediaTek receiver has not been
+established in this port. A proper adaptation must cover both serialization and
+the receiving behaviour, preserving the original event semantics.
+
+LineageOS already has standard thermal handling: ThermalManagerService receives
+HAL temperature callbacks, handles SHUTDOWN severity for applicable types, and
+SystemUI's PowerUI subscribes to skin/USB events for warnings. Those are distinct
+from MediaTek's THERMAL_WARNING/THERMAL_DIAG broadcasts. The existing standard
+handlers do not establish that kernel signal events have been translated into
+that chain. A focused search found no matching MediaTek actions in this tree's
+SystemUI Java/Kotlin/XML; a broader application search was stopped and cannot
+support a claim that no receiver exists anywhere.
+
+Current decision: retain the working daemon/control and brightness-cap paths;
+do not add the raw stock alert executable or thermal_core as an unverified fix.
+The Thermal HAL notification route and the alert bridge remain explicit open
+integration items, with no new upstream or binary patch made for this finding.
