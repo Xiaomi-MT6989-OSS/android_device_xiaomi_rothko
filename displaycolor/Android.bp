@@ -125,9 +125,6 @@ cc_library_static {
         "android.hardware.graphics.common@1.2",
         "vendor.lineage.livedisplay-V1-ndk",
         "vendor.xiaomi.hardware.displayfeature_aidl-V2-ndk",
-        // Static-library shared dependencies do not propagate to the binary;
-        // use the V4 PQ reader's matching graphics-common generation.
-        "android.hardware.graphics.common-V4-ndk",
         "vendor.mediatek.hardware.pq_aidl-V4-ndk",
     ],
 }

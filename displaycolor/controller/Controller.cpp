@@ -36,8 +36,8 @@ constexpr int kUnavailable = 1, kTimeout = 2, kPersistence = 3;
 // the intent echo arrives seconds after the request, not immediately.
 constexpr auto kRequestTimeout = 12000ms;
 constexpr auto kApplyTimeout = 9000ms;
-// Without a SurfaceFlinger listener the stock backend is the only acceptance
-// signal; the LUT rewrite is synchronous, so a short grace is enough.
+// Observation window for requests that return from the stock backend without
+// an intent echo. Expiry below records backend acceptance, not a hardware ACK.
 constexpr auto kEchoGrace = 400ms;
 constexpr auto kRepublishTimeout = 1500ms;
 constexpr auto kPollInterval = 25ms;
@@ -115,8 +115,7 @@ public:
         // atomics are recorded: no command mutex, Binder call, wait or payload log.
         if (event == 30000) {
             mObservation->lastIntent.store(value, std::memory_order_relaxed);
-            const uint64_t count = mObservation->intents.fetch_add(1, std::memory_order_release) + 1;
-            LOG(INFO) << "OEM intent echo " << value << " (count " << count << ")";
+            mObservation->intents.fetch_add(1, std::memory_order_release);
         } else if (event == 10000) {
             if (value == 0 || value == 1) {
                 mObservation->wcg.store(value, std::memory_order_relaxed);
@@ -690,7 +689,7 @@ void Controller::run() {
             intentBoundary = observation->intents.load(std::memory_order_acquire);
             pendingPolicy = 0;
             pendingIntent = applying->intent;
-            deadline = Clock::now() + (listener ? kApplyTimeout : kEchoGrace);
+            deadline = Clock::now() + kApplyTimeout;
             echoDeadline = Clock::now() + kEchoGrace;
             mApplyingMode.store(applying->id);
             mReady.store(false);
@@ -715,8 +714,8 @@ void Controller::run() {
                     observation->lastIntent.load() == pendingIntent &&
                     mUnresolvedIntent.load() != pendingIntent;
             // The stock service only emits the intent callback for a subset of
-            // requests. The backend has already accepted the write, so a
-            // missing echo is not an error: the panel carried out the change.
+            // requests. This fallback records the successful backend transaction;
+            // it does not establish a physical LUT or SF/HWC acknowledgement.
             if (!echoedNow && Clock::now() >= echoDeadline) {
                 LOG(INFO) << "mode " << applying->id << " accepted by the stock backend";
                 mCurrent.store(applying->id);
@@ -734,37 +733,6 @@ void Controller::run() {
                 applyScene.reset();
                 mApplyingMode.store(-1);
                 mReady.store(true);
-                continue;
-            }
-            if (!listener) {
-                // No coordination channel: accept the OEM echo itself.
-                const bool echoed =
-                        observation->intents.load(std::memory_order_acquire) > intentBoundary &&
-                        observation->lastIntent.load() == pendingIntent &&
-                        mUnresolvedIntent.load() != pendingIntent;
-                if (echoed || Clock::now() >= deadline) {
-                    if (echoed) {
-                        LOG(INFO) << "mode " << applying->id << " confirmed by OEM echo";
-                    } else {
-                        LOG(WARNING) << "mode " << applying->id
-                                     << " accepted without an OEM echo";
-                    }
-                    mCurrent.store(applying->id);
-                    bool ok = true;
-                    if (pending && pending->makeDefault && !pending->abandoned.load()) {
-                        ok = persistDefault(applying->id,
-                                            [&] { return pending->abandoned.load(); });
-                    }
-                    confirmedMode = applying->id;
-                    confirmedIntent = pendingIntent;
-                    publishedWcgVersion = observation->wcgVersion.load();
-                    finish(pending, ok, kPersistence);
-                    pending = nullptr;
-                    applying = nullptr;
-                    applyScene.reset();
-                    mApplyingMode.store(-1);
-                    mReady.store(true);
-                }
                 continue;
             }
             if (!pendingPolicy && echoedNow && observation->wcg.load() >= 0) {
@@ -850,13 +818,9 @@ ndk::ScopedAStatus DisplayModes::getDisplayModes(std::vector<live::DisplayMode>*
     return ndk::ScopedAStatus::ok();
 }
 ndk::ScopedAStatus DisplayModes::getCurrentDisplayMode(live::DisplayMode* mode) {
-    int32_t id = mController->currentMode();
-    if (!findMode(id)) {
-        // Nothing has been confirmed in this session yet. Report the persisted
-        // choice: the worker restores exactly that mode once SurfaceFlinger
-        // reports state, so the selection in Settings stays truthful.
-        id = mController->defaultMode();
-    }
+    // A saved preference is not an observation of the current generation.
+    // The SDK/UI already handle unavailable state and offer an explicit retry.
+    const int32_t id = mController->currentMode();
     if (!findMode(id)) return unavailable(kUnavailable);
     *mode = parcelMode(id);
     return ndk::ScopedAStatus::ok();
