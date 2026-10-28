@@ -158,3 +158,38 @@ The dependency manifest pins the upstream MediaTek base, not this unpublished
 local commit. Reproduction must apply the independently exported correction after
 that base; do not assume an upstream checkout includes the fix. No ROM was built
 or deployed as part of this source correction.
+
+## Watcher dispatch and retry boundary
+
+A third host harness adds the unchanged thermalWatcherCallbackFunc body to the
+real parser/read-chain fixture. It reproduces three retry failures: all monitored
+reads return ERROR, all return UNDER_COLLECTING, or a healthy entry with a long
+poll interval masks failed siblings. The first two return milliseconds::max;
+its conversion to the current Looper pollOnce int argument produces -1. The
+actual Android Looper thread was not run; the helper return value and source
+call-site conversion were checked separately.
+
+Independent hardware/mediatek commit 59892c1 makes an unsuccessful read vote the
+existing 2000 ms kMinPollIntervalMs. It does not change successful intervals,
+thresholds, cache/severity or cooling ownership. Failed entries remain eligible
+for retry because their successful last_update_time is not advanced. This is a
+retry interval, not a thermal filter or an added brightness/charging policy.
+
+The host result changed from 15 passing/3 failing to 18 passing/0 failing. The
+actual callback function dispatches CPU/GPU/NPU hot and falling changes through
+cb_, suppresses duplicate unchanged severities and fabricated read-error events,
+and resumes valid reads on the next scheduled invocation. Initial snapshot and
+type filtering were checked in the preceding read-chain harness, not by assuming
+NONE-to-NONE produces a watcher change event.
+
+Statistics, power and cooling helper bodies remain boundary fixtures; nonempty
+bindings, power hints and cooling write requests are rejected by the fixture.
+These checks do not validate the real cooling controller, Binder recipients,
+Android thread scheduling or service restart. Production source binds cb_ to
+Thermal::sendThermalChangedCallback, whose type-filtering/dead-client handling
+still requires separate boundary/runtime validation.
+
+The two minimal shared corrections must be replayed after the pinned upstream
+base in order (affc75f then 59892c1). The identity-reporting device configuration
+remains a candidate, and no claim of stock-policy equivalence or deployment is
+made from these host results.
