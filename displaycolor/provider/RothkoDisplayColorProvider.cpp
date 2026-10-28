@@ -346,11 +346,10 @@ private:
         // Binder owns cookie cleanup through onUnlinked, including failed
         // links; deletion waits for every late death callback to finish.
         auto* cookie = new DeathCookie{this, generation};
-        // SurfaceFlinger runs a single-threaded binder server, so it cannot
-        // register a death recipient for this connection. That is not a reason
-        // to drop the connection: the periodic reportState call already detects
-        // a dead controller. Binder frees the cookie through onUnlinked whether
-        // or not the link succeeded.
+        // A failed death link does not by itself reject the connection. A later
+        // reportState can detect a dead controller, but reports are event-driven,
+        // not an independent heartbeat. Binder frees the cookie via onUnlinked
+        // whether or not the link succeeded.
         const bool deathLinked =
                 AIBinder_linkToDeath(binder.get(), mDeathRecipient.get(), cookie) == STATUS_OK;
         if (!deathLinked) {

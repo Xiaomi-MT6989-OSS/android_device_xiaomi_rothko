@@ -1,9 +1,12 @@
-# Rothko display color source preparation
+# Rothko display color controller
 
 This directory is device-private source. The provider is selected through
 `SOONG_CONFIG_surfaceflinger_display_color_lib` in BoardConfig and the
-controller is installed through `PRODUCT_PACKAGES`. The sources compile as part
-of the unified candidate; no device validation has been performed yet.
+controller is installed through `PRODUCT_PACKAGES`. Earlier unified images have
+passed user tests for profile changes and persistence across reboot. Those
+observations do not establish panel colorimetry, every rapid-switch sequence,
+or service-failure recovery. Later source-review changes require a new build
+and regression; they are not retroactively covered by the installed image.
 
 Layout:
 
@@ -48,7 +51,7 @@ invalidate. Private callback messages have a finite 16-slot queue. All cached
 policy fields are read in one bounded atomic sequence check; concurrent writes
 return the upstream/default policy for that frame instead of spinning.
 
-Service death immediately disables cached policy. An ordinary controller
+An observed service death disables cached policy. An ordinary controller
 reconnect replays the latest content/power continuously observed by SF, clears
 old profile/request correlation and uses a new connection. Lost local updates,
 queue overflow or invalid protocol mark all content/profile/power unknown and
@@ -69,6 +72,9 @@ preserved. The controller must retain confirmed user/default separately from
 this temporary suspension.
 
 The worker's fixed 20 ms polling interval is local and does not scan files.
+State reports are sent only when dirty; this interval is not a Binder heartbeat.
+If death linking fails, an otherwise idle dead controller is detected only when
+a later report fails. Policy has no independent expiry in this interface.
 Private Binder methods must remain prompt; a malicious or blocked synchronous
 controller registration can stall this worker but cannot make a composition
 hook wait. Production controller authorization, init, service contexts and
@@ -83,6 +89,14 @@ Source/evidence contracts:
 
 The original V2 protocol has no request token or hardware LUT acknowledgement.
 These private request/revision identifiers must not be described as OEM ACKs.
-HWC software acceptance, persistence, actual panel appearance, lifecycle
-recovery and HDR/power transitions still require the combined build and device
-validation.
+HWC software acceptance is distinct from panel appearance. The current missing-
+echo fallback records successful OEM transaction acceptance after a 400 ms
+observation window, not a physical LUT acknowledgement. This path and request
+generation/queue races need further review. Unavailable current state is returned
+as unavailable, rather than replaced by the saved boot preference; the SDK/UI
+support explicit retry. The default getter remains separately available.
+
+Remaining validation includes failed/late callbacks, rapid transitions, backend
+death or a live-but-stalled Binder peer, persistence failures, HDR/power return,
+and calibrated color measurements. The device-specific 170m-as-sRGB compositor
+override also needs separate necessity and camera-content testing.

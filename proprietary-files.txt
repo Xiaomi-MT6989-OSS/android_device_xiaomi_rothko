@@ -3050,7 +3050,7 @@ odm/etc/disp0/dsi_n12_42_02_0a_dsc_cmd/miLut_7.txt;MAKE_COPY_RULE_ONLY
 odm/etc/disp0/dsi_n12_42_02_0a_dsc_cmd/miLut_8.txt;MAKE_COPY_RULE_ONLY
 odm/etc/disp0/dsi_n12_42_02_0a_dsc_cmd/miLut_9.txt;MAKE_COPY_RULE_ONLY
 
-# Stock DisplayFeature AIDL backend - diagnostic service, not colour-mode UI
+# Stock DisplayFeature AIDL backend for the device colour/doze controller
 odm/lib64/hw/displayfeature.default.so
 odm/lib64/libMiDispDevManager.so
 odm/lib64/libadaptivehdr.so
