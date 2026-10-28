@@ -14,6 +14,7 @@ from extract_utils.main import ExtractUtils, ExtractUtilsModule
 from tinyxml2_isolation import blob_fixup_tinyxml2_isolation
 from vibrator_instance_fixup import blob_fixup_vibrator_instance
 from allocator_v2_isolation import blob_fixup_allocator_v2_isolation
+from audio_param_fixup import blob_fixup_hp_impedance
 
 namespace_imports = [
     'device/xiaomi/rothko',
@@ -155,9 +156,7 @@ separate_fixups[
 )
 # Stock param_id=7 lacks its closing tag; keep every original parameter value.
 separate_fixups['vendor/etc/audio_param/HpImpedance_AudioParam.xml'] = (
-    blob_fixup().regex_replace(
-        r'(?m)^(\t</ParamUnitPool>)$', r'\t\t</ParamUnit>\n\1'
-    )
+    blob_fixup().call(blob_fixup_hp_impedance, need_tmp_dir=False)
 )
 # Retain the stock THP HAL and its boot/DAC actions. The auxiliary debug
 # services/scripts are not part of the selected algorithm closure.
@@ -187,6 +186,7 @@ separate_fixups['vendor/etc/vintf/manifest/manifest_media_c2_V1_2_default.xml'] 
 # The dedicated ueventd rule supplies system ownership; init keeps that DAC.
 separate_fixups['odm/etc/init/vendor.novatek.hardware.visdisplaysrv-service.rc'] = (
     blob_fixup()
+        .regex_replace(r'\r\n', '\n')
         .regex_replace(r'(?m)^    ##disabled\r?$', '    disabled')
         .regex_replace('chmod 0666 /dev/vis_display_spidev', 'chmod 0660 /dev/vis_display_spidev')
 )

@@ -7,6 +7,8 @@ hash tables and Android packed relocations remain valid without rebuilding.
 The Binder descriptor, executable code and std::allocator names are untouched.
 """
 from pathlib import Path
+import hashlib
+import json
 import struct
 
 OLD_NAMESPACE = b'4aidl7android8hardware8graphics9allocator'
@@ -20,7 +22,7 @@ def gnu_hash(name):
     return value
 
 
-def isolate_symbols(file_path):
+def isolate_symbols(file_path, already_isolated_sha256=None):
     path = Path(file_path)
     original = path.read_bytes()
     if original[:6] != b'\x7fELF\x02\x01':
@@ -48,6 +50,12 @@ def isolate_symbols(file_path):
         raise ValueError('Unexpected dynamic tables')
     table = section_bytes(strings)
     if NEW_NAMESPACE in table:
+        # Only a byte-exact reviewed output may skip the transformation. An
+        # arbitrary ELF containing this namespace is still a collision/error.
+        if (already_isolated_sha256 is not None
+                and hashlib.sha256(original).hexdigest() == already_isolated_sha256
+                and OLD_NAMESPACE not in table):
+            return 0
         raise ValueError('Already isolated or namespace collision')
     changed = 0
     old_names, new_names = set(), set()
@@ -81,4 +89,5 @@ def isolate_symbols(file_path):
 
 
 def blob_fixup_allocator_v2_isolation(ctx, file, file_path, *args, **kwargs):
-    isolate_symbols(file_path)
+    reviewed = json.loads(Path(__file__).with_name('allocator-v2-isolation-hashes.json').read_text())
+    isolate_symbols(file_path, reviewed.get(file.dst))

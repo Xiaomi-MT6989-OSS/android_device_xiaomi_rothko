@@ -26,6 +26,6 @@ def adapt_instance(data):
     return adapted
 
 
-def blob_fixup_vibrator_instance(ctx, file, file_path):
+def blob_fixup_vibrator_instance(ctx, file, file_path, *args, **kwargs):
     path = Path(file_path)
     path.write_bytes(adapt_instance(path.read_bytes()))

@@ -1,0 +1,11 @@
+{
+  "vendor/bin/hw/mt6989/android.hardware.graphics.allocator-V2-service-mediatek.mt6989": "3c2eb2fcf5480cfaaad71e72079c1e18f3a5d8efc0360f3728c961f40e3df060",
+  "vendor/lib64/android.hardware.graphics.allocator-V2-ndk-v34.so": "535d5bcc034f13153e8bf8d860f9dd807ee95f56d4559ca35d6d99c13dfe56d0",
+  "vendor/lib64/egl/mt6989/libGLES_mali.so": "be42c6a09564f2f01a21a5b6349664aabcd7f606dcca6dd9bed62c8cc40803ba",
+  "vendor/lib64/hw/hwcomposer.mtk_common.so": "41c8bef52ad2a686be1da22d66823b87eaffdfbb09c9fdd07a249dd1c322aff4",
+  "vendor/lib64/hw/mt6989/android.hardware.graphics.allocator-V2-mediatek.so": "d45295a74bca5433dcd96f518aae571ae7d4e79d6d0d44ef2ddcadcbe5a6f186",
+  "vendor/lib64/libcodec2_fsr.so": "a1f5182abb3b528c310db0dd7ada703799fd32faed3edf178a79c37afc8a9b9c",
+  "vendor/lib64/libcodec2_vpp_AIMEMC_plugin.so": "f3cc7cba6e3c7cf5c7cb505820f6d8aa4211bfff5dbd24222366f76dc5afe670",
+  "vendor/lib64/libcodec2_vpp_AISR_plugin.so": "ae46dc0750c041de892661881ef687f8ac9d0aa4ec28c1a78b32b03afdb2e339",
+  "vendor/lib64/libui-rothko-v34.so": "b7b467fb5f7871105e6716612c7e1892b8103e1daa1044f177ba42d25d07cdc9"
+}
