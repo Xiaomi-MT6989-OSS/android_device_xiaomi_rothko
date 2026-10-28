@@ -80,3 +80,28 @@ current-user stop cancels it, and late overlay events cannot reactivate it.
 Handler/TargetUser are fixtures; this is not Android multi-user/profile or
 work-profile application-authentication acceptance. No lockout or authentication
 decision was changed.
+
+## Returning transport faults and input cleanup boundary
+
+The actual connect/send/updateAndApply method bodies and state machine passed a
+host protocol-fixture suite. It checks baseline-before-activation, idempotent
+wire updates, finish/late-overlay handling, partial activation with an ambiguous
+reply, rejected/exceptional transactions, unknown cleanup outcomes, unsupported
+version, missing service/API, death-link failure and a late old-service death
+after replacement. Cancelled requests do not replay into a new service. Parcels
+are recycled and completed transactions clear their pending diagnostic.
+
+Binder, Parcel, ServiceManager and handler are fixtures, not Android transport.
+The suite's repeated boundary assertions are not independent hardware scenarios.
+No source change was needed for these returning-fault cases. An indefinitely
+blocked synchronous Binder call remains a known limit: pendingMs observes it but
+does not cancel it, and the serial handler cannot deliver cancellation while
+that call remains blocked. Do not add a timeout that falsely declares the remote
+hardware stopped.
+
+The input adapter uses a transition lock and generation check to serialize
+activation/cancellation/delivery; trigger, normal input loss and framework
+reinitialization pair mode16 cleanup without touching mode10. This is static
+ownership review, not a complete native concurrency test. Fatal poll errors,
+failed disable during unload, touch-service blocking and reactivation after
+worker failure still need explicit fault injection before claiming full cleanup.
