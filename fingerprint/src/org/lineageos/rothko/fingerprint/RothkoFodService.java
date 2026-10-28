@@ -115,8 +115,10 @@ public final class RothkoFodService extends SystemService {
 
     @Override
     public void onUserStopping(TargetUser user) {
-        // Stop any current capture. A subsequent framework request establishes its own user.
-        post(() -> mState.cancel());
+        // Background-user/profile teardown must not cancel the foreground request.
+        post(() -> {
+            if (user.getUserIdentifier() == mCurrentUser) mState.cancel();
+        });
     }
 
     private void post(Runnable event) { mHandler.post(() -> updateAndApply(event)); }
