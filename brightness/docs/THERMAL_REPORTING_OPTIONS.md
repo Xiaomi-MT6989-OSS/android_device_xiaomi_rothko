@@ -225,3 +225,34 @@ There are now four independent shared-source fixes to replay after the pinned
 base: affc75f, 59892c1, 1480fd5 and 278b978, in that order. They address demonstrated
 generic reader/notification defects, not device-specific thermal thresholds or
 factory cooling policy. The device identity-reporting candidate remains unselected.
+
+## Owner teardown correction and remaining acceptance boundary
+
+Default member destruction released the service subscription state before its
+helper, and the helper's default destructor did not stop the watcher before
+sensor state was destroyed. Local libutils Thread source confirms its destructor
+does not implicitly request exit/wait, while a running worker holds a self
+reference. Dropping an sp alone is not a stop-and-join contract.
+
+Independent commit 43572e2 provides owner-thread teardown: stop/join the snapshot
+queue first, reset the helper while subscription state is alive, then request
+watcher exit, wake its poll and wait before helper data destruction. Queue stop is
+idempotent for sequential explicit stop and member destruction. Current main
+keeps the normal service alive in the Binder pool, so this is a demonstrated
+object-lifetime defect, not evidence that normal device boots hit it.
+
+The original member declarations/destructors plus actual host queue were tested
+with lifecycle-instrumented helper dependencies and Android watcher API fixtures.
+Before correction, 1 of 24 checks passed; after correction and two null-startup
+cases, all 26 pass. The real queue's 22 checks also pass after adding explicit
+owner stop. Android Thread itself, Binder reconnect and init restart were not run.
+Do not destroy the owner from its worker callback; externally retained injected
+helpers keep their external owner's lifecycle responsibilities.
+
+There are now five replayable shared commits, ending in 43572e2. The source
+reporting proposal has host evidence for parsing, trip-write exclusion, units,
+severity/change dispatch, bounded error retry, subscription generations and
+owner teardown under the documented fixtures. This is sufficient to keep the
+proposal reviewable, not to mark it deployed or factory-equivalent. Actual HAL
+startup/reconnect, SELinux, absence of runtime trip/cooling writes, polling cost,
+factory scenario selection and physical brightness remain acceptance items.
