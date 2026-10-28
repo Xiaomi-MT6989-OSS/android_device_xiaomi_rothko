@@ -65,3 +65,37 @@ the device-configuration priority. If the existing implementation cannot meet
 the reporting/no-write contract, document the failing source path before choosing
 a narrowly scoped HAL change. None of these routes establishes full equivalence
 of Xiaomi scene selection, cloud policy or physical display brightness.
+
+## First host checks completed
+
+209 checks passed using the original thermal_info.cpp translation unit, its
+original SensorInfo definitions, JsonCpp sources and generated AIDL enum headers.
+Selected helper functions were copied byte for byte from thermal-helper.cpp:
+getSeverityFromThresholds, setMinTimeout, updateTripPointThreshold and initializeTrip.
+Only Android file/property/logging boundaries and unused estimator construction
+were replaced by host fixtures. Estimator use fails the test rather than
+pretending to implement a model. These are isolated function checks, not the full
+Android service.
+
+The parser accepts both the existing configuration and the candidate. Checks
+confirm the existing unmonitored flags, six candidate public reporting entries,
+four hidden physical inputs, preserved types/thresholds/units, empty trigger and
+cooling bindings, and no smoothing. Duplicate names, absent identity coefficients
+and a hidden-but-callback-enabled entry are rejected by the real parser.
+
+The actual trip initializer is called with an empty path map under both genl
+settings: no path lookup, read, write or kernel-monitored entry occurs. As a
+positive instrumentation control, enabling Monitor on the six original physical
+entries with fake user_space policies produces 12 captured writes, one temperature
+and one hysteresis trip write per entry. This confirms that the fixture can detect
+the unsafe direct-Monitor route; no real thermal paths are accessed.
+
+The real severity function was also exercised at each finite hot threshold and
+on falling just below it, with the currently configured zero hot hysteresis.
+Matching those software results does not establish original daemon hysteresis or
+full stock control equivalence.
+
+Still pending: actual virtual raw-read/unit conversion, initial and subsequent
+callback delivery, watcher/error/restart behaviour, polling cost and Android/device
+integration. The candidate remains outside the selected product configuration.
+Do not use these 209 checks to mark the thermal reporting gap repaired.
