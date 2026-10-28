@@ -93,11 +93,14 @@ struct Listener:bridge::IColorPolicyCallback {
     int64_t lastPolicy=0;
     int32_t lastIntent=-1;
     std::atomic<bool> autoAccept{true};
+    std::atomic<bool> failNextPolicy{false};
     ScopedAStatus onPolicy(int64_t,int64_t id,int32_t intent,bool)override{
         {
             std::lock_guard l(mutex);if(intent==-1)++clears;
             else {++policies;lastPolicy=id;lastIntent=intent;}
         }
+        if(intent>=0&&failNextPolicy.exchange(false))
+            return ScopedAStatus::fromServiceSpecificError(1);
         if(intent>=0&&autoAccept.load())if(auto c=hostController.lock()){
             bridge::DisplayState accepted;
             {std::lock_guard l(c->mMutex);accepted=*c->mState;accepted.sequence=c->mLastSequence+1;}
@@ -285,6 +288,29 @@ void echoWaitsForSoftwareAcceptance(){
     check(call.wait_for(2s)==std::future_status::ready&&call.get().isOk(),
           "matching SF/HWC acceptance did not complete request");
 }
+void policyDeliveryFailureCompletesCaller(){
+    Fixture f;
+    f.listener->failNextPolicy.store(true);
+    auto call=std::async(std::launch::async,[&]{return f.c->setMode(1,true);});
+    const bool prompt=call.wait_for(1s)==std::future_status::ready;
+    const bool ok=call.get().isOk();
+    check(prompt&&!ok,"failed policy delivery left caller waiting for an impossible acknowledgement");
+    check(f.c->currentMode()==-1&&f.c->defaultMode()==3,
+          "failed policy delivery published current/default mode");
+}
+void gamutDeliveryFailureInvalidatesCurrent(){
+    Fixture f;
+    const int before=f.listener->policyCount();
+    f.listener->failNextPolicy.store(true);
+    f.backend->emit(10000,1);
+    until([&]{return f.listener->policyCount()>before;},"gamut policy was not attempted");
+    until([&]{return f.c->currentMode()==-1;},
+          "failed gamut policy delivery retained a confirmed current mode");
+    live::DisplayMode mode;
+    DisplayModes service(f.c);
+    check(!service.getCurrentDisplayMode(&mode).isOk()&&f.c->defaultMode()==3,
+          "delivery failure exposed an available current mode or changed default");
+}
 int main(int argc,char** argv){
     std::string which=argc>1?argv[1]:"all";
     int failed=0,ran=0;
@@ -296,7 +322,9 @@ int main(int argc,char** argv){
             {"failed-scene-retry",failedSceneMustBeRetried},
             {"late-echo-acceptance",lateEchoStillWaitsForAcceptance},
             {"missing-echo-default",missingEchoCannotSaveDefault},
-            {"echo-software-acceptance",echoWaitsForSoftwareAcceptance}}){
+            {"echo-software-acceptance",echoWaitsForSoftwareAcceptance},
+            {"policy-delivery-failure",policyDeliveryFailureCompletesCaller},
+            {"gamut-delivery-failure",gamutDeliveryFailureInvalidatesCurrent}}){
         if(which!="all"&&which!=name)continue;
         ++ran;
         try{test();std::cout<<"PASS "<<name<<'\n';}

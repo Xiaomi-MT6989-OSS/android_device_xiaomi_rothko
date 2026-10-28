@@ -15,7 +15,7 @@ scheduling and invoking the actual caller timeout handler without a 12-second
 wall-clock delay. Android build files and production class visibility are unchanged.
 Host open/openat always fail, preventing access to production /data paths.
 
-The eleven scenarios cover stale timeout after listener replacement, queued
+The thirteen scenarios cover stale timeout after listener replacement, queued
 caller completion on replacement, a request admitted during automatic restore,
 stale completion while a newer request owns admission, delayed OEM return after
 replacement, replacement reusing external connection identifiers, and persistence
@@ -24,7 +24,8 @@ notification retried before a mode write with sampling eligibility restored, and
 a matching late intent after the former 400 ms window (including rejection of a
 different intent and exactly one publication), a missing echo timing out without
 changing current/default mode, and timely echo waiting for matching SF/HWC
-software acceptance before completing the caller.
+software acceptance before completing the caller, prompt failure when policy
+delivery fails, and invalidating current mode when gamut-policy delivery fails.
 
 These tests execute the real worker/request code. The fake Binder transport does
 not model Android IPC, death delivery or transaction queues. The fake OEM backend

@@ -324,20 +324,22 @@ void Controller::finish(const std::shared_ptr<Request>& request, bool ok, int er
     request->changed.notify_all();
 }
 
-void Controller::publishPolicy(uint64_t generation, int64_t connection, int64_t request,
+bool Controller::publishPolicy(uint64_t generation, int64_t connection, int64_t request,
                                int32_t intent, bool wcg) {
     std::shared_ptr<bridge::IColorPolicyCallback> listener;
     {
         std::lock_guard lock(mMutex);
         if (generation != mGeneration || connection != mConnection ||
-                request <= mLastPublished) return;
+                request <= mLastPublished) return false;
         mLastPublished = request;
         listener = mListener;
     }
-    if (listener && !listener->onPolicy(connection, request, intent, wcg).isOk()) {
+    if (!listener || !listener->onPolicy(connection, request, intent, wcg).isOk()) {
         std::lock_guard lock(mMutex);
         if (generation == mGeneration) mReady.store(false);
+        return false;
     }
+    return true;
 }
 
 bool Controller::persistDefault(int32_t mode, const std::function<bool()>& aborted) {
@@ -786,9 +788,15 @@ void Controller::run() {
                     mUnresolvedIntent.load() != pendingIntent;
             if (!pendingPolicy && echoedNow && observation->wcg.load() >= 0) {
                 pendingPolicy = mPolicySequence.fetch_add(1);
-                publishPolicy(activeGeneration, activeConnection, pendingPolicy, pendingIntent,
-                              observation->wcg.load() == 1);
+                // A failed Binder transaction does not prove the peer observed
+                // nothing. Clear the attempted policy through normal failure
+                // cleanup, without waiting for an acknowledgement it cannot give.
                 policyActive = true;
+                if (!publishPolicy(activeGeneration, activeConnection, pendingPolicy,
+                                   pendingIntent, observation->wcg.load() == 1)) {
+                    failPending(kUnavailable, true);
+                    continue;
+                }
             }
             if (pendingPolicy && applyScene &&
                 sameGeneration(*state, activeSession, activeConnection) &&
@@ -839,9 +847,12 @@ void Controller::run() {
                 applyScene = state;
                 deadline = Clock::now() + kRepublishTimeout;
                 publishedWcgVersion = version;
-                publishPolicy(activeGeneration, activeConnection, pendingPolicy,
-                              confirmedIntent, wcg == 1);
                 policyActive = true;
+                if (!publishPolicy(activeGeneration, activeConnection, pendingPolicy,
+                                   confirmedIntent, wcg == 1)) {
+                    failPending(kUnavailable, false);
+                    continue;
+                }
             }
             if (pendingPolicy && applyScene &&
                 sameGeneration(*state, activeSession, activeConnection)) {

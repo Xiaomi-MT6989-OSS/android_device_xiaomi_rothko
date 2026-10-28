@@ -49,7 +49,7 @@ private:
     };
     void run();
     void finish(const std::shared_ptr<Request>& request, bool ok, int error);
-    void publishPolicy(uint64_t generation, int64_t connection, int64_t request,
+    bool publishPolicy(uint64_t generation, int64_t connection, int64_t request,
             int32_t intent, bool wcg);
     // Atomic policy clear for the caller thread. The OEM worker may be blocked
     // in a vendor call, so a timeout must not depend on it making progress.

@@ -198,3 +198,23 @@ timeout and persistence failure after software confirmation. File persistence
 success, real Binder queues/death, physical LUT application and phone behaviour
 remain unvalidated. In particular, actual callback absence can now expose an
 unavailable Settings state instead of false success; its root cause remains open.
+
+## Policy transport failures
+
+The controller must distinguish a failed policy transaction from a policy that
+was delivered and awaits software acceptance. Previously publishPolicy only
+temporarily cleared readiness: a mode request waited for an acknowledgement
+until timeout, while the gamut-only path restored readiness and retained the
+old current mode despite delivery failure.
+
+publishPolicy now returns delivery status to the worker. On failure the existing
+cleanup reports the request error promptly, invalidates current, preserves the
+saved default and attempts to clear the policy. The clear is necessary because
+a failed Binder transaction is not proof that the peer performed no work. The
+gamut update uses the same cleanup without marking a new OEM request unresolved.
+Listener-generation checks still prevent old work from changing new state.
+
+Two host tests reproduce the former behaviour and pass after the repair; all
+thirteen scenarios pass. This models a returned transport error, not a blocked
+Binder call, actual process death or guaranteed successful peer cleanup. Those
+remain separate runtime validation concerns.
