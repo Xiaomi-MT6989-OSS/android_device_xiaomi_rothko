@@ -394,7 +394,7 @@ void Controller::run() {
     uint64_t intentBoundary = 0;
     bool restore = true, policyActive = false;
     int32_t previousPower = -1;
-    Clock::time_point deadline{}, echoDeadline{}, nextLookup{};
+    Clock::time_point deadline{}, echoDeadline{}, nextLookup{}, nextSceneAttempt{};
 
     // Registration can change while this worker is blocked in OEM IPC. State
     // from the old iteration must not become the new connection's ready/current.
@@ -476,6 +476,7 @@ void Controller::run() {
             activeSession = session;
             activeConnection = connection;
             previous.reset();
+            nextSceneAttempt = {};
             applyScene.reset();
             pendingPolicy = 0;
             confirmedMode = -1;
@@ -642,6 +643,10 @@ void Controller::run() {
             continue;
         }
         if (sceneChanged) {
+            // Failed IPC must not mark this scene as delivered or allow a mode
+            // write to bypass its prerequisite notifications. Reuse the backend
+            // recovery cadence rather than retrying on every worker poll.
+            if (Clock::now() < nextSceneAttempt) continue;
             bool ok = true;
             auto feature = [&](int32_t id, int32_t value) {
                 if (ok) ok = backend->setFeature(0, id, value, 0).isOk();
@@ -673,12 +678,27 @@ void Controller::run() {
                 feature(64, hlg ? 1 : 0);
                 if (srgb) feature(318, 1);
             }
-            previous = state;
             restore = true;
             if (!ok) {
+                previous.reset();
+                nextSceneAttempt = Clock::now() + kLookupInterval;
                 mHistogram->scene(false, false, sceneRevision);
                 failPending(kUnavailable, false);
                 continue;
+            }
+            previous = state;
+            nextSceneAttempt = {};
+            {
+                // Failure disabled sampling. Restore its scene only if no
+                // newer report/registration has superseded this batch.
+                std::lock_guard lock(mMutex);
+                if (activeGeneration == mGeneration && sceneRevision == mSceneRevision) {
+                    const bool known = state->synchronizedState && state->connected &&
+                            state->powerKnown && state->accepted && state->lastAttempted == 2 &&
+                            state->contentKnown && state->enabled && state->managed;
+                    mHistogram->scene(known, state->hdrCandidate != ds(Dataspace::UNKNOWN),
+                                      sceneRevision);
+                }
             }
         }
         if (state->powerKnown) previousPower = state->lastAttempted;

@@ -111,3 +111,10 @@ Remaining validation includes failed/late callbacks, rapid transitions, backend
 death or a live-but-stalled Binder peer, persistence failures, HDR/power return,
 and calibrated color measurements. The device-specific 170m-as-sRGB compositor
 override also needs separate necessity and camera-content testing.
+
+Failed composition/power notification batches are not cached as delivered. They
+keep the controller unavailable and disable sampling until a successful replay,
+with retries bounded to the existing one-second backend recovery cadence. A
+successful batch restores sampling eligibility only for the still-current scene
+revision and listener generation. This is IPC failure recovery, not brightness
+filtering or proof that a physical LUT has applied.

@@ -145,6 +145,7 @@ public:virtual ndk::ScopedAStatus apply(int64_t,int32_t,bool*)=0;
 }
 AIBinder* AServiceManager_checkService(const char*);
 void hostHistogramDrive();
+void hostHistogramScene(bool);
 '''
 (out / 'HostRuntime.h').write_text(runtime)
 for name in (
@@ -164,7 +165,7 @@ namespace rothko::color {
 class HistogramService {
 public:
     void newSf(int64_t,int64_t){}
-    void scene(bool,bool,int64_t){}
+    void scene(bool known,bool,int64_t){hostHistogramScene(known);}
     void sfGuard(std::shared_ptr<std::atomic<bool>>,int64_t,int64_t){}
     void backend(std::shared_ptr<std::atomic<bool>>){}
     void drive(aidl::vendor::xiaomi::hardware::displayfeature_aidl::IDisplayFeature&,int64_t){hostHistogramDrive();}

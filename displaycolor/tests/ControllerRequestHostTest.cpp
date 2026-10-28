@@ -14,6 +14,10 @@ using ndk::ScopedAStatus;
 extern "C" int hostOpen(const char*,int,...){return -1;}
 extern "C" int hostOpenAt(int,const char*,int,...){return -1;}
 void hostOemFeature(int32_t,int32_t);
+std::atomic<bool> failSceneOnce{false}, sceneNeedsRetry{false}, modeBeforeSceneRetry{false};
+std::atomic<int> sceneAttempts{0};
+std::atomic<bool> histogramSceneKnown{false};
+void hostHistogramScene(bool known){histogramSceneKnown.store(known);}
 // Boundary fakes only; Controller.cpp and its request/worker logic are unchanged.
 namespace aidl::vendor::xiaomi::hardware::displayfeature_aidl {
 const char* IDisplayFeature::descriptor="host.oem";
@@ -41,7 +45,18 @@ struct Oem final:df::IDisplayFeature {
     ScopedAStatus sendPostProcCommand(int32_t,int32_t)override{return ScopedAStatus::ok();}
     ScopedAStatus sendRefreshCommand()override{return ScopedAStatus::ok();}
     ScopedAStatus setFeature(int32_t,int32_t feature,int32_t,int32_t cookie)override{
-        hostOemFeature(feature,cookie);return ScopedAStatus::ok();
+        hostOemFeature(feature,cookie);
+        if(feature==10&&cookie==0){
+            ++sceneAttempts;
+            if(failSceneOnce.exchange(false)){
+                sceneNeedsRetry.store(true);
+                return ScopedAStatus::fromServiceSpecificError(1);
+            }
+            sceneNeedsRetry.store(false);
+        }
+        if(cookie==255&&feature>=0&&feature<=2&&sceneNeedsRetry.load())
+            modeBeforeSceneRetry.store(true);
+        return ScopedAStatus::ok();
     }
     ScopedAStatus setFunction(int32_t,int32_t,int32_t,int32_t)override{return ScopedAStatus::ok();}
     ScopedAStatus sendGamePkgName(int32_t,int32_t,int32_t,const std::string&)override{return ScopedAStatus::ok();}
@@ -182,6 +197,17 @@ void persistenceFailureKeepsActualSeparate(){
     check(!f.c->setMode(1,true).isOk(),"unavailable host persistence falsely succeeded");
     check(f.c->currentMode()==1&&f.c->defaultMode()==3,"persistence failure hid accepted mode or changed default");
 }
+void failedSceneMustBeRetried(){
+    Fixture f;
+    sceneAttempts.store(0);sceneNeedsRetry.store(false);modeBeforeSceneRetry.store(false);
+    failSceneOnce.store(true);
+    f.c->reportState(scene(10,1,2,2));
+    until([&]{return !failSceneOnce.load();},"scene failure not injected");
+    until([&]{return f.c->mReady.load();},"scene failure did not recover");
+    check(sceneAttempts.load()>=2&&!modeBeforeSceneRetry.load(),
+          "failed scene batch was cached as delivered; mode applied before retry");
+    check(histogramSceneKnown.load(),"scene recovery left histogram sampling disabled");
+}
 int main(int argc,char** argv){
     std::string which=argc>1?argv[1]:"all";
     int failed=0,ran=0;
@@ -189,7 +215,8 @@ int main(int argc,char** argv){
             {"stale-timeout",staleTimeout},{"reconnect-queued",reconnectCompletesQueued},
             {"restore-queue",requestDuringRestore},
             {"stale-completion",oldCompletionCannotReleaseNew},{"late-oem",lateOemReturn},
-            {"same-identity",repeatedIdentityCancelsQueued},{"persistence-failure",persistenceFailureKeepsActualSeparate}}){
+            {"same-identity",repeatedIdentityCancelsQueued},{"persistence-failure",persistenceFailureKeepsActualSeparate},
+            {"failed-scene-retry",failedSceneMustBeRetried}}){
         if(which!="all"&&which!=name)continue;
         ++ran;
         try{test();std::cout<<"PASS "<<name<<'\n';}
