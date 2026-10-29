@@ -1,12 +1,14 @@
 source: HyperOS OS3.0.307.0 stock vendor/lib64 Bluetooth HAL and legacy session bridge
-scope: software A2DP dependency closure; persist.bluetooth.a2dp_offload.disabled remains false
+scope: software A2DP dependency closure; current vendor.prop defaults persist.bluetooth.a2dp_offload.disabled=true (historical closure validation kept it false before software playback acceptance)
 changes: SONAME / DT_NEEDED only; executable .text sections are unchanged
 pairing: legacy HIDL middleware imports resolve to the existing stock _mtk AIDL session, shared with the stock provider and Bluetooth HAL
 isolation: private legacy session filename preserves platform A16 session libraries
 rejected draft: co-loading the stock generic AIDL session and _mtk caused mutex destruction failure during isolated dlclose
-current validation: both files pass check_elf_file; 18 existing providers match the live phone; isolated factory query plus Bluetooth load/unload exit zero
-runtime scope: descriptor/load test only; not installed, no session opened and headset sound not yet verified
+historical closure validation: both files passed check_elf_file; 18 existing providers matched that test phone; isolated factory query plus Bluetooth load/unload exited zero
+runtime scope: initial closure test only covered descriptor/load. Later unified images and user acceptance confirmed continuous software A2DP media playback; hardware offload remains deferred. HFP/SCO, headset microphone, LE Audio and spatial rendering are not established by that acceptance.
 
 audio.bluetooth.default.so: sha256=1de6e6a19bbe0f591dea96da343d63e3753e51e410600d5a2909083a6dda2fb1
 libbluetooth_audio_session-rothko.so: sha256=fdd5f37a9da4d1e7ff07b0ccc04ddf6337356b5491e1812c67f814e557abed1a
 legacy .text sha256=1e662e5cdfc19d02b4454c799db9d28407f523b25359e810260b0b03dbd0421e
+
+2026-10-29 source audit: the two current files match device-prebuilts.json output hashes; all executable sections and .rodata match their recorded stock parents, and ordered dependencies/SONAME match the recipe. HAL, legacy bridge and provider share libbluetooth_audio_session_aidl_mtk.so. No new ROM build or runtime test was run. Use the extraction recipe for reproduction; this text is not a claim about current installed images or persisted userdata properties.
