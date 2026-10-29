@@ -48,3 +48,25 @@ factory descriptor query/load/unload on the phone. The last check did not call
 activate(true) or register with SensorService. It is not screen-off unlock
 validation. Cold boot, real registration, success/rejection, AOD, lockout and
 display cleanup still require the paired image test.
+
+## Poll-error recovery audit
+
+The original worker returned on a non-EINTR poll error without closing its armed
+input/mode16 state. A host injection reproduced missing cleanup and a later
+activation returning OK with no worker left to deliver the new contact.
+
+That path now drops only the matching generation, attempts mode16 cleanup, and
+waits on a stop-aware condition variable before returning to the worker loop.
+The wait reuses the existing 1000 ms cleanup retry interval to prevent busy-spin
+under persistent poll failures. It is error recovery only: normal eventfd/input
+poll remains indefinite, with no temperature, brightness or touch filtering.
+The recovery mutex is released before re-entering the normal transition/state
+locks. Shutdown's kick notifies recovery as well as the eventfd.
+
+The original-scenario host checks changed from 18 passing/4 failing to 22 passing.
+The expanded, repository-owned suite passes 38 checks, including persistent
+failure recovery, old unconfirmed cleanup versus a newly armed generation, and
+unload. See tests/worker/README.md for a reproducible Linux command and fixture
+limits. No new HAL image, Binder transport or device test is implied. Synchronous
+touchfeature blocking and a failed final disable during unload remain explicit
+limits; do not claim hardware cleanup was confirmed without an accepted reply.

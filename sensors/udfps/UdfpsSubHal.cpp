@@ -17,6 +17,8 @@
 
 #include <atomic>
 #include <cerrno>
+#include <chrono>
+#include <condition_variable>
 #include <cstdio>
 #include <cstring>
 #include <memory>
@@ -288,6 +290,10 @@ class UdfpsSubHal final : public ISensorsSubHal {
 
  private:
   void kick() {
+    {
+      std::lock_guard lock(mRecoveryMutex);
+      mRecoveryCondition.notify_all();
+    }
     const uint64_t value = 1;
     if (mWake.get() >= 0 && write(mWake.get(), &value, sizeof(value)) < 0 &&
         errno != EAGAIN) {
@@ -311,11 +317,22 @@ class UdfpsSubHal final : public ISensorsSubHal {
       ::rothko::FodInput parser(held);
       while (!mStop) {
         pollfd fds[] = {{mWake.get(), POLLIN, 0}, {input.get(), POLLIN, 0}};
-        const int timeout = mTouchIconDisablePending.load() ? 1000 : -1;
+        const int timeout = mTouchIconDisablePending.load() ? kRetryDelayMs : -1;
         const int rc = poll(fds, 2, timeout);
         if (rc < 0) {
           if (errno == EINTR) continue;
-          return;
+          const int error = errno;
+          dropInputAndDisarm(generation);
+          ALOGE("FOD poll failed: %s; waiting before retry", strerror(error));
+          {
+            // Error recovery only: avoid spinning on persistent poll failures.
+            // Normal input still waits indefinitely on input/eventfd readiness.
+            std::unique_lock recovery(mRecoveryMutex);
+            mRecoveryCondition.wait_for(
+                recovery, std::chrono::milliseconds(kRetryDelayMs),
+                [this] { return mStop.load(); });
+          }
+          break;
         }
         if (rc == 0) {
           retryDisarmIfIdle();
@@ -417,6 +434,7 @@ class UdfpsSubHal final : public ISensorsSubHal {
   }
 
   static constexpr int32_t kHandle = 1;
+  static constexpr int kRetryDelayMs = 1000;
   unique_fd mWake, mInput;
   bool mAvailable = false, mHeldAtActivation = false;
   uint64_t mGeneration = 0;
@@ -427,6 +445,8 @@ class UdfpsSubHal final : public ISensorsSubHal {
   std::atomic_bool mTouchIconDisablePending{false};
   std::mutex mTouchTransitionMutex;
   std::mutex mMutex;
+  std::mutex mRecoveryMutex;
+  std::condition_variable mRecoveryCondition;
   sp<IHalProxyCallback> mCallback;
   std::thread mThread;
 };
