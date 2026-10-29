@@ -108,3 +108,20 @@ repository-owned host suite and scope are documented in sensors/udfps/tests/work
 Failed final disable during unload and touch-service blocking remain explicit
 limits. Passing the poll-recovery suite does not establish full driver/Binder
 concurrency or guaranteed hardware cleanup.
+
+## Controller and shared-observer review
+
+A host fixture of the actual FingerprintProvider UI-event/controller methods and
+this device state machine passed 15 scenarios: absent observer, standard event
+forwarding, same-Binder replacement, current-controller death, late old death and
+old-request detach, failed death-link registration, cancellation and fresh-request
+recovery. Handler, scheduler and Binder are fixtures; this does not validate
+Android process restart or hardware concurrency. No production change was needed.
+
+SystemServer starts the device-specific services before SystemUI. Existing
+biometric state/authentication listeners lack the exact request identity needed
+here; biometric context listeners do not supply the actual overlay/ColorFade and
+physical-power combination. The legacy hardware/xiaomi HAL wrapper is not a
+direct plugin for the selected stock AIDL daemon. Retain the optional, separately
+maintained lifecycle hook pending integration review; this is not a claim of
+upstream acceptance or proof that no alternative architecture is possible.
