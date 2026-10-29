@@ -1,7 +1,9 @@
 # Factory network location and geocoding
 
 This integrates the unmodified OS3.0.307.0.WNNCNXM `com.xiaomi.metoknlp`
-system provider. It is a source candidate, not a claim of successful positioning.
+system provider. Earlier unified images passed basic network positioning and
+geocoding under validated connectivity; see the controlled acceptance sections
+below. Newly audited source changes still require a later unified build.
 It does not install Google services or change the GNSS provider.
 
 ## Why this provider
@@ -113,8 +115,8 @@ module-owned staged product files before building images, so a stale product
 APK cannot shadow the new system_ext provider. Do not clean the build tree.
 The final image must have exactly one package and the permission XML must share
 its partition. Recheck the package source path and native library mappings on
-the next device acceptance; the installed phone still has the previous product
-image until that flash occurs.
+each new image. The earlier product-only status was superseded by the
+system_ext device acceptance below.
 
 ## Runtime acceptance follow-up (2026-10-27)
 
@@ -144,3 +146,11 @@ formal preinstalled build. There is currently no reproduced initialization defec
 under the controlled connected condition, and no extra workaround is justified.
 SDK cache reuse is distinguished from a new backend query; cellular-only, region
 and multi-user coverage remain separate. No rebuild is needed for these findings.
+
+## Source audit (2026-10-29)
+
+The selected APK still matches the recorded factory identity. All four extracted
+JNI members match the original bytes and use only the declared NDK dependencies;
+the nine privileged grants match the stock package set. This is offline input
+validation, not a new device, backend, signature or location-accuracy test. No
+initialization-toggle workaround or always-on diagnostic client was added.
