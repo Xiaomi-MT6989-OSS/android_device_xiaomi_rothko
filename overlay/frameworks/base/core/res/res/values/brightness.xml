@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- OS3.0.307.0 stock calibration, converted where A16 uses logical brightness. -->
 <resources>
+    <!-- The stock AOD route accepts HIGH/LOW commands, not intermediate ramp values.
+         Animate neither these buckets nor repeated DOZE/SUSPEND power round-trips. -->
+    <bool name="config_displayBrightnessBucketsInDoze">true</bool>
     <!-- Factory board-temperature and safety-nits bounds apply to both SDR and HDR.
          Gallery's separate 37/35 C gate is for its explicit OEM boost request. -->
     <string name="config_deviceSpecificBrightnessPolicy" translatable="false">org.lineageos.rothko.brightness.RothkoBrightnessPolicy</string>
