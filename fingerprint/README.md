@@ -102,6 +102,9 @@ hardware stopped.
 The input adapter uses a transition lock and generation check to serialize
 activation/cancellation/delivery; trigger, normal input loss and framework
 reinitialization pair mode16 cleanup without touching mode10. This is static
-ownership review, not a complete native concurrency test. Fatal poll errors,
-failed disable during unload, touch-service blocking and reactivation after
-worker failure still need explicit fault injection before claiming full cleanup.
+ownership review, not a complete native concurrency test. The fatal-poll path
+has since been reproduced and corrected in the device input adapter; its 38-check
+repository-owned host suite and scope are documented in sensors/udfps/tests/worker.
+Failed final disable during unload and touch-service blocking remain explicit
+limits. Passing the poll-recovery suite does not establish full driver/Binder
+concurrency or guaranteed hardware cleanup.
