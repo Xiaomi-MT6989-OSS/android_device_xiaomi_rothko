@@ -36,3 +36,14 @@
 构建接入最终方式：清空 BOARD_HOSTAPD_DRIVER，使上游源码 hostapd 与其非更新 APEX 禁用；vendor 同名 prefer prebuilt 提供 hostapd。V1 XML 与 stock 原字节相同，由 configs/wifi/android.hardware.wifi.hostapd.xml 合并，不通过 PRODUCT_COPY_FILES 或另一个同路径 fragment 安装。提取清单中的原厂 XML 仅 EXTRACT_ONLY 留档。上游 manifest 的试验性 V1 修改已撤销，external/wpa_supplicant_8 最终内容无净变更。运行逻辑均来自设备树/vendor。
 
 此前几轮失败属于构建集成：Android 16 禁止复制 VINTF、同路径重复安装、以及覆盖模块后未选入 manifest；这些均已在最终镜像中逐项排除。提取清单模块名和 manifest 留档标记已同步，避免重新提取复现早期接入方式。
+
+## 2026-10-29 审查状态补充
+
+上文“尚未刷入”等状态属于当时的候选阶段。随后正式镜像已由用户确认
+WPA3-Personal、WPA2/WPA3-Personal及WPA2-Personal均可用iPhone加入并
+实际上网；对应V1服务、SAE及四次握手证据已登记。它不代表STA客户端
+WPA3路由器互通通过，普通重启后热点与全部安全/并发场景仍需独立验收。
+
+本轮离线审查重新确认原厂闭包、记录的私有TLS依赖隔离、stock配置与七项
+热点RRO值，没有修改运行实现或读取手机。当前整理源码尚未重新构建，
+历史发布候选与手机不会因文档/源码更新自动改变。
