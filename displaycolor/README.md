@@ -8,6 +8,16 @@ observations do not establish panel colorimetry, every rapid-switch sequence,
 or service-failure recovery. Later source-review changes require a new build
 and regression; they are not retroactively covered by the installed image.
 
+The process must start its Binder thread pool before constructing Controller or
+publishing services. Setting a maximum does not start the pool; joining only on
+main leaves one receiver. A synchronous DisplayModes setter then occupies that
+receiver while waiting for independent OEM/SF callbacks. Production tracing on
+2026-11-05 showed OEM WCG/intent transactions sent in milliseconds but dispatched
+in the controller only after its nine-second apply timeout. service.cpp now
+explicitly calls ABinderProcess_startThreadPool(). This startup change still
+requires the next unified build and device regression; host IPC fakes do not
+exercise the real Binder scheduler.
+
 Layout:
 
 - `provider/` — the SurfaceFlinger-side `DisplayColorExtension`, linked into

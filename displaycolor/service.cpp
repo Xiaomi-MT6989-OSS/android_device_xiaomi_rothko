@@ -28,6 +28,12 @@ int main() {
     // SurfaceFlinger provider calls setListener/reportState, so a pool is
     // required before either interface is published.
     ABinderProcess_setThreadPoolMaxThreadCount(4);
+    // setDisplayMode waits for OEM callbacks and SF policy acknowledgement.
+    // joinThreadPool below only joins the calling thread: without starting
+    // the pool, a synchronous setter occupies the sole Binder receiver and
+    // prevents those independent callbacks from completing the request.
+    // Start before Controller's constructor can register with the OEM HAL.
+    ABinderProcess_startThreadPool();
 
     auto controller = ndk::SharedRefBase::make<Controller>();
     auto modes = ndk::SharedRefBase::make<DisplayModes>(controller);
