@@ -3,3 +3,13 @@ runtime_resource_overlay {
     name: "RothkoNetworkStackOverlay",
     product_specific: true,
 }
+
+// The stock product table takes precedence over the stock system table.
+// Preserve its bytes and original license; do not merge different APN datasets.
+prebuilt_etc {
+    name: "RothkoApnsConf",
+    src: "apns-conf.xml",
+    filename: "apns-conf.xml",
+    product_specific: true,
+    overrides: ["apns-conf.xml"],
+}

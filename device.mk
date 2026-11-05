@@ -326,3 +326,6 @@ $(call inherit-product, $(LOCAL_PATH)/network-location.mk)
 
 # Domestic network validation and time services, also when no SIM is inserted.
 PRODUCT_PACKAGES += RothkoNetworkStackOverlay
+
+# Use the unchanged OS3.0.307.0 product APN table instead of the common list.
+PRODUCT_PACKAGES += RothkoApnsConf
