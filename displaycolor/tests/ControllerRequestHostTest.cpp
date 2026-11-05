@@ -40,6 +40,8 @@ std::shared_ptr<IDisplayFeature> IDisplayFeature::fromBinder(const ndk::SpAIBind
 struct Oem final:df::IDisplayFeature {
     std::shared_ptr<df::IDisplayFeatureCallback> callback;
     std::atomic<bool> autoEcho{true};
+    std::atomic<bool> autoHlgEcho{true};
+    std::atomic<int> hlgEnables{0};
     ScopedAStatus notifyBrightness(int32_t)override{return ScopedAStatus::ok();}
     ScopedAStatus registerCallback(int32_t,const std::shared_ptr<df::IDisplayFeatureCallback>& c)override{callback=c;return ScopedAStatus::ok();}
     void emit(int32_t event,int32_t value){callback->displayfeatureInfoChanged(event,value,0,0,0);}
@@ -47,7 +49,7 @@ struct Oem final:df::IDisplayFeature {
     ScopedAStatus sendPanelCommand(const std::string&)override{return ScopedAStatus::ok();}
     ScopedAStatus sendPostProcCommand(int32_t,int32_t)override{return ScopedAStatus::ok();}
     ScopedAStatus sendRefreshCommand()override{return ScopedAStatus::ok();}
-    ScopedAStatus setFeature(int32_t,int32_t feature,int32_t,int32_t cookie)override{
+    ScopedAStatus setFeature(int32_t,int32_t feature,int32_t value,int32_t cookie)override{
         hostOemFeature(feature,cookie);
         if(feature==10&&cookie==0){
             ++sceneAttempts;
@@ -63,6 +65,10 @@ struct Oem final:df::IDisplayFeature {
             emit(10000,0);
             const int intents[]={258,256,257};
             emit(30000,intents[feature]);
+        }
+        if(feature==64&&value!=0){
+            ++hlgEnables;
+            if(autoHlgEcho.load())emit(30000,275);
         }
         return ScopedAStatus::ok();
     }
@@ -333,6 +339,112 @@ void callerTimeoutInvalidatesBlockedCurrent(){
     check(!ok&&f.c->currentMode()==-1&&f.c->defaultMode()==3,
           "late OEM return confirmed or saved the abandoned request");
 }
+void hlgCallbackAndSdrRestore(){
+    Fixture f;
+    const int before=f.listener->policyCount();
+    auto h=scene(10,1,2);h.hdrCandidate=3;
+    f.c->reportState(h);
+    until([&]{return f.listener->policyCount()>before&&f.listener->policy().second==275;},
+          "new HLG echo was not forwarded");
+    check(f.c->defaultMode()==3,"HDR changed saved SDR mode");
+    check(!f.c->mReady.load(),"HDR enabled SDR user writes");
+    f.c->reportState(scene(10,1,3));
+    until([&]{return f.c->mReady.load()&&f.listener->policy().second==257;},
+          "leaving HLG did not restore SDR");
+    check(f.c->defaultMode()==3,"HDR persisted as user mode");
+}
+void hlgRejectsOldEcho(){
+    Fixture f;f.backend->autoHlgEcho=false;
+    f.backend->emit(30000,275); // A callback from before this HDR scene.
+    const int before=f.listener->policyCount();
+    auto h=scene(10,1,2);h.hdrCandidate=4;f.c->reportState(h);
+    until([&]{return f.backend->hlgEnables.load()>0;},"HLG batch was not sent");
+    std::this_thread::sleep_for(75ms);
+    check(f.listener->policyCount()==before,"old HLG echo authorized a new scene");
+    f.backend->emit(30000,275);
+    until([&]{return f.listener->policy().second==275;},"fresh HLG echo was ignored");
+}
+void hlgHwcRejectionStopsPolicy(){
+    Fixture f;f.listener->autoAccept=false;
+    const int before=f.listener->policyCount();
+    auto h=scene(10,1,2);h.hdrCandidate=3;f.c->reportState(h);
+    until([&]{return f.listener->policyCount()>before;},"HLG policy not offered");
+    const int clears=f.listener->count();
+    {std::lock_guard l(f.c->mMutex);h=*f.c->mState;h.sequence=f.c->mLastSequence+1;}
+    h.policyRequestId=f.listener->policy().first;h.profileRejected=true;
+    h.profileKnown=false;f.c->reportState(h);
+    until([&]{return f.listener->count()>clears;},"rejected HLG policy not cleared");
+    const int count=f.listener->policyCount();f.backend->emit(30000,275);
+    std::this_thread::sleep_for(75ms);
+    check(f.listener->policyCount()==count,"rejected HLG policy retried in same scene");
+    check(f.c->defaultMode()==3,"rejected HDR changed user default");
+}
+void clientHlgNeverOffersHardwareIntent(){
+    Fixture f;const int before=f.listener->policyCount();
+    auto h=scene(10,1,2);h.hdrCandidate=3;h.forceHdrClientComposition=true;
+    f.c->reportState(h);
+    until([&]{return f.backend->hlgEnables.load()>0;},"HLG batch not reached");
+    std::this_thread::sleep_for(75ms);
+    check(f.listener->policyCount()==before,"client HDR got hardware HLG policy");
+}
+void activeHlgYieldsToClientThenRearms(){
+    Fixture f;
+    auto h=scene(10,1,2);h.hdrCandidate=3;
+    f.c->reportState(h);
+    until([&]{return f.listener->policy().second==275;},"initial HLG policy not offered");
+    const auto initial=f.listener->policy().first;
+    auto nextScene=[&](bool force) {
+        std::lock_guard l(f.c->mMutex);
+        auto next=*f.c->mState;
+        next.sequence=f.c->mLastSequence+1;
+        next.forceHdrClientComposition=force;
+        return next;
+    };
+    until([&]{
+        std::lock_guard l(f.c->mMutex);
+        return f.c->mState->policyRequestId==initial;
+    },"initial HLG policy was not acknowledged");
+    f.backend->autoHlgEcho=false;
+    const int clears=f.listener->count();
+    f.c->reportState(nextScene(true));
+    until([&]{return f.listener->count()>clears;},"active HLG policy survived forced client");
+    const int before=f.listener->policyCount();
+    f.backend->emit(30000,275); // While client composition is still in force.
+    const int enabled=f.backend->hlgEnables.load();
+    f.c->reportState(nextScene(false));
+    until([&]{return f.backend->hlgEnables.load()>enabled;},"HLG reentry was not armed");
+    std::this_thread::sleep_for(75ms);
+    check(f.listener->policyCount()==before,"client-scene echo authorized reentry");
+    f.backend->emit(30000,275);
+    until([&]{return f.listener->policyCount()>before&&f.listener->policy().second==275;},"fresh HLG echo did not reenable policy");
+    check(f.listener->policy().first>initial&&f.c->defaultMode()==3,
+          "HLG reentry reused the first lease or changed the saved SDR mode");
+}
+void hlgRearmsAfterSurfaceFlingerRestart(){
+    Fixture f;
+    auto old=scene(10,1,2);old.hdrCandidate=3;
+    f.c->reportState(old);
+    until([&]{return f.listener->policy().second==275;},"old HLG policy missing");
+    const auto oldId=f.listener->policy().first;
+    f.backend->autoHlgEcho=false;
+    f.backend->emit(30000,275); // Old generation's final echo.
+    const int enables=f.backend->hlgEnables.load();
+    auto replacement=std::make_shared<Listener>();
+    f.c->setListener(11,1,replacement); // Same ordinal, different SF session.
+    auto next=scene(11,1,1);next.hdrCandidate=3;
+    f.c->reportState(next);
+    until([&]{return f.backend->hlgEnables.load()>enables;},"new HLG batch missing");
+    old.sequence+=100;
+    old.policyRequestId=oldId;
+    old.profileKnown=true;
+    old.renderIntent=275;
+    f.c->reportState(old);
+    std::this_thread::sleep_for(75ms);
+    check(replacement->policyCount()==0,"old SF report or echo authorized replacement");
+    f.backend->emit(30000,275);
+    until([&]{return replacement->policy().second==275;},"replacement ignored fresh echo");
+    check(replacement->policy().first>oldId,"replacement reused old HLG policy ID");
+}
 int main(int argc,char** argv){
     std::string which=argc>1?argv[1]:"all";
     int failed=0,ran=0;
@@ -347,7 +459,13 @@ int main(int argc,char** argv){
             {"echo-software-acceptance",echoWaitsForSoftwareAcceptance},
             {"policy-delivery-failure",policyDeliveryFailureCompletesCaller},
             {"gamut-delivery-failure",gamutDeliveryFailureInvalidatesCurrent},
-            {"blocked-caller-timeout",callerTimeoutInvalidatesBlockedCurrent}}){
+            {"blocked-caller-timeout",callerTimeoutInvalidatesBlockedCurrent},
+            {"hlg-callback-sdr-restore",hlgCallbackAndSdrRestore},
+            {"hlg-old-echo",hlgRejectsOldEcho},
+            {"hlg-hwc-rejection",hlgHwcRejectionStopsPolicy},
+            {"hlg-client-excluded",clientHlgNeverOffersHardwareIntent},
+            {"hlg-client-reentry",activeHlgYieldsToClientThenRearms},
+            {"hlg-sf-restart",hlgRearmsAfterSurfaceFlingerRestart}}){
         if(which!="all"&&which!=name)continue;
         ++ran;
         try{test();std::cout<<"PASS "<<name<<'\n';}

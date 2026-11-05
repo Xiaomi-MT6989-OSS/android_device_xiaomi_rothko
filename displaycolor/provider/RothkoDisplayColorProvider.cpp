@@ -33,6 +33,12 @@ using namespace std::chrono_literals;
 constexpr char kService[] =
         "vendor.xiaomi.rothko.display.color.IRothkoDisplayColor/default";
 constexpr size_t kPolicyQueueCapacity = 16;
+// Factory HLG callback / HAL_HDR_D75 tables, not a global color preference.
+constexpr int32_t kHlgIntent = 275;
+bool isHlg(int32_t dataspace) {
+    return dataspace == static_cast<int32_t>(ui::Dataspace::BT2020_HLG) ||
+            dataspace == static_cast<int32_t>(ui::Dataspace::BT2020_ITU_HLG);
+}
 
 struct PolicyMessage {
     int64_t connection = 0;
@@ -142,7 +148,7 @@ public:
         if (before != mPolicySequence.load() || !mPolicyEnabled.load() ||
             mOverflow.load() || mReconnect.load() || mPowerChanged.load()) return {};
         return {.revision = revision, .renderIntent = static_cast<ui::RenderIntent>(intent),
-                .wideColorGamut = wcg};
+                .wideColorGamut = wcg, .legacyHlg = intent == kHlgIntent};
     }
 
     void onContent(PhysicalDisplayId id, const DisplayColorContent& content) override {
@@ -155,8 +161,12 @@ public:
             state.hdrCandidate = static_cast<int32_t>(content.hdrCandidate);
             state.outputCandidate = static_cast<int32_t>(content.outputCandidate);
             state.forceHdrClientComposition = content.forceHdrClientComposition;
-            if ((!content.enabled || !content.managed ||
-                 content.hdrCandidate != ui::Dataspace::UNKNOWN) && mPolicyEnabled.exchange(false)) {
+            const bool matchesPolicy = mPolicyIntent.load() == kHlgIntent
+                    ? isHlg(static_cast<int32_t>(content.hdrCandidate)) &&
+                            !content.forceHdrClientComposition
+                    : content.hdrCandidate == ui::Dataspace::UNKNOWN;
+            if ((!content.enabled || !content.managed || !matchesPolicy) &&
+                    mPolicyEnabled.exchange(false)) {
                 mPowerChanged.store(true, std::memory_order_release);
             }
         });
@@ -401,7 +411,8 @@ private:
         if (!mRemote || message.connection != mLiveConnection.load(std::memory_order_acquire) ||
             !mPrimaryConnected.load(std::memory_order_acquire)) return;
         const bool validIntent = message.intent == -1 ||
-                (message.intent >= 256 && message.intent <= 258);
+                (message.intent >= 256 && message.intent <= 258) ||
+                (message.intent == kHlgIntent && message.wcg);
         if (!validIntent || message.requestId <= 0 || message.requestId < mLastRequest) {
             loseState();
             return;
@@ -420,10 +431,13 @@ private:
         bool clearPolicyAfterUnlock = false;
         {
             std::lock_guard lock(mStateMutex);
-            // A controller snapshot can race power/HDR changes. Never apply a
-            // user SDR override against a newer local non-SDR/unknown state.
+            // Both kinds are tied to the latest local scene. A delayed HLG
+            // callback must not replace SDR/PQ or a client tone-mapped frame.
+            const bool matchesContent = message.intent == kHlgIntent
+                    ? isHlg(mState.hdrCandidate) && !mState.forceHdrClientComposition
+                    : mState.hdrCandidate == static_cast<int32_t>(ui::Dataspace::UNKNOWN);
             if (!mState.contentKnown || !mState.enabled || !mState.managed ||
-                mState.hdrCandidate != static_cast<int32_t>(ui::Dataspace::UNKNOWN) ||
+                !matchesContent ||
                 !mState.powerKnown || !mState.accepted ||
                 mState.lastAttempted != static_cast<int32_t>(DisplayColorPowerMode::On)) {
                 clearPolicyAfterUnlock = true;

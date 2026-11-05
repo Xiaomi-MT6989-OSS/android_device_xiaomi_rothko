@@ -78,6 +78,13 @@ static bool sdrReady(const bridge::DisplayState& s) {
     return s.connected && s.powerKnown && s.accepted && s.lastAttempted == 2 && s.contentKnown &&
            s.enabled && s.managed && s.hdrCandidate == ds(Dataspace::UNKNOWN);
 }
+constexpr int32_t kHlgIntent = 275; // Stock feature 64 -> event 30000 -> HAL_HDR_D75.
+static bool hlgReady(const bridge::DisplayState& s) {
+    return s.connected && s.powerKnown && s.accepted && s.lastAttempted == 2 &&
+            s.contentKnown && s.enabled && s.managed && !s.forceHdrClientComposition &&
+            (s.hdrCandidate == ds(Dataspace::BT2020_HLG) ||
+             s.hdrCandidate == ds(Dataspace::BT2020_ITU_HLG));
+}
 // Generation (sfSession/connection) is verified separately; this compares only
 // the content and power inputs that decide the OEM notification batch.
 static bool sameScene(const bridge::DisplayState& a, const bridge::DisplayState& b) {
@@ -395,6 +402,11 @@ void Controller::run() {
     uint64_t activeGeneration = 0;
     uint64_t intentBoundary = 0;
     bool restore = true, policyActive = false;
+    std::optional<bridge::DisplayState> hlgScene;
+    uint64_t hlgIntentBoundary = 0;
+    int64_t hlgPolicy = 0;
+    bool hlgRejected = false, hlgConfirmed = false;
+    Clock::time_point hlgDeadline{};
     int32_t previousPower = -1;
     Clock::time_point deadline{}, nextLookup{}, nextSceneAttempt{};
 
@@ -420,6 +432,7 @@ void Controller::run() {
         if (!policyActive) return;
         policyActive = false;
         pendingPolicy = 0;
+        hlgPolicy = 0;
         publishPolicy(activeGeneration, activeConnection, mPolicySequence.fetch_add(1), -1, true);
     };
     // `unattributed` is true only when an OEM mode request was actually issued
@@ -485,6 +498,9 @@ void Controller::run() {
             confirmedIntent = 0;
             publishedWcgVersion = 0;
             policyActive = false;
+            hlgScene.reset();
+            hlgPolicy = 0;
+            hlgRejected = hlgConfirmed = false;
             restore = true;
             previousPower = -1;
             sfDeath.reset();
@@ -540,6 +556,7 @@ void Controller::run() {
             setReady(false);
             setCurrent(-1);
             clearPolicyNow();
+            hlgScene.reset();
         }
 
         // 4. One bounded lookup attempt per interval, one registration per
@@ -619,6 +636,7 @@ void Controller::run() {
                 continue;
             }
             clearPolicyNow();
+            hlgScene.reset();
             continue;
         }
 
@@ -649,6 +667,9 @@ void Controller::run() {
             // write to bypass its prerequisite notifications. Reuse the backend
             // recovery cadence rather than retrying on every worker poll.
             if (Clock::now() < nextSceneAttempt) continue;
+            if (hlgPolicy) clearPolicyNow();
+            hlgScene.reset();
+            hlgRejected = hlgConfirmed = false;
             bool ok = true;
             auto feature = [&](int32_t id, int32_t value) {
                 if (ok) ok = backend->setFeature(0, id, value, 0).isOk();
@@ -677,6 +698,13 @@ void Controller::run() {
                     feature(318, 1);
                 }
                 feature(10, hdr ? 1 : 0);
+                // Arm immediately before the HLG command so a callback
+                // delivered during the preceding scene notifications is stale.
+                if (ok && hlgReady(*state)) {
+                    hlgScene = state;
+                    hlgIntentBoundary = observation->intents.load(std::memory_order_acquire);
+                    hlgDeadline = Clock::now() + kApplyTimeout;
+                }
                 feature(64, hlg ? 1 : 0);
                 if (srgb) feature(318, 1);
             }
@@ -710,7 +738,6 @@ void Controller::run() {
         //    Without an SF observation there is no content signal to gate on.
         if (state && !sdrReady(*state)) {
             setReady(false);
-            clearPolicyNow();
             if (pending) {
                 finish(pending, false, kUnavailable);
                 pending = nullptr;
@@ -719,7 +746,53 @@ void Controller::run() {
                 failPending(kUnavailable, true);
                 continue;
             }
+            if (hlgScene && hlgReady(*state) && sameScene(*hlgScene, *state) &&
+                    currentGeneration()) {
+                if (!hlgPolicy) {
+                    // Retire the SDR lease, not the saved SDR user preference.
+                    clearPolicyNow();
+                    const bool echoed =
+                            observation->intents.load(std::memory_order_acquire) >
+                                    hlgIntentBoundary &&
+                            observation->lastIntent.load() == kHlgIntent;
+                    if (!hlgRejected && Clock::now() < hlgDeadline && echoed) {
+                        hlgPolicy = mPolicySequence.fetch_add(1);
+                        policyActive = true;
+                        if (!publishPolicy(activeGeneration, activeConnection, hlgPolicy,
+                                           kHlgIntent, true)) {
+                            clearPolicyNow();
+                            hlgRejected = true;
+                        }
+                    }
+                }
+                if (hlgPolicy && state->policyRequestId == hlgPolicy &&
+                        (state->profileKnown || state->profileRejected)) {
+                    if (state->profileRejected || state->hwcResult != 0 ||
+                            state->renderIntent != kHlgIntent ||
+                            state->dataspace == ds(Dataspace::UNKNOWN)) {
+                        clearPolicyNow();
+                        hlgRejected = true;
+                    } else if (state->synchronizedState && !hlgConfirmed) {
+                        hlgConfirmed = true;
+                        LOG(INFO) << "legacy HLG intent accepted by HWC";
+                    }
+                }
+                if (!hlgConfirmed && Clock::now() >= hlgDeadline && !hlgRejected) {
+                    clearPolicyNow();
+                    hlgRejected = true;
+                    LOG(WARNING) << "legacy HLG policy unavailable: echo/HWC not confirmed";
+                }
+            } else {
+                clearPolicyNow();
+                hlgScene.reset();
+            }
             continue;
+        }
+
+        if (hlgScene) {
+            clearPolicyNow();
+            hlgScene.reset();
+            restore = true;
         }
 
         // 10. Start a user request or re-drive the OEM baseline.
