@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <!-- Match Lineage's MCC 460 list, including devices without a SIM. -->
+    <string-array name="config_ntpServers" translatable="false">
+        <item>ntp://ntp.aliyun.com</item>
+        <item>ntp://ntp.tencent.com</item>
+        <item>ntp://ntp.ntsc.ac.cn</item>
+    </string-array>
+</resources>

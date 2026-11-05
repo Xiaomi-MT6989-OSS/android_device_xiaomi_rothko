@@ -323,3 +323,6 @@ PRODUCT_COPY_FILES += \
 
 # Restore the factory network location provider without MIUI framework dependencies.
 $(call inherit-product, $(LOCAL_PATH)/network-location.mk)
+
+# Domestic network validation and time services, also when no SIM is inserted.
+PRODUCT_PACKAGES += RothkoNetworkStackOverlay
