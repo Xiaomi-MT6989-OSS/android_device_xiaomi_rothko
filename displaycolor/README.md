@@ -101,11 +101,10 @@ hook wait. Production controller authorization, init, service contexts and
 SELinux belong to the controller integration and are not supplied by this
 provider alone.
 
-Source/evidence contracts:
+Source/evidence contract:
 
-- `${PROJECT_ROOT}/research/2026-10-16/four-feature-repair-01/color-service-contract-review.zh-CN.md`
-- `${PROJECT_ROOT}/research/2026-10-15/rea-display/ADAPTATION.zh-CN.md`
 - `frameworks/native/services/surfaceflinger/CompositionEngine/include/compositionengine/DisplayColorExtension.h`
+- The matching public platform changes are pinned in `rothko-lineage-integration/patches/`.
 
 The original V2 protocol has no request token or hardware LUT acknowledgement.
 These private request/revision identifiers must not be described as OEM ACKs.

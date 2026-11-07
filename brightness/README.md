@@ -176,9 +176,11 @@ hardware frame progress, correct PQ ABI, SELinux, or physical HBM.
 From the device directory, run:
 
 ```sh
+SOURCE_ROOT=/path/to/LineageOS-23.2
+TEST_OUTPUT=$(mktemp -d)
 python3 brightness/tests/run_host_tests.py \
-  --source-root ${SOURCE_ROOT} \
-  --output ${PROJECT_ROOT}/out/bringup/stock-brightness-policy-host
+  --source-root "$SOURCE_ROOT" \
+  --output "$TEST_OUTPUT/stock-brightness-policy-host"
 ```
 
 The runner performs small host Java unit checks only, with boundary vectors
