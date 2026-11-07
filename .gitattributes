@@ -1,0 +1,3 @@
+# Preserve exact extraction inputs and patch checksums.
+* -text
+patches/*.mbox -whitespace

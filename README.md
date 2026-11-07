@@ -1,27 +1,26 @@
-# Redmi K70 Ultra / rothko — LineageOS 23.2 bring-up
+# Redmi K70 Ultra / rothko — LineageOS 23.2
 
-This local branch preserves the original `xiaomi-mt6989-devs` rothko history
-(base `059ac72366d7ca095f2341e635145f611349e0de`). The hardware baseline is
-HyperOS OS3.0.307.0.WNNCNXM, including its 6.1.138 Android 14 GKI, DT tables,
-partitioned module sets and selected stock vendor/ODM binaries.
+Unofficial source-only collaboration tree. Android 16 framework with stock
+Android 14/API 34 vendor from OS3.0.307.0.WNNCNXM. This is a development
+candidate, not an official or newly runtime-approved release.
 
-Use the independent `device/xiaomi/rothko-kernel` prebuilt repository and the
-pinned MTK/Xiaomi dependencies recorded in the project manifests. Extract
-blobs with this branch's `extract-files.py` and the corresponding stock dump;
-do not substitute an OS2 vendor repository or revive the old KeyMint fixups.
+The original community history and its signed base
+059ac72366d7ca095f2341e635145f611349e0de are preserved. Later history
+was filtered in a separate copy to remove payloads/host paths while
+retaining authors and committers. Original histories remain unchanged.
 
-Device-local IMS/audio/modem inputs have a separate pinned recipe:
-`extract-device-prebuilts.py` and `DEVICE_PREBUILTS.md`. It complements the
-vendor/ODM extractor. See `EXTRACTION_FIXUPS.md` for reviewed fixups and the
-factory/product-tree input differences; installed-phone extraction is not yet
-validated. Always extract into a new directory before reviewing the results.
+The tree alone cannot build the ROM. Use the pinned device/vendor/kernel
+revisions, public base manifest and independent platform patch series in
+the companion rothko-lineage-integration repository. See its BUILD.md,
+KNOWN_ISSUES.md, VALIDATION.md and HISTORY.md.
 
-The branch is for offline configuration/build validation. First boot,
-recovery, encryption, boot-control/misc behavior, module CRCs, thermal/power
-configuration and hardware operation have not been validated. A successful
-extraction or build does not establish flash readiness.
+778 device-local stock payloads are intentionally absent and Git-ignored.
+Reconstruct them using extract-device-prebuilts.py and its hash manifest;
+see DEVICE_PREBUILTS.md. Vendor/ODM and kernel recipes are separate.
+No original binary or raw firmware should be committed here.
 
-LK, preloader, bootloader and all aliases are protected. No protected raw
-firmware belongs in this tree, vendor or OTA. `create_pl_dev` and generic MTK
-boot-control/UFS BootLU switching must remain excluded. Follow the project's
-`SAFETY.md` and staged implementation plan before any device mutation.
+The stock camera is the selected app; remaining still-photo effects and
+image-quality reports are listed in KNOWN_ISSUES.md. Software A2DP is
+the selected default. Preserve existing per-file notices; see LICENSING.md.
+LK/preloader/bootloader are outside this product and must not be flashed
+by source preparation or added to an OTA.

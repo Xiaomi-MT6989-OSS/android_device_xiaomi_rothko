@@ -1,0 +1,22 @@
+name: Device bug report
+description: Report a reproducible problem against an exact baseline
+body:
+  - type: markdown
+    attributes:
+      value: Do not upload IMEI, serials, NV/calibration, biometric data or unredacted personal logs.
+  - type: textarea
+    id: baseline
+    attributes:
+      label: Build/source revision and firmware
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps, expected result and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Redacted evidence and test scope
