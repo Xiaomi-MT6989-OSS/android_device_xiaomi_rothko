@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# The stock MiuiCamera YuvProcessor thread queries statfs() on its dma-buf
+# backed capture buffer while saving a still image. That pseudo filesystem
+# carries no SELinux label, so the metadata query is denied to priv_app and
+# shows up as:
+#
+#   avc: denied { getattr } for comm="YuvProcessor_Re" name="/"
+#       dev="dmabuf" tcontext=u:object_r:unlabeled:s0 tclass=filesystem
+#
+# Only the metadata read is granted; no directory or data access is added.
+# A permissive-mode comparison showed this denial is not the cause of the
+# missing still-image watermark, so this rule only keeps the log clean and
+# restores the query the stock app expects.
+allow priv_app unlabeled:filesystem getattr;

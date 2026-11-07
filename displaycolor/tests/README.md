@@ -1,5 +1,32 @@
 # Color controller host regression tests
 
+Pinned stock startup-order transformation (provide the unmodified firmware
+executable, not an arbitrary newer version):
+
+```sh
+python3 displaycolor/tests/test_startup_fixup.py /path/to/stock/vendor.xiaomi.hardware.displayfeature_aidl-service
+```
+
+This checks ELF preservation, instruction relocation and modeled control flow;
+it does not execute the ARM code or the real HAL. See
+`../docs/STOCK_STARTUP_ORDER.md` for scope and device validation requirements.
+
+Provider lock contention reproducer:
+
+```sh
+python3 displaycolor/tests/run_provider_lock_tests.py --output /tmp/rothko-provider-handoff
+```
+
+This compiles verbatim production update/enqueuePolicy/loseState method bodies
+inside a minimal host fixture and uses the production StateUpdateQueue header.
+It covers nonblocking state delivery despite worker lock ownership, ordered
+power events, discarded events, full state queue, rejection of another producer
+thread, 100000 concurrent updates across ring wrap, Binder policy queue contention
+and real policy overflow. `--sanitize` adds ASan/UBSan. The former try-lock
+implementation loses state under contention; a blocking-lock replacement also
+fails the nonblocking check. The fixture does not model the complete provider,
+Binder delivery, SF thread affinity, frame latency or a physical display.
+
 Run from the device repository with Python 3.9+ and a C++20-capable g++:
 
 ```sh

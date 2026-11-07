@@ -8,11 +8,12 @@ The XML retains its original copyright and Apache 2.0 notice.
 - XML version: 8 (matches the current framework's internal APN XML version)
 - APN entries: 4749, including 52 with MCC 460
 
-RothkoApnsConf installs at `/product/etc/apns-conf.xml` and overrides the
-common Lineage `apns-conf.xml` install module. It does not modify the shared
-Lineage APN source or merge in a second dataset. TelephonyProvider prefers
-the product table to the system table; a data-side OTA APN file, if present,
-has still higher priority. This follows the current upstream loading logic.
+The table installs unchanged at `/odm/telephony/apns-conf.xml`. Current
+TelephonyProvider checks `/system/etc/apns-conf.xml`, then the OEM path
+`/odm/telephony/apns-conf.xml`, then `/product/etc/apns-conf.xml`, and chooses
+the last file that exists. The ODM table therefore replaces the common Product
+table without introducing a second Product module or changing vendor/lineage.
+A data-side OTA APN file, if present, still has higher priority.
 
 The separate `/vendor/etc/vendor-apns-conf.xml` is already byte-identical to
 stock (SHA-256 `60aeb604d2977913ba2681a3422faa262149cc581e9f62d1ddefc83044abcfe8`)

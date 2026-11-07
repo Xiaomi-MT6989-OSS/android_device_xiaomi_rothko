@@ -24,6 +24,11 @@ PRODUCT_COPY_FILES += \
 # owns the only channel to the stock Xiaomi DisplayFeature service.
 PRODUCT_PACKAGES += vendor.lineage.livedisplay-service.rothko
 
+# SF reapplies these thread profiles after init's service profiles. Use the
+# supported vendor override rather than replacing the upstream init service.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/task_profiles.json:$(TARGET_COPY_OUT_VENDOR)/etc/task_profiles.json
+
 # Android 16 camera NDK client for the stock face HAL (its Android 14 client
 # cannot register a listener with the Android 16 cameraserver).
 PRODUCT_PACKAGES += libcamera2ndk_vendor_rothko
@@ -327,5 +332,13 @@ $(call inherit-product, $(LOCAL_PATH)/network-location.mk)
 # Domestic network validation and time services, also when no SIM is inserted.
 PRODUCT_PACKAGES += RothkoNetworkStackOverlay
 
-# Use the unchanged OS3.0.307.0 product APN table instead of the common list.
-PRODUCT_PACKAGES += RothkoApnsConf
+# TelephonyProvider prefers the ODM OEM table over the common product table.
+# This is the unchanged OS3.0.307.0 product APN data, repackaged as ODM data.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/network/apns-conf.xml:$(TARGET_COPY_OUT_ODM)/telephony/apns-conf.xml
+
+# Stock camera candidate; retain Aperture until full device acceptance.
+$(call inherit-product, $(LOCAL_PATH)/camera/camera.mk)
+
+# Device-local control for the byte-identical stock Dolby DAP stack.
+PRODUCT_PACKAGES += RothkoDolby

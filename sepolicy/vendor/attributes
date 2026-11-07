@@ -7,3 +7,6 @@ hal_attribute(displayfeature_xiaomi)
 hal_attribute(visdisplaysrv)
 
 hal_attribute(batteryantiaging)
+
+# Original Dolby DMS HIDL service.
+hal_attribute(dms_rothko)

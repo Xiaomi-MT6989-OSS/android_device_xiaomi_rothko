@@ -1,0 +1,109 @@
+{
+  "status": "selected for unified build; build and runtime acceptance pending",
+  "libraries": [
+    {
+      "source": "system_ext/lib64/libcamera_ispinterface_jni.xiaomi.so",
+      "sha256": "18f4b408e343b48045240ac890ee8113f57f376a418a37fdd13c68a565c0df07",
+      "needed": [
+        "libandroid_runtime.so",
+        "libbinder.so",
+        "libcamera_client.so",
+        "libcamera_metadata.so",
+        "libcutils.so",
+        "libgui.so",
+        "libhidlbase.so",
+        "libhidltransport.so",
+        "liblog.so",
+        "libmedia.so",
+        "libnativehelper.so",
+        "libui.so",
+        "libutils.so",
+        "libvndksupport.so",
+        "vendor.mediatek.hardware.camera.isphal@1.0.so",
+        "vendor.mediatek.hardware.camera.isphal-V1-ndk.so",
+        "libbinder_ndk.so",
+        "libmtkisp_metadata_sys.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "source": "system_ext/lib64/libcamera_algoup_jni.xiaomi.so",
+      "sha256": "fc44bb45a3be3460866439c38a7b0066a30610fe8b2a39090ae3900e88df27e7",
+      "needed": [
+        "libbinder.so",
+        "libcamera_client.so",
+        "libcamera_metadata.so",
+        "libcutils.so",
+        "libgui.so",
+        "liblog.so",
+        "libutils.so",
+        "libvndksupport.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "source": "system_ext/lib64/libmtkisp_metadata_sys.so",
+      "sha256": "96a45c836ecc0febfdca70ce40cf91d034d22457f94425ba4a56341c971af6f1",
+      "needed": [
+        "libui.so",
+        "liblog.so",
+        "libutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "source": "system_ext/lib64/vendor.mediatek.hardware.camera.isphal-V1-ndk.so",
+      "sha256": "b03ad1b4bca66374f059b08e1fbb0a101385d5ec3c3d4e95c736e2722eda0b3a",
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.common-V2-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ],
+      "original_sha256": "f3b0b0187e90bd1ade2af100fec85ee815e0af32cd8663f85cae28570ad960e1",
+      "original_needed": [
+        "libbinder_ndk.so",
+        "android.hardware.common-V2-ndk.so",
+        "android.hardware.graphics.common-V6-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ],
+      "fixup": "Remove unused graphics common V6 DT_NEEDED only; no code or parcelable changes."
+    },
+    {
+      "source": "system_ext/lib64/vendor.mediatek.hardware.camera.isphal@1.0.so",
+      "sha256": "8d7b493053d4babf5731222be388eb19f6cad571b2bce85b35c05b2438839b7a",
+      "needed": [
+        "android.hardware.graphics.common@1.0.so",
+        "android.hardware.graphics.common@1.1.so",
+        "libhidlbase.so",
+        "liblog.so",
+        "libutils.so",
+        "libcutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    }
+  ],
+  "source_built_dependency": "android.hardware.graphics.common-V6-ndk",
+  "limits": [
+    "system_ext app install domain selected from current LoadedApk source; runtime verification pending",
+    "Namespace and Java runtime closure not proven",
+    "Symbol names alone do not prove C++ ABI compatibility"
+  ]
+}

@@ -8,6 +8,8 @@
     <bool name="doze_suspend_display_state_supported">true</bool>
     <!-- Present the actual AOD window before releasing the native DRAW wake lock. -->
     <bool name="doze_present_before_suspend">true</bool>
+    <!-- The panel supports a real 60 Hz mode; cap the keyguard/doze window there. -->
+    <integer name="config_keyguardMaxRefreshRate">60</integer>
     <!-- Stock MIUIAod subscribes to wake-up sensor type 33171029. Its values
          are OEM AOD states, not the generic NIGHT/LOW/HIGH/SUN buckets. -->
     <string name="doze_brightness_sensor_type" translatable="false">xiaomi.sensor.aod</string>

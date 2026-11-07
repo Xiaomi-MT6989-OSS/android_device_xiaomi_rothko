@@ -16,6 +16,8 @@ from vibrator_instance_fixup import blob_fixup_vibrator_instance
 from allocator_v2_isolation import blob_fixup_allocator_v2_isolation
 from audio_param_fixup import blob_fixup_hp_impedance
 from nfc_manifest_fixup import blob_fixup_nfc_manifest
+from displayfeature_startup_fixup import blob_fixup_displayfeature_startup
+from beauty_region_fixup import blob_fixup_beauty_gl_to_cn
 
 namespace_imports = [
     'device/xiaomi/rothko',
@@ -69,6 +71,12 @@ lib_fixups[(
 # Current ELF evidence does not justify the old KeyMint/composer interface
 # replacements or speculative shim additions.
 blob_fixups: blob_fixups_user_type = {
+    # This stock system-side ISP binding does not import any graphics common
+    # V6 symbols (including weak imports); its parcelables use common V2.
+    # Remove only the unused NEEDED edge, avoiding a V6/V7 mixed AIDL graph
+    # through the A16 system libui. The vendor-side binding is unchanged.
+    'system_ext/lib64/vendor.mediatek.hardware.camera.isphal-V1-ndk.so': blob_fixup()
+        .remove_needed('android.hardware.graphics.common-V6-ndk.so'),
     # The API 34 foundation must coexist with the current source vendor library.
     # This list comes from rothko DT_NEEDED, including the extracted VNDK helper.
     (
@@ -192,7 +200,16 @@ separate_fixups['odm/etc/init/vendor.novatek.hardware.visdisplaysrv-service.rc']
         .regex_replace(r'(?m)^    ##disabled\r?$', '    disabled')
         .regex_replace('chmod 0666 /dev/vis_display_spidev', 'chmod 0660 /dev/vis_display_spidev')
 )
+separate_fixups['vendor/bin/hw/vendor.xiaomi.hardware.displayfeature_aidl-service'] = (
+    blob_fixup().call(blob_fixup_displayfeature_startup, need_tmp_dir=False)
+)
 blob_fixups = separate_fixups
+
+# The camera HAL publishes the beauty scene table from the global file on this
+# device; carry the China scene keys so the stock camera's beauty panel works.
+blob_fixups['odm/etc/camera/beauty/beauty_config_gl.json'] = (
+    blob_fixup().call(blob_fixup_beauty_gl_to_cn, need_tmp_dir=False)
+)
 
 # Source and Soong-processed installed forms must regenerate the same fragment.
 blob_fixups['vendor/etc/vintf/manifest/nfc-service-tms.xml'] = (

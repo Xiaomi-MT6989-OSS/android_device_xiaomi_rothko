@@ -4,3 +4,20 @@
 # Scope the access to camera runtime output instead of generic vendor_data_file.
 allow mtk_hal_camera vendor_camera_runtime_data_file:dir { add_name getattr search write };
 allow mtk_hal_camera vendor_camera_runtime_data_file:file { create getattr open read write };
+
+# Stock CameraDFX::InitTombstoneFile opens/scans its own directory, chmods it
+# after mkdir, and removes expired diagnostic files. No access to /data/tombstones.
+allow mtk_hal_camera vendor_camera_tombstone_data_file:dir { add_name create getattr open read remove_name search setattr write };
+allow mtk_hal_camera vendor_camera_tombstone_data_file:file { create getattr open read unlink write };
+type_transition mtk_hal_camera vendor_camera_runtime_data_file:dir vendor_camera_tombstone_data_file "camtombstone";
+
+# Exact stock service label; the camera provider registers this AIDL extension.
+allow mtk_hal_camera hal_aidlbgservice_service:service_manager { add find };
+allow hal_camera_client hal_aidlbgservice_service:service_manager find;
+allow platform_app hal_aidlbgservice_service:service_manager find;
+
+# Stock MiuiCamera is an original-signed priv-app, not platform_app. The stock
+# policy permits this client to receive BGService image callbacks and buffers.
+allow priv_app hal_aidlbgservice_service:service_manager find;
+binder_call(priv_app, mtk_hal_camera)
+binder_call(mtk_hal_camera, priv_app)

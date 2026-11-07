@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+# Original rothko Dolby DMS; keep runtime state in its own directory.
+type hal_dms_rothko_default, domain;
+type hal_dms_rothko_default_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(hal_dms_rothko_default)
+hal_server_domain(hal_dms_rothko_default, hal_dms_rothko)
+type hal_dms_rothko_hwservice, hwservice_manager_type, protected_hwservice;
+hal_attribute_hwservice(hal_dms_rothko, hal_dms_rothko_hwservice)
+hwbinder_use(hal_dms_rothko_default)
+binder_call(hal_dms_rothko_client, hal_dms_rothko_server)
+binder_call(hal_dms_rothko_server, hal_dms_rothko_client)
+hal_client_domain(audioserver, hal_dms_rothko)
+hal_client_domain(hal_audio_default, hal_dms_rothko)
+hal_client_domain(hal_dms_rothko_default, hal_audio)
+r_dir_file(hal_dms_rothko_default, vendor_configs_file)
+allow hal_dms_rothko_default vendor_data_file:dir search;
+allow hal_dms_rothko_default vendor_dolby_data_file:dir create_dir_perms;
+allow hal_dms_rothko_default vendor_dolby_data_file:file create_file_perms;
+
+# Select the original speaker-specific DAP model.
+get_prop(hal_dms_rothko_default, vendor_mtk_audio_prop)

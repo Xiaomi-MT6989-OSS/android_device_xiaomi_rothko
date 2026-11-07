@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.lineageos.rothko.dolby">
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_ROUTING" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <application android:name=".DolbyApplication" android:label="@string/dolby_title"
+        android:defaultToDeviceProtectedStorage="true" android:directBootAware="true"
+        android:allowBackup="false" android:persistent="true" android:supportsRtl="true"
+        android:theme="@style/Theme.SubSettingsBase.Expressive">
+        <activity android:name=".DolbyActivity" android:exported="true" android:label="@string/dolby_title">
+            <intent-filter><action android:name="com.android.settings.action.IA_SETTINGS" /></intent-filter>
+            <meta-data android:name="com.android.settings.category" android:value="com.android.settings.category.ia.sound" />
+            <meta-data android:name="com.android.settings.group_key" android:value="system_sounds_and_vibrations_category" />
+        </activity>
+        <receiver android:name=".BootReceiver" android:exported="false">
+            <intent-filter><action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" /></intent-filter>
+        </receiver>
+    </application>
+</manifest>

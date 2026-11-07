@@ -8,3 +8,12 @@ debug.hwui.skia_atrace_enabled=false
 persist.dbg.volte_avail_ovr=1
 persist.dbg.vt_avail_ovr=1
 persist.dbg.wfc_avail_ovr=1
+
+# Stock MIUI region. OS3.0.307 ships these in /mi_ext/etc/build.prop
+# (ro.miui.build.region=cn) and system_ext/etc/cust/cn/cust.prop
+# (ro.miui.region=CN, ro.miui.cust_variant=cn). The stock camera reads them to
+# select /odm/etc/camera/beauty/beauty_config_<region>.json; without them the
+# beauty panel lists only "none".
+ro.miui.build.region=cn
+ro.miui.region=CN
+ro.miui.cust_variant=cn

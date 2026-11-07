@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="300dp"
+    android:paddingStart="16dp" android:paddingEnd="16dp"
+    android:paddingTop="8dp" android:paddingBottom="8dp">
+    <org.lineageos.rothko.dolby.EqualizerCurveView android:id="@+id/eq_curve"
+        android:layout_width="match_parent" android:layout_height="match_parent" />
+</FrameLayout>

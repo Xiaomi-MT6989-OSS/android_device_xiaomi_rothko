@@ -14,9 +14,11 @@ main leaves one receiver. A synchronous DisplayModes setter then occupies that
 receiver while waiting for independent OEM/SF callbacks. Production tracing on
 2026-11-05 showed OEM WCG/intent transactions sent in milliseconds but dispatched
 in the controller only after its nine-second apply timeout. service.cpp now
-explicitly calls ABinderProcess_startThreadPool(). This startup change still
-requires the next unified build and device regression; host IPC fakes do not
-exercise the real Binder scheduler.
+explicitly calls ABinderProcess_startThreadPool(). The November 6 image contains
+this change; host IPC fakes do not exercise the real Binder scheduler.
+A separate stock HAL publication/initialization race was then isolated on the
+device. Its extraction fixup is documented in `docs/STOCK_STARTUP_ORDER.md`;
+that newer fixup has not yet been built or deployed.
 
 Layout:
 
@@ -54,7 +56,7 @@ correlates real HWC results; expired or different-connection results report
 
 The provider selects only the first connected internal physical display.
 External and virtual outputs are ignored. Hook methods only access atomic cache
-or try-lock/coalesce fixed-size local state. They never wait, perform Binder or
+or enqueue fixed-size, inline state updates. They never wait, perform Binder or
 disk access, or invoke SF invalidate inline. A dedicated worker performs service
 lookup, Binder registration/death handling, policy callbacks and asynchronous
 invalidate. Private callback messages have a finite 16-slot queue. All cached
@@ -63,7 +65,15 @@ return the upstream/default policy for that frame instead of spinning.
 
 An observed service death disables cached policy. An ordinary controller
 reconnect replays the latest content/power continuously observed by SF, clears
-old profile/request correlation and uses a new connection. Lost local updates,
+old profile/request correlation and uses a new connection. Policy enqueue runs
+on Binder threads and serializes with the consumer's short local queue access;
+ordinary queue-mutex contention no longer drops requests. No Binder call or
+invalidate callback runs under that mutex. SF state hooks use a fixed SPSC queue;
+closures capture observations by value and are applied only by the worker.
+Queue publication uses acquire/release indices with no heap allocation or
+retry loop. Current internal-display hooks run on the SF main thread; an
+unexpected producer thread fails closed rather than corrupting the queue.
+Real loss (a full state queue or violated producer/protocol contract), actual
 queue overflow or invalid protocol mark all content/profile/power unknown and
 clear policy. Content/profile can recover on fresh composition; actual power
 can only recover on a real HWC power observation. No cached power is promoted

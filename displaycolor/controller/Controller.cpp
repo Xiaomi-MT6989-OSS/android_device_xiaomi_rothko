@@ -853,6 +853,23 @@ void Controller::run() {
             // Binder OK only acknowledges dispatch into the asynchronous stock
             // pipeline. Elapsed time must not confirm or persist a user mode.
             if (Clock::now() >= deadline) {
+                // One bounded failure record, outside the OEM callback. A mode
+                // timeout can mean missing intent/gamut or missing SF/HWC
+                // acceptance; do not collapse these into a generic UI error.
+                LOG(WARNING) << "mode confirmation timeout id=" << applying->id
+                             << " expectedIntent=" << pendingIntent
+                             << " intentBoundary=" << intentBoundary
+                             << " intents=" << observation->intents.load()
+                             << " lastIntent=" << observation->lastIntent.load()
+                             << " wcg=" << observation->wcg.load()
+                             << " unresolvedIntent=" << mUnresolvedIntent.load()
+                             << " policy=" << pendingPolicy
+                             << " observedPolicy=" << state->policyRequestId
+                             << " profileKnown=" << state->profileKnown
+                             << " rejected=" << state->profileRejected
+                             << " hwcResult=" << state->hwcResult
+                             << " observedIntent=" << state->renderIntent
+                             << " synchronized=" << state->synchronizedState;
                 // A restore timeout must not poison attribution for the user's
                 // next request of the same mode.
                 failPending(kTimeout, pending != nullptr);

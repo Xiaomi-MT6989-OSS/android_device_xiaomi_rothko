@@ -1,0 +1,13 @@
+<resources>
+    <string name="dolby_title">Dolby Atmos</string>
+    <string name="dolby_enable">Use Dolby Atmos</string>
+    <string name="dolby_profile">Sound profile</string>
+    <string name="dolby_unavailable">Dolby Atmos is unavailable. Tap to retry.</string>
+    <string name="dolby_error">The change could not be confirmed. Please try again.</string>
+    <string-array name="profile_names"><item>Dynamic</item><item>Movie</item><item>Music</item><item>Custom</item></string-array>
+    <string-array name="profile_values"><item>0</item><item>1</item><item>2</item><item>3</item></string-array>
+    <string name="dolby_equalizer">Custom equalizer</string>
+    <string name="dolby_eq_reset">Reset equalizer</string>
+    <string name="dolby_gain">%1$.1f dB</string>
+    <string name="dolby_band_value">%1$d Hz · %2$.1f dB</string>
+</resources>

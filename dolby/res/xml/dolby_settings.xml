@@ -1,0 +1,7 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/dolby_title">
+    <com.android.settingslib.widget.MainSwitchPreference android:key="enabled" android:persistent="false" android:title="@string/dolby_enable" />
+    <ListPreference android:key="profile" android:persistent="false" android:title="@string/dolby_profile"
+        android:entries="@array/profile_names" android:entryValues="@array/profile_values" />
+    <PreferenceCategory android:key="equalizer" android:title="@string/dolby_equalizer" />
+    <Preference android:key="status" android:title="@string/dolby_unavailable" />
+</PreferenceScreen>

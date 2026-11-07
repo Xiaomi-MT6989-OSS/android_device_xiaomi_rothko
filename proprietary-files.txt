@@ -74,6 +74,21 @@ vendor/etc/dolby/dax-default-spatializer.xml
 vendor/etc/dolby/dax-fs19xx-spatializer.xml
 
 
+# Audio Dolby DAP
+vendor/bin/hw/vendor.dolby.hardware.dms@2.0-service
+vendor/etc/init/vendor.dolby.hardware.dms@2.0-service.rc
+vendor/etc/vintf/manifest/vendor.dolby.hardware.dms.xml
+vendor/etc/dolby/dax-default.xml
+vendor/etc/dolby/dax-fs19xx.xml
+vendor/lib64/vendor.dolby.hardware.dms@2.0-impl.so
+vendor/lib64/libdlbdsservice.so
+vendor/lib64/soundfx/libswdap.so
+vendor/lib64/soundfx/libhwdap.so
+vendor/lib64/soundfx/libdlbvol.so
+vendor/lib64/soundfx/libswgamedap.so
+vendor/lib64/soundfx/libswvqe.so
+
+
 # Audio Configs
 vendor/etc/audio_param/ansparam.bin
 vendor/etc/audio_param/AudioParamOptions_mgvi.xml
@@ -615,6 +630,7 @@ odm/lib64/libAncHumanVideoBokehV4.so
 odm/lib64/libanc_dc_base.so
 odm/lib64/libanc_single_bokeh.so
 odm/lib64/libanc_single_rt_bokeh.so
+odm/lib64/libcameraheif.so
 odm/lib64/libcamera_scene.so
 odm/lib64/libclient2slpi.notifier.so
 odm/lib64/libcolortempmode.so
@@ -653,6 +669,8 @@ odm/etc/camera/165_C50D.png
 odm/etc/camera/166_F50.png
 odm/etc/camera/ainr_v1.bin
 odm/etc/camera/ainr_v1_params.json
+odm/etc/camera/cameradfx_config.json
+odm/etc/camera/common_camdfx_config.json
 odm/etc/camera/aivsModel_0478CF20
 odm/etc/camera/aivsModel_168C0E45
 odm/etc/camera/aivsModel_16E8F8F9
@@ -1229,6 +1247,7 @@ odm/lib64/camera/plugins/com.xiaomi.plugin.facebeautypreview.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.filter.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.gainmap.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.gainmapPostProc.so
+odm/lib64/camera/plugins/com.xiaomi.plugin.heifedit.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.hwhalproc.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.hwjpeg.so
 odm/lib64/camera/plugins/com.xiaomi.plugin.hwproc.so
@@ -2412,6 +2431,9 @@ odm/lib64/libmt_mitee.so
 odm/etc/init/vendor.xiaomi.hardware.aidl.mtdservice-miteeservice.rc
 odm/etc/vintf/manifest/manifest_vendor.xiaomi.hardware.aidl.mtdservice.xml
 
+# Neural-networks VINTF
+vendor/etc/vintf/manifest/android.hardware.neuralnetworks-shim-service-mtk.xml
+
 # Neural-networks
 vendor/bin/hw/android.hardware.neuralnetworks-shim-service-mtk
 vendor/etc/init/android.hardware.neuralnetworks-shim-service-mtk.rc
@@ -3124,3 +3146,56 @@ vendor/lib64/android.hardware.wifi.hostapd-V1-ndk.so:vendor/lib64/android.hardwa
 vendor/lib64/vendor.xiaomi.hardware.wifi.hostapd-V1-ndk.so:vendor/lib64/vendor.xiaomi.hardware.wifi.hostapd-V1-ndk-rothko.so;MODULE=vendor.xiaomi.hardware.wifi.hostapd-V1-ndk_vendorcompat;FIX_SONAME;TRYSRCFIRST
 apex/com.android.vndk.v34/lib64/libcrypto.so:vendor/lib64/libcrypto-rothko-wifi.so;MODULE=libcrypto_rothko_wifi;FIX_SONAME;TRYSRCFIRST
 apex/com.android.vndk.v34/lib64/libssl.so:vendor/lib64/libssl-rothko-wifi.so;MODULE=libssl_rothko_wifi;FIX_SONAME;TRYSRCFIRST
+
+# Stock camera application - opt-in port
+product/priv-app/MiuiCamera/MiuiCamera.apk;EXTRACT_ONLY;FILEGROUP=MiuiCamera-rothko-stock
+
+# Stock camera system-side JNI closure - opt-in port
+system_ext/lib64/libcamera_ispinterface_jni.xiaomi.so;EXTRACT_ONLY;FILEGROUP=libcamera_ispinterface_jni.xiaomi_rothko_camera_system-stock
+system_ext/lib64/libcamera_algoup_jni.xiaomi.so;EXTRACT_ONLY;FILEGROUP=libcamera_algoup_jni.xiaomi_rothko_camera_system-stock
+system_ext/lib64/libcamera_mianode_jni.xiaomi.so;EXTRACT_ONLY;FILEGROUP=libcamera_mianode_jni.xiaomi_rothko_camera_system-stock
+system_ext/lib64/libmtkisp_metadata_sys.so;EXTRACT_ONLY;FILEGROUP=libmtkisp_metadata_sys_rothko_camera_system-stock
+system_ext/lib64/vendor.mediatek.hardware.camera.isphal-V1-ndk.so;EXTRACT_ONLY;FILEGROUP=vendor.mediatek.hardware.camera.isphal-V1-ndk_rothko_camera_system-stock
+system_ext/lib64/vendor.mediatek.hardware.camera.isphal@1.0.so;EXTRACT_ONLY;FILEGROUP=vendor.mediatek.hardware.camera.isphal@1.0_rothko_camera_system-stock
+
+# Stock camera local filter tables - opt-in port
+odm/etc/camera/102_SummerDay.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-102_SummerDay-stock
+odm/etc/camera/103_Fantasy.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-103_Fantasy-stock
+odm/etc/camera/104_Meet.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-104_Meet-stock
+odm/etc/camera/105_WindSing.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-105_WindSing-stock
+odm/etc/camera/106_Lost.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-106_Lost-stock
+odm/etc/camera/107_Central.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-107_Central-stock
+odm/etc/camera/108_NorthernEurope.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-108_NorthernEurope-stock
+odm/etc/camera/109_Rome.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-109_Rome-stock
+odm/etc/camera/111_GreenOrange.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-111_GreenOrange-stock
+odm/etc/camera/112_CyberPunk.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-112_CyberPunk-stock
+odm/etc/camera/113_BlackIce.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-113_BlackIce-stock
+odm/etc/camera/121_Bleach.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-121_Bleach-stock
+odm/etc/camera/122_Thriller.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-122_Thriller-stock
+odm/etc/camera/123_TealOrange.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-123_TealOrange-stock
+odm/etc/camera/124_JapaneseStyle.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-124_JapaneseStyle-stock
+odm/etc/camera/125_Latin.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-125_Latin-stock
+odm/etc/camera/126_Fantasy2.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-126_Fantasy2-stock
+odm/etc/camera/127_Creamy.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-127_Creamy-stock
+odm/etc/camera/128_Sepia.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-128_Sepia-stock
+odm/etc/camera/129_LeicaVivid.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-129_LeicaVivid-stock
+odm/etc/camera/130_LeicaNatural.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-130_LeicaNatural-stock
+odm/etc/camera/131_MonochromeTrue.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-131_MonochromeTrue-stock
+odm/etc/camera/132_MonochromeHighContrast.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-132_MonochromeHighContrast-stock
+odm/etc/camera/133_MonochromeBrown.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-133_MonochromeBrown-stock
+odm/etc/camera/134_MonochromeBlue.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-134_MonochromeBlue-stock
+odm/etc/camera/135_Classical.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-135_Classical-stock
+odm/etc/camera/136_Filene.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-136_Filene-stock
+odm/etc/camera/137_GreenNight.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-137_GreenNight-stock
+odm/etc/camera/138_LiteratureAndArt.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-138_LiteratureAndArt-stock
+odm/etc/camera/139_OrangeHoney.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-139_OrangeHoney-stock
+odm/etc/camera/140_Romance.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-140_Romance-stock
+odm/etc/camera/141_FR500.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-141_FR500-stock
+odm/etc/camera/142_FE250.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-142_FE250-stock
+odm/etc/camera/143_RedLantern.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-143_RedLantern-stock
+odm/etc/camera/144_RedHero.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-144_RedHero-stock
+odm/etc/camera/145_TactileBlackWhite.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-145_TactileBlackWhite-stock
+odm/etc/camera/146_TactileGreen.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-146_TactileGreen-stock
+odm/etc/camera/147_Neutral.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-147_Neutral-stock
+odm/etc/camera/167_CC.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-167_CC-stock
+odm/etc/camera/168_NC.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-168_NC-stock

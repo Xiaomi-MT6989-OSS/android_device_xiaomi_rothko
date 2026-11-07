@@ -23,6 +23,7 @@
 
 # Keep camera runtime output separate from generic vendor data.
 /data/vendor/camera(/.*)? u:object_r:vendor_camera_runtime_data_file:s0
+/data/vendor/camera/offlinelog/camtombstone(/.*)? u:object_r:vendor_camera_tombstone_data_file:s0
 
 # Original DisplayFeature service, device and private generated state.
 /vendor/bin/hw/vendor\.xiaomi\.hardware\.displayfeature_aidl-service u:object_r:hal_displayfeature_xiaomi_default_exec:s0
@@ -70,3 +71,6 @@
 /vendor/bin/hw/vendor\.xiaomi\.hardware\.batteryantiaging-service u:object_r:hal_batteryantiaging_default_exec:s0
 /odm/etc/charger/BAA_config_(common|rothko)\.json u:object_r:batteryantiaging_cfg_file:s0
 /data/vendor/batteryantiaging(/.*)? u:object_r:batteryantiaging_cache_file:s0
+
+/vendor/bin/hw/vendor\.dolby\.hardware\.dms@2\.0-service u:object_r:hal_dms_rothko_default_exec:s0
+/data/vendor/dolby(/.*)? u:object_r:vendor_dolby_data_file:s0

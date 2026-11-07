@@ -1,0 +1,12 @@
+<resources>
+    <string name="dolby_title">杜比全景声</string>
+    <string name="dolby_enable">使用杜比全景声</string>
+    <string name="dolby_profile">声音模式</string>
+    <string name="dolby_unavailable">杜比全景声暂不可用，点按重试。</string>
+    <string name="dolby_error">无法确认更改结果，请重试。</string>
+    <string-array name="profile_names"><item>动态</item><item>电影</item><item>音乐</item><item>自定义</item></string-array>
+    <string name="dolby_equalizer">自定义均衡器</string>
+    <string name="dolby_eq_reset">重置均衡器</string>
+    <string name="dolby_gain">%1$.1f dB</string>
+    <string name="dolby_band_value">%1$d Hz · %2$.1f dB</string>
+</resources>

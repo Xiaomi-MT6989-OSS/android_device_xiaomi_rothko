@@ -6,6 +6,7 @@
 #define LOG_TAG "RothkoDisplayColorProvider"
 
 #include <compositionengine/DisplayColorExtension.h>
+#include "StateUpdateQueue.h"
 #include <aidl/vendor/xiaomi/rothko/display/color/BnColorPolicyCallback.h>
 #include <aidl/vendor/xiaomi/rothko/display/color/DisplayState.h>
 #include <aidl/vendor/xiaomi/rothko/display/color/IRothkoDisplayColor.h>
@@ -24,6 +25,7 @@
 #include <mutex>
 #include <thread>
 #include <utility>
+#include <unistd.h>
 
 namespace android::compositionengine {
 namespace {
@@ -87,28 +89,19 @@ public:
 
     void setInvalidateCallback(std::function<void()> invalidate) override {
         // Called during SF initialization, before the provider is used by CE.
-        // A contended install must not park the worker forever: the callback
-        // only triggers a repaint, while the controller link carries policy.
-        {
-            std::unique_lock lock(mStateMutex, std::try_to_lock);
-            if (lock.owns_lock()) {
-                mInvalidate = std::move(invalidate);
-            } else {
-                loseState();
-                ALOGW("Invalidate callback install contended; starting without it");
-            }
-        }
+        // One initialization call, before release-publishing mStarted to the
+        // worker. No other thread accesses mInvalidate before that acquire.
+        mInvalidate = std::move(invalidate);
         mStarted.store(true, std::memory_order_release);
     }
 
     void onDisplayConnected(PhysicalDisplayId id, bool internal) override {
         if (!internal || mPrimaryConnected.load(std::memory_order_acquire)) return;
-        // Preserve the connect identity even if the coalesced snapshot lock is
-        // contended. Overflow recovery can then rebuild identity as unknown
-        // content/power rather than permanently losing the only connect event.
+        // Publish primary identity immediately; state delivery is asynchronous.
         mPrimaryId.store(id.value, std::memory_order_release);
         mPrimaryConnected.store(true, std::memory_order_release);
-        update([&](auto& state) {
+        mHookPower.store(-1);
+        update([this, id](auto& state) {
             // rothko has one internal panel. Never silently select a second
             // internal/external/virtual display while the first is connected.
             if (state.connected && state.physicalId != static_cast<int64_t>(id.value)) return;
@@ -117,8 +110,6 @@ public:
             state.sequence = sequence;
             state.physicalId = static_cast<int64_t>(id.value);
             state.connected = true;
-            mPrimaryId.store(id.value, std::memory_order_release);
-            mPrimaryConnected.store(true, std::memory_order_release);
             mPolicyEnabled.store(false, std::memory_order_release);
         });
     }
@@ -127,7 +118,8 @@ public:
         if (!isPrimary(id)) return;
         mPrimaryConnected.store(false, std::memory_order_release);
         mPolicyEnabled.store(false, std::memory_order_release);
-        update([&](auto& state) {
+        mHookPower.store(-1);
+        update([](auto& state) {
             state.connected = false;
             state.contentKnown = state.profileKnown = state.powerKnown = false;
             state.synchronizedState = false;
@@ -153,7 +145,17 @@ public:
 
     void onContent(PhysicalDisplayId id, const DisplayColorContent& content) override {
         if (!isPrimary(id)) return;
-        update([&](auto& state) {
+        // Disable an inapplicable cached policy in this frame, before deferred
+        // delivery. The worker still owns all snapshot mutations and IPC.
+        const bool matchesPolicy = mPolicyIntent.load() == kHlgIntent
+                ? isHlg(static_cast<int32_t>(content.hdrCandidate)) &&
+                        !content.forceHdrClientComposition
+                : content.hdrCandidate == ui::Dataspace::UNKNOWN;
+        if ((!content.enabled || !content.managed || !matchesPolicy) &&
+                mPolicyEnabled.exchange(false)) {
+            mPowerChanged.store(true, std::memory_order_release);
+        }
+        update([this, content](auto& state) {
             state.contentKnown = true;
             state.enabled = content.enabled;
             state.managed = content.managed;
@@ -174,7 +176,7 @@ public:
 
     void onPolicyRejected(PhysicalDisplayId id, uint64_t revision) override {
         if (!isPrimary(id)) return;
-        update([&](auto& state) {
+        update([this, revision](auto& state) {
             state.profileKnown = false;
             state.profileRejected = true;
             state.policyRevision = static_cast<int64_t>(revision);
@@ -186,7 +188,7 @@ public:
                         ui::Dataspace dataspace, ui::RenderIntent intent,
                         status_t result) override {
         if (!isPrimary(id)) return;
-        update([&](auto& state) {
+        update([this, revision, mode, dataspace, intent, result](auto& state) {
             // A rejected device policy falls back to revision zero. Preserve
             // its rejection until the controller publishes a new request;
             // otherwise coalescing could erase the only failure observation.
@@ -205,7 +207,12 @@ public:
     void onPowerMode(PhysicalDisplayId id, DisplayColorPowerMode requested,
                      DisplayColorPowerMode lastAttempted, bool accepted) override {
         if (!isPrimary(id)) return;
-        update([&](auto& state) {
+        const int32_t power = static_cast<int32_t>(lastAttempted);
+        if (!accepted || mHookPower.exchange(power) != power) {
+            mPolicyEnabled.store(false);
+            mPowerChanged.store(true, std::memory_order_release);
+        }
+        update([this, requested, lastAttempted, accepted](auto& state) {
             if (!accepted || !state.powerKnown ||
                 state.lastAttempted != static_cast<int32_t>(lastAttempted)) {
                 state.contentKnown = state.profileKnown = false;
@@ -253,16 +260,26 @@ private:
 
     template <typename Mutate>
     void update(Mutate mutate) {
-        std::unique_lock lock(mStateMutex, std::try_to_lock);
-        if (!lock.owns_lock()) {
+        // These rothko internal-display hooks run on the SF main thread in the
+        // current platform. Reject unexpected producers rather than corrupting
+        // the SPSC queue if future display offloading changes that contract.
+        static thread_local const pid_t tid = gettid();
+        pid_t unset = 0;
+        mProducerTid.compare_exchange_strong(unset, tid);
+        if (mProducerTid.load() != tid) {
             loseState();
             return;
         }
-        mutate(mState);
-        ++mState.sequence;
-        mState.synchronizedState = mState.connected && mState.contentKnown &&
-                mState.profileKnown && mState.powerKnown && !mState.profileRejected;
-        mDirty.store(true, std::memory_order_release);
+        if (mOverflow.load(std::memory_order_acquire)) return;
+        if (!mStateUpdates.push([this, mutate](auto& state) {
+                mutate(state);
+                ++state.sequence;
+                state.synchronizedState = state.connected && state.contentKnown &&
+                        state.profileKnown && state.powerKnown && !state.profileRejected;
+                mDirty.store(true, std::memory_order_release);
+            })) {
+            loseState();
+        }
     }
 
     int64_t requestForRevision(uint64_t revision) const {
@@ -278,8 +295,10 @@ private:
 
     void enqueuePolicy(const PolicyMessage& message) {
         if (message.connection != mLiveConnection.load(std::memory_order_acquire)) return;
-        std::unique_lock lock(mQueueMutex, std::try_to_lock);
-        if (!lock.owns_lock() || mQueueSize == kPolicyQueueCapacity) {
+        // The consumer releases this mutex before applyPolicy or any IPC.
+        // A busy consumer is not a full queue and must not lose the request.
+        std::lock_guard lock(mQueueMutex);
+        if (mQueueSize == kPolicyQueueCapacity) {
             loseState();
             return;
         }
@@ -481,7 +500,16 @@ private:
         ABinderProcess_startThreadPool();
         auto nextLookup = std::chrono::steady_clock::now();
         for (;;) {
-            if (mOverflow.exchange(false, std::memory_order_acq_rel)) handleOverflow();
+            if (mOverflow.load(std::memory_order_acquire)) {
+                // Producer drops observations until recovery is complete. Old
+                // queued power must not become known after an actual overflow.
+                while (mStateUpdates.pop(nullptr)) {}
+                handleOverflow();
+                mOverflow.store(false, std::memory_order_release);
+            }
+            for (size_t count = 0; count < decltype(mStateUpdates)::maxPending; ++count) {
+                if (!mStateUpdates.pop(&mState)) break;
+            }
             if (mReconnect.exchange(false, std::memory_order_acq_rel)) disconnect();
             if (mPowerChanged.exchange(false, std::memory_order_acq_rel)) clearPolicy();
             const auto now = std::chrono::steady_clock::now();
@@ -516,6 +544,9 @@ private:
     }
 
     const int64_t mSfSession;
+    rothko::color::StateUpdateQueue<transport::DisplayState> mStateUpdates;
+    std::atomic<pid_t> mProducerTid{0};
+    std::atomic<int32_t> mHookPower{-1};
     std::mutex mStateMutex;
     transport::DisplayState mState;
     std::function<void()> mInvalidate;

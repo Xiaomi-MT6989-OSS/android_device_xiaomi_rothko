@@ -1,0 +1,513 @@
+// SPDX-License-Identifier: Apache-2.0
+// Unmodified, originally signed rothko APK with its stock privileged identity.
+vintf_fragment {
+    name: "rothko-camera-bgservice.xml",
+    src: "vendor.xiaomi.hardware.aidlbgservice-service.xml",
+    vendor: true,
+}
+
+android_app_import {
+    name: "MiuiCameraRothko",
+    owner: "xiaomi",
+    apk: ":MiuiCamera-rothko-stock",
+    presigned: true,
+    preprocessed: true,
+    system_ext_specific: true,
+    privileged: true,
+    enforce_uses_libs: false,
+    dex_preopt: {
+        enabled: false,
+    },
+}
+
+prebuilt_etc {
+    name: "rothko-camera-privapp-permissions",
+    src: "privapp-permissions-rothko-camera.xml",
+    filename: "privapp-permissions-rothko-camera.xml",
+    sub_dir: "permissions",
+    system_ext_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-hiddenapi",
+    src: "hiddenapi-rothko-camera.xml",
+    filename: "hiddenapi-rothko-camera.xml",
+    sub_dir: "sysconfig",
+    system_ext_specific: true,
+}
+
+// Original system-side ISP client closure; vendor counterparts stay isolated.
+cc_prebuilt_library_shared {
+    name: "libcamera_ispinterface_jni.xiaomi_rothko_camera_system",
+    owner: "xiaomi",
+    stem: "libcamera_ispinterface_jni.xiaomi",
+    srcs: [":libcamera_ispinterface_jni.xiaomi_rothko_camera_system-stock"],
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libandroid_runtime",
+        "libbinder",
+        "libcamera_client",
+        "libcamera_metadata",
+        "libcutils",
+        "libgui",
+        "libhidlbase",
+        "libhidltransport_rothko",
+        "liblog",
+        "libmedia",
+        "libnativehelper",
+        "libui",
+        "libutils",
+        "libvndksupport",
+        "vendor.mediatek.hardware.camera.isphal@1.0_rothko_camera_system",
+        "vendor.mediatek.hardware.camera.isphal-V1-ndk_rothko_camera_system",
+        "libbinder_ndk",
+        "libmtkisp_metadata_sys_rothko_camera_system",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+}
+
+cc_prebuilt_library_shared {
+    name: "libcamera_algoup_jni.xiaomi_rothko_camera_system",
+    owner: "xiaomi",
+    stem: "libcamera_algoup_jni.xiaomi",
+    srcs: [":libcamera_algoup_jni.xiaomi_rothko_camera_system-stock"],
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder",
+        "libcamera_client",
+        "libcamera_metadata",
+        "libcutils",
+        "libgui",
+        "liblog",
+        "libutils",
+        "libvndksupport",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+}
+
+cc_prebuilt_library_shared {
+    name: "libcamera_mianode_jni.xiaomi_rothko_camera_system",
+    owner: "xiaomi",
+    stem: "libcamera_mianode_jni.xiaomi",
+    srcs: [":libcamera_mianode_jni.xiaomi_rothko_camera_system-stock"],
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder",
+        "libcamera_client",
+        "libcamera_metadata",
+        "libcutils",
+        "libgui",
+        "liblog",
+        "libutils",
+        "libvndksupport",
+        "libxml2",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+}
+
+cc_prebuilt_library_shared {
+    name: "libmtkisp_metadata_sys_rothko_camera_system",
+    owner: "xiaomi",
+    stem: "libmtkisp_metadata_sys",
+    srcs: [":libmtkisp_metadata_sys_rothko_camera_system-stock"],
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libui",
+        "liblog",
+        "libutils",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+}
+
+cc_prebuilt_library_shared {
+    name: "vendor.mediatek.hardware.camera.isphal-V1-ndk_rothko_camera_system",
+    owner: "xiaomi",
+    stem: "vendor.mediatek.hardware.camera.isphal-V1-ndk",
+    srcs: [":vendor.mediatek.hardware.camera.isphal-V1-ndk_rothko_camera_system-stock"],
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "libbinder_ndk",
+        "android.hardware.common-V2-ndk",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+}
+
+cc_prebuilt_library_shared {
+    name: "vendor.mediatek.hardware.camera.isphal@1.0_rothko_camera_system",
+    owner: "xiaomi",
+    stem: "vendor.mediatek.hardware.camera.isphal@1.0",
+    srcs: [":vendor.mediatek.hardware.camera.isphal@1.0_rothko_camera_system-stock"],
+    system_ext_specific: true,
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    shared_libs: [
+        "android.hardware.graphics.common@1.0",
+        "android.hardware.graphics.common@1.1",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "libcutils",
+        "libc++",
+        "libc",
+        "libm",
+        "libdl",
+    ],
+}
+
+// Local filter tables referenced by the original ODM filter plugin.
+prebuilt_etc {
+    name: "rothko-camera-filter-102_SummerDay",
+    src: ":rothko-camera-filter-102_SummerDay-stock",
+    filename: "102_SummerDay.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-103_Fantasy",
+    src: ":rothko-camera-filter-103_Fantasy-stock",
+    filename: "103_Fantasy.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-104_Meet",
+    src: ":rothko-camera-filter-104_Meet-stock",
+    filename: "104_Meet.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-105_WindSing",
+    src: ":rothko-camera-filter-105_WindSing-stock",
+    filename: "105_WindSing.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-106_Lost",
+    src: ":rothko-camera-filter-106_Lost-stock",
+    filename: "106_Lost.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-107_Central",
+    src: ":rothko-camera-filter-107_Central-stock",
+    filename: "107_Central.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-108_NorthernEurope",
+    src: ":rothko-camera-filter-108_NorthernEurope-stock",
+    filename: "108_NorthernEurope.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-109_Rome",
+    src: ":rothko-camera-filter-109_Rome-stock",
+    filename: "109_Rome.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-111_GreenOrange",
+    src: ":rothko-camera-filter-111_GreenOrange-stock",
+    filename: "111_GreenOrange.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-112_CyberPunk",
+    src: ":rothko-camera-filter-112_CyberPunk-stock",
+    filename: "112_CyberPunk.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-113_BlackIce",
+    src: ":rothko-camera-filter-113_BlackIce-stock",
+    filename: "113_BlackIce.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-121_Bleach",
+    src: ":rothko-camera-filter-121_Bleach-stock",
+    filename: "121_Bleach.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-122_Thriller",
+    src: ":rothko-camera-filter-122_Thriller-stock",
+    filename: "122_Thriller.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-123_TealOrange",
+    src: ":rothko-camera-filter-123_TealOrange-stock",
+    filename: "123_TealOrange.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-124_JapaneseStyle",
+    src: ":rothko-camera-filter-124_JapaneseStyle-stock",
+    filename: "124_JapaneseStyle.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-125_Latin",
+    src: ":rothko-camera-filter-125_Latin-stock",
+    filename: "125_Latin.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-126_Fantasy2",
+    src: ":rothko-camera-filter-126_Fantasy2-stock",
+    filename: "126_Fantasy2.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-127_Creamy",
+    src: ":rothko-camera-filter-127_Creamy-stock",
+    filename: "127_Creamy.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-128_Sepia",
+    src: ":rothko-camera-filter-128_Sepia-stock",
+    filename: "128_Sepia.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-129_LeicaVivid",
+    src: ":rothko-camera-filter-129_LeicaVivid-stock",
+    filename: "129_LeicaVivid.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-130_LeicaNatural",
+    src: ":rothko-camera-filter-130_LeicaNatural-stock",
+    filename: "130_LeicaNatural.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-131_MonochromeTrue",
+    src: ":rothko-camera-filter-131_MonochromeTrue-stock",
+    filename: "131_MonochromeTrue.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-132_MonochromeHighContrast",
+    src: ":rothko-camera-filter-132_MonochromeHighContrast-stock",
+    filename: "132_MonochromeHighContrast.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-133_MonochromeBrown",
+    src: ":rothko-camera-filter-133_MonochromeBrown-stock",
+    filename: "133_MonochromeBrown.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-134_MonochromeBlue",
+    src: ":rothko-camera-filter-134_MonochromeBlue-stock",
+    filename: "134_MonochromeBlue.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-135_Classical",
+    src: ":rothko-camera-filter-135_Classical-stock",
+    filename: "135_Classical.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-136_Filene",
+    src: ":rothko-camera-filter-136_Filene-stock",
+    filename: "136_Filene.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-137_GreenNight",
+    src: ":rothko-camera-filter-137_GreenNight-stock",
+    filename: "137_GreenNight.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-138_LiteratureAndArt",
+    src: ":rothko-camera-filter-138_LiteratureAndArt-stock",
+    filename: "138_LiteratureAndArt.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-139_OrangeHoney",
+    src: ":rothko-camera-filter-139_OrangeHoney-stock",
+    filename: "139_OrangeHoney.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-140_Romance",
+    src: ":rothko-camera-filter-140_Romance-stock",
+    filename: "140_Romance.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-141_FR500",
+    src: ":rothko-camera-filter-141_FR500-stock",
+    filename: "141_FR500.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-142_FE250",
+    src: ":rothko-camera-filter-142_FE250-stock",
+    filename: "142_FE250.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-143_RedLantern",
+    src: ":rothko-camera-filter-143_RedLantern-stock",
+    filename: "143_RedLantern.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-144_RedHero",
+    src: ":rothko-camera-filter-144_RedHero-stock",
+    filename: "144_RedHero.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-145_TactileBlackWhite",
+    src: ":rothko-camera-filter-145_TactileBlackWhite-stock",
+    filename: "145_TactileBlackWhite.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-146_TactileGreen",
+    src: ":rothko-camera-filter-146_TactileGreen-stock",
+    filename: "146_TactileGreen.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-147_Neutral",
+    src: ":rothko-camera-filter-147_Neutral-stock",
+    filename: "147_Neutral.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-167_CC",
+    src: ":rothko-camera-filter-167_CC-stock",
+    filename: "167_CC.png",
+    sub_dir: "camera",
+    device_specific: true,
+}
+
+prebuilt_etc {
+    name: "rothko-camera-filter-168_NC",
+    src: ":rothko-camera-filter-168_NC-stock",
+    filename: "168_NC.png",
+    sub_dir: "camera",
+    device_specific: true,
+}

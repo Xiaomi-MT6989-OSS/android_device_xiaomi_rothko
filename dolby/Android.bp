@@ -1,0 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+android_app {
+    name: "RothkoDolby",
+    defaults: ["SettingsLibDefaults"],
+    srcs: ["src/**/*.kt"],
+    platform_apis: true,
+    certificate: "platform",
+    system_ext_specific: true,
+    static_libs: ["androidx.preference_preference"],
+}

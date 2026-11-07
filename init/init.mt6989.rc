@@ -252,6 +252,9 @@ on post-fs-data
     chmod 0771 /data/vendor/camera
 
     mkdir /data/vendor/camera/offlinelog 0777 cameraserver audio
+    # Stock CameraDFX creates/scans this directory when tombstone logging is on.
+    # Provision it before camera startup and label it separately from metadata.
+    mkdir /data/vendor/camera/offlinelog/camtombstone 0770 cameraserver audio
     # Repair labels on camera runtime directories retained from earlier builds.
     restorecon_recursive /data/vendor/camera
     chmod 0666 /dev/camlog
@@ -1112,6 +1115,10 @@ on property:sys.boot_completed=1
     # Activate the zRAM entry in the fstab shipped with this device.
     setprop persist.sys.zram_enabled 1
     swapon_all /vendor/etc/fstab.mt6989
+
+    # The Lineage Power HAL waits for this before starting its hint worker.
+    # Keep this in the installed rc; init.mt6989.power.rc is not packaged.
+    setprop vendor.powerhal.init 1
 
 on property:sys.boot_completed=1
 
