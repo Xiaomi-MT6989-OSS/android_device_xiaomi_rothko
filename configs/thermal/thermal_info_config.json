@@ -33,7 +33,7 @@
             "Multiplier": 0.001
         },
         {
-            "Name": "battery",
+            "Name": "BATTERY",
             "Type": "BATTERY",
             "HotThreshold": [
                 "NAN",
@@ -45,10 +45,11 @@
                 60.0
             ],
             "VrThreshold": "50.0",
-            "Multiplier": 0.001
+            "Multiplier": 0.001,
+            "ZoneName": "battery"
         },
         {
-            "Name": "mtktsAP",
+            "Name": "SKIN",
             "Type": "SKIN",
             "HotThreshold": [
                 "NAN",
@@ -60,10 +61,11 @@
                 90.0
             ],
             "VrThreshold": "50.0",
-            "Multiplier": 0.001
+            "Multiplier": 0.001,
+            "ZoneName": "battery"
         },
         {
-            "Name": "mtktsbtsmdpa",
+            "Name": "POWER_AMPLIFIER",
             "Type": "POWER_AMPLIFIER",
             "HotThreshold": [
                 "NAN",
@@ -75,7 +77,17 @@
                 110.0
             ],
             "VrThreshold": "68.0",
-            "Multiplier": 0.001
+            "Multiplier": 0.001,
+            "VirtualSensor": true,
+            "Combination": [
+                "mtktsbtsnrpa",
+                "mtktsbtsmdpa"
+            ],
+            "Coefficient": [
+                1,
+                1
+            ],
+            "Formula": "MAXIMUM"
         },
         {
             "Name": "NPU",
@@ -91,6 +103,50 @@
                 117.0
             ],
             "VrThreshold": "NAN",
+            "Multiplier": 0.001
+        },
+        {
+            "Name": "TPU",
+            "Type": "TPU",
+            "ZoneName": "soc_max",
+            "HotThreshold": [
+                "NAN",
+                "NAN",
+                "NAN",
+                85.0,
+                90.0,
+                100.0,
+                117.0
+            ],
+            "VrThreshold": "NAN",
+            "Multiplier": 0.001
+        },
+        {
+            "Name": "SOC",
+            "Type": "SOC",
+            "ZoneName": "soc_max",
+            "HotThreshold": [
+                "NAN",
+                "NAN",
+                "NAN",
+                85.0,
+                90.0,
+                100.0,
+                117.0
+            ],
+            "VrThreshold": "NAN",
+            "Multiplier": 0.001
+        },
+        {
+            "Name": "mtktsbtsnrpa",
+            "Type": "UNKNOWN",
+            "Hidden": true,
+            "Multiplier": 0.001
+        },
+        {
+            "Name": "mtktsbtsmdpa",
+            "Type": "UNKNOWN",
+            "Hidden": true,
             "Multiplier": 0.001
         }
     ],
