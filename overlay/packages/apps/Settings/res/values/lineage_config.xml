@@ -3,4 +3,8 @@
     <!-- Rothko exposes native 60/90/120/144 Hz modes in DisplayManager. -->
     <bool name="config_show_min_refresh_rate_switch">true</bool>
     <bool name="config_show_peak_refresh_rate_switch">true</bool>
+    <!-- The stock face HAL owns the camera and renders a 480 by 640 preview. -->
+    <bool name="config_face_enroll_hal_owns_camera">true</bool>
+    <integer name="face_preview_width">480</integer>
+    <integer name="face_preview_height">640</integer>
 </resources>
