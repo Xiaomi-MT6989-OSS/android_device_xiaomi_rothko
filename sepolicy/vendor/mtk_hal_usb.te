@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
+# The batterysecret policy labels port0/data_role separately. The USB HAL
+# still needs to read it to report the connected data role and port mode.
+allow mtk_hal_usb sysfs_rothko_pd_data_role:file r_file_perms;
