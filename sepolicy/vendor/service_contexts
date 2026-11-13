@@ -21,3 +21,4 @@ vendor.xiaomi.rothko.display.brightness.IRothkoDozeBrightness/default u:object_r
 vendor.tms.tmsnfc_aidl.ITmsNfc/default u:object_r:tmsnfc_aidl_service:s0
 
 vendor.xiaomi.hardware.batteryantiaging.IBatteryAntiAging/default u:object_r:hal_batteryantiaging_service:s0
+vendor.mediatek.hardware.camera.isphal.IISPModule/internal/1 u:object_r:mtk_hal_isphal_service:s0

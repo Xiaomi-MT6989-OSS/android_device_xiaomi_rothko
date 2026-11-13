@@ -21,3 +21,10 @@ allow platform_app hal_aidlbgservice_service:service_manager find;
 allow priv_app hal_aidlbgservice_service:service_manager find;
 binder_call(priv_app, mtk_hal_camera)
 binder_call(mtk_hal_camera, priv_app)
+
+# Stock ISP extension has a dedicated label for its platform-app clients.
+# The common policy mapping for this instance is removed by the companion patch.
+add_service(mtk_hal_camera, mtk_hal_isphal_service)
+allow platform_app mtk_hal_isphal_service:service_manager find;
+binder_call(platform_app, mtk_hal_camera)
+binder_call(mtk_hal_camera, platform_app)

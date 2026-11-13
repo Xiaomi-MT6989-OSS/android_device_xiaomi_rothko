@@ -18,3 +18,5 @@ type tmsnfc_aidl_service, service_manager_type;
 type hal_batteryantiaging_service, service_manager_type, hal_service_type, protected_service;
 
 type hal_aidlbgservice_service, service_manager_type, hal_service_type, protected_service;
+
+type mtk_hal_isphal_service, service_manager_type, hal_service_type, protected_service;
