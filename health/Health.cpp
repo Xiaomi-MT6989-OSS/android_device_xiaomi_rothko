@@ -4,7 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <charconv>
+#include <cstdint>
+#include <string>
+
+#include <android-base/file.h>
 #include <android-base/logging.h>
+#include <android-base/strings.h>
 #include <android/binder_interface_utils.h>
 #include <health-impl/Health.h>
 #include <health/utils.h>
@@ -32,12 +38,79 @@ static constexpr std::string_view gChargerArg{"--charger"};
 
 namespace aidl::android::hardware::health {
 
+namespace {
+
+constexpr char kUsbRealType[] = "/sys/class/power_supply/usb/real_type";
+constexpr char kPdSourcePdo[] = "/sys/devices/platform/pd-adapter/Charging_Adapter/pd_adapter/pdo";
+constexpr int kMaxSourcePdos = 7;
+
+bool IsUsbPdConnected() {
+    std::string type;
+    return ::android::base::ReadFileToString(kUsbRealType, &type) &&
+           ::android::base::Trim(type) == "USB_PD";
+}
+
+void UpdateUsbPdChargingCapability(HealthInfo& info) {
+    if (!(info.chargerAcOnline || info.chargerUsbOnline) ||
+        info.batteryStatus != BatteryStatus::CHARGING || !IsUsbPdConnected()) {
+        return;
+    }
+
+    int bestMillivolts = 0;
+    int bestMilliamps = 0;
+    for (int index = 1; index <= kMaxSourcePdos; ++index) {
+        std::string data;
+        if (!::android::base::ReadFileToString(kPdSourcePdo + std::to_string(index), &data)) {
+            break;
+        }
+        data = ::android::base::Trim(data);
+        uint32_t pdo = 0;
+        const auto [end, error] = std::from_chars(data.data(), data.data() + data.size(), pdo, 16);
+        if (error != std::errc() || end != data.data() + data.size() || pdo == 0) {
+            break;
+        }
+
+        // USB PD Source PDOs: fixed supply or programmable power supply (PPS).
+        // Keep voltage and current from the same PDO.
+        const uint32_t type = pdo >> 30;
+        int millivolts;
+        int milliamps;
+        if (type == 0) {
+            millivolts = ((pdo >> 10) & 0x3ff) * 50;
+            milliamps = (pdo & 0x3ff) * 10;
+        } else if (type == 3 && ((pdo >> 28) & 0x3) == 0) {
+            millivolts = ((pdo >> 17) & 0xff) * 100;
+            milliamps = (pdo & 0x7f) * 50;
+        } else {
+            continue;
+        }
+        if (millivolts * milliamps > bestMillivolts * bestMilliamps) {
+            bestMillivolts = millivolts;
+            bestMilliamps = milliamps;
+        }
+    }
+
+    // The primary_chg supply can retain its BC1.2 limits after PD has connected.
+    // Replace those limits only with a better capability from the current source.
+    const int64_t reportedPower = static_cast<int64_t>(info.maxChargingVoltageMicrovolts) *
+                                  info.maxChargingCurrentMicroamps;
+    const int64_t pdPower = static_cast<int64_t>(bestMillivolts) * bestMilliamps * 1000000;
+    if (pdPower > 0 && pdPower > reportedPower && IsUsbPdConnected()) {
+        info.maxChargingVoltageMicrovolts = bestMillivolts * 1000;
+        info.maxChargingCurrentMicroamps = bestMilliamps * 1000;
+    }
+}
+
+}  // namespace
+
 class RothkoHealth : public Health {
   public:
     using Health::Health;
 
   protected:
     void UpdateHealthInfo(HealthInfo* health_info) override {
+        UpdateUsbPdChargingCapability(*health_info);
+
         if (health_info->batteryLevel >= 100 ||
             health_info->batteryStatus == BatteryStatus::FULL) {
             health_info->batteryChargeTimeToFullNowSeconds = 0;

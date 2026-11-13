@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+
+type sysfs_rothko_pd_source_cap, fs_type, sysfs_type;
+
+# Health reports the connected adapter's capabilities. Only PDO attributes
+# are readable, while batterysecret keeps its existing read access.
+allow hal_health_default sysfs_usbpd_device:dir search;
+allow hal_health_default sysfs_rothko_pd_source_cap:file r_file_perms;
+allow batterysecret sysfs_rothko_pd_source_cap:file r_file_perms;
