@@ -3,7 +3,7 @@
 java_library {
     name: "rothko-brightness-policy",
     srcs: ["src/**/*.java"],
-    libs: ["services"],
+    libs: ["services.core"],
     static_libs: ["vendor.xiaomi.rothko.display.brightness-java"],
     installable: true,
     system_ext_specific: true,
