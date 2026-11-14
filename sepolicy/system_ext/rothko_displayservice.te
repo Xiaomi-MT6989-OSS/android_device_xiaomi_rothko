@@ -1,0 +1,9 @@
+type rothko_displayservice, domain, coredomain;
+type rothko_displayservice_exec, exec_type, system_file_type, file_type;
+init_daemon_domain(rothko_displayservice)
+binder_use(rothko_displayservice)
+hwbinder_use(rothko_displayservice)
+add_hwservice(rothko_displayservice, fwk_display_hwservice)
+allow rothko_displayservice surfaceflinger_service:service_manager find;
+binder_call(rothko_displayservice, surfaceflinger)
+binder_call(rothko_displayservice, hal_camera_server)

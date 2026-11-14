@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: Apache-2.0
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+hidl_interface {
+    name: "android.frameworks.displayservice@1.0",
+    root: "android.frameworks.displayservice",
+    srcs: [
+        "types.hal",
+        "IDisplayEventReceiver.hal",
+        "IDisplayService.hal",
+        "IEventCallback.hal",
+    ],
+    interfaces: ["android.hidl.base@1.0"],
+    gen_java: false,
+}

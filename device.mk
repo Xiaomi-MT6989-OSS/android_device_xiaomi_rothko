@@ -344,3 +344,6 @@ $(call inherit-product, $(LOCAL_PATH)/camera/camera.mk)
 
 # Device-local control for the byte-identical stock Dolby DAP stack.
 PRODUCT_PACKAGES += RothkoDolby
+
+# API 34 camera clients retain the retired framework display-event ABI.
+PRODUCT_PACKAGES += android.frameworks.displayservice@1.0-service.rothko

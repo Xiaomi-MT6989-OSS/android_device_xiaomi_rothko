@@ -1,0 +1,5 @@
+service vendor.displayservice-compat /system_ext/bin/hw/android.frameworks.displayservice@1.0-service.rothko
+    class hal
+    user system
+    group graphics
+    interface android.frameworks.displayservice@1.0::IDisplayService default
