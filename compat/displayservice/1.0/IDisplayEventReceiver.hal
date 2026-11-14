@@ -63,4 +63,3 @@ interface IDisplayEventReceiver {
      */
     close() generates (Status status);
 };
-
