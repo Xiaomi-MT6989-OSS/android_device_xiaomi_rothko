@@ -36,7 +36,7 @@ def lib_fixup_stock_compat(lib, partition, *args, **kwargs):
 # Preserve the reviewed build module IDs; runtime aliases are applied below.
 lib_fixups = {
     **default_lib_fixups,
-    ('android.frameworks.sensorservice-V1-ndk', 'libsensorndkbridge',
+    ('libmnl', 'android.frameworks.sensorservice-V1-ndk', 'libsensorndkbridge',
      'android.hardware.bluetooth.audio-V3-ndk',
      'android.hardware.graphics.composer3-V2-ndk',
      'android.hardware.camera.device-V2-ndk',

@@ -2373,7 +2373,7 @@ vendor/lib64/hw/android.hardware.gnss-impl-mediatek.so
 vendor/lib64/hw/gps.default.so
 vendor/lib64/hw/mtkgeofence.default.so
 vendor/lib64/mt6989/libDR.so;SYMLINK=vendor/lib64/libDR.so
-vendor/lib64/mt6989/libmnl.so;SYMLINK=vendor/lib64/libmnl.so
+vendor/lib64/mt6989/libmnl.so;SYMLINK=vendor/lib64/libmnl.so;MODULE=libmnl_vendorcompat
 vendor/lib64/mt6989/libispfeature_mtkcam.v4l2.so;SYMLINK=vendor/lib64/libispfeature_mtkcam.v4l2.so
 vendor/lib64/mt6989/libispinterpreter_mtkcam.so;SYMLINK=vendor/lib64/libispinterpreter_mtkcam.so
 vendor/lib64/mt6989/liblpnr.so;SYMLINK=vendor/lib64/liblpnr.so
