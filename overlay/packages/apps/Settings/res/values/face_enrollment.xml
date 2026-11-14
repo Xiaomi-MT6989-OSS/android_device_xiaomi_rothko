@@ -4,8 +4,8 @@
          The stock face sensor reports CONVENIENCE, not app/payment authentication. -->
     <bool name="config_face_intro_show_less_secure">true</bool>
     <string name="security_settings_face_enroll_introduction_message" product="default">Use your face to unlock your phone. Use your fingerprint, PIN, pattern, or password when an app requires authentication.</string>
-    <string name="security_settings_face_enroll_introduction_message_setup">Set up Face Unlock to unlock your phone.</string>
-    <string name="security_settings_face_enroll_introduction_message_unlock_disabled">Your organization has disabled Face Unlock. Contact your administrator for more information.</string>
+    <string name="security_settings_face_enroll_introduction_message_setup" product="default">Set up Face Unlock to unlock your phone.</string>
+    <string name="security_settings_face_enroll_introduction_message_unlock_disabled" product="default">Your organization has disabled Face Unlock. Contact your administrator for more information.</string>
     <string name="security_settings_face_enroll_introduction_info_title">Keep in mind</string>
     <string name="security_settings_face_enroll_introduction_info_glasses">Enroll in good lighting with your face uncovered. If you usually wear glasses, wear them during setup.</string>
     <string name="security_settings_face_enroll_introduction_info_looking" product="default">Looking at your phone may unlock it unintentionally. Someone who looks like you, or someone holding your phone up to your face, may also unlock it.</string>

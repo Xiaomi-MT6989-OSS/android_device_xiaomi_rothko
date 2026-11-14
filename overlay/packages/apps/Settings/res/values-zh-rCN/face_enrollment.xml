@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="security_settings_face_enroll_introduction_message" product="default">使用面孔解锁手机。应用要求身份验证时，请使用指纹、PIN 码、图案或密码。</string>
-    <string name="security_settings_face_enroll_introduction_message_setup">设置人脸解锁，使用面孔解锁手机。</string>
-    <string name="security_settings_face_enroll_introduction_message_unlock_disabled">您所在的组织已停用人脸解锁。如需了解详情，请联系管理员。</string>
+    <string name="security_settings_face_enroll_introduction_message_setup" product="default">设置人脸解锁，使用面孔解锁手机。</string>
+    <string name="security_settings_face_enroll_introduction_message_unlock_disabled" product="default">您所在的组织已停用人脸解锁。如需了解详情，请联系管理员。</string>
     <string name="security_settings_face_enroll_introduction_info_title">请注意</string>
     <string name="security_settings_face_enroll_introduction_info_glasses">请在光线充足时录入，避免遮挡面部。如果您平时佩戴眼镜，请戴着眼镜完成设置。</string>
     <string name="security_settings_face_enroll_introduction_info_looking" product="default">注视手机可能会意外解锁。与您相貌相似的人，或将手机对准您面部的人，也可能解锁手机。</string>
