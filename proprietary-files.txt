@@ -233,7 +233,7 @@ vendor/lib64/libbt-vendor.so
 
 
 # Bluetooth (A2DP)
-vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so
+vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so;MODULE=vendor.mediatek.hardware.bluetooth.audio-V1-ndk_vendorcompat
 vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1.so
 vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2.so
 
