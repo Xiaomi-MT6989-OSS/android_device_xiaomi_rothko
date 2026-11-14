@@ -1,8 +1,9 @@
 {
-  "scope": "Per-file fixes justified by completed normal ELF checks and verified providers; no new shim source or implementation patch. Runtime and C++ layout remain unverified.",
+  "scope": "Per-file fixes justified by normal ELF checks and verified providers. The device-owned cppcose compatibility wrapper preserves the removed EdDSA overload. Runtime and C++ layout remain unverified.",
   "references": [
     "https://github.com/mt6897-devs/device_xiaomi_duchamp/blob/lineage-23.2/extract-files.py",
-    "https://github.com/degas-developers/android_device_xiaomi_degas/blob/lineage-23.2/extract-files.py"
+    "https://github.com/degas-developers/android_device_xiaomi_degas/blob/lineage-23.2/extract-files.py",
+    "https://android.googlesource.com/platform/system/keymaster/+/ec8df6d5da89e191aa704bcecd11699336224d19"
   ],
   "files": {
     "vendor/lib64/mt6989/lib3a.ae.stat.so": {
@@ -88,6 +89,13 @@
         "liblog.so"
       ],
       "reason": "After isolated SONAME correction, normal checker reports __android_log_print and __android_log_write. Current liblog exports both; stock DT_NEEDED omits liblog. Evidence: libarmnn-soname-only-check.log."
+    },
+    "vendor/lib64/libkeymint_remote_prov_support-rothko.so": {
+      "add_needed": [
+        "libcppcose_rothko_compat.so"
+      ],
+      "reason": "Attempt 22 normal ELF check found the removed three-bytevec constructCoseSign1 overload. Device shim forwards exactly the former empty-protected-map EDDSA call to the current five-argument API, per system/keymaster ec8df6d.",
+      "preserve_section_order": true
     }
   }
 }

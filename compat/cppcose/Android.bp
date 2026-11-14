@@ -1,0 +1,13 @@
+// SPDX-License-Identifier: Apache-2.0
+cc_library_shared {
+    name: "libcppcose_rothko_compat",
+    vendor: true,
+    compile_multilib: "64",
+    srcs: ["cppcose_compat.cpp"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    shared_libs: [
+        "libcppcose_rkp",
+        "libcppbor",
+        "libcrypto",
+    ],
+}

@@ -180,8 +180,14 @@ symbol_compat = json.loads(
 )
 for target, changes in symbol_compat['files'].items():
     fixup = separate_fixups.setdefault(target, blob_fixup())
-    for library in changes.get('add_needed', []):
-        fixup.add_needed(library)
+    if changes.get('preserve_section_order', False):
+        fixup.call(
+            blob_fixup_runtime_alias, None, {},
+            add_needed=changes.get('add_needed', []), need_tmp_dir=False,
+        )
+    else:
+        for library in changes.get('add_needed', []):
+            fixup.add_needed(library)
     for symbol in changes.get('clear_symbol_versions', []):
         fixup.clear_symbol_version(symbol)
 separate_fixups[
