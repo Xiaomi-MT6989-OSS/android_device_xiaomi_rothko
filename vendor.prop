@@ -358,3 +358,7 @@ ro.vendor.miface.started=true
 
 # Stock HWC's Doze capability is disabled unless this original property is set.
 ro.vendor.mtk_aod_support=1
+
+# Software LHDC priorities. Prefer upstream V5, retain OEM V3/V4 compatibility.
+bluetooth.a2dp.source.lhdcv5_priority.config=8003
+bluetooth.a2dp.source.lhdcv3_priority.config=8002

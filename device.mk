@@ -77,6 +77,7 @@ PRODUCT_PACKAGES += \
 
 # Audio
 $(call soong_config_set_bool,audio_bluetooth_hw,use_stock_hal,true)
+$(call soong_config_set_bool,bluetooth_device,include_lhdc_v3,true)
 PRODUCT_PACKAGES += \
     android.hardware.audio.service.mediatek \
     android.hardware.audio.effect@7.0-impl
