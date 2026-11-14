@@ -36,7 +36,7 @@ def lib_fixup_stock_compat(lib, partition, *args, **kwargs):
 # Preserve the reviewed build module IDs; runtime aliases are applied below.
 lib_fixups = {
     **default_lib_fixups,
-    ('libmnl', 'vendor.mediatek.hardware.bluetooth.audio-V1-ndk',
+    ('libmnl', 'libformatter', 'vendor.mediatek.hardware.bluetooth.audio-V1-ndk',
      'vendor.mediatek.hardware.bluetooth.audio@2.1',
      'vendor.mediatek.hardware.bluetooth.audio@2.2',
      'vendor.mediatek.hardware.netdagent@1.0',

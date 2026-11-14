@@ -2411,7 +2411,7 @@ vendor/lib64/libcodec2_soft_mtk_msadpcmdec.so
 vendor/lib64/libcodec2_vpp_qt_plugin.so
 vendor/lib64/libcodec2_vpp_rs_plugin.so
 vendor/lib64/libdolbyottcameracontrol.so
-vendor/lib64/libformatter.so
+vendor/lib64/libformatter.so;MODULE=libformatter_vendorcompat
 vendor/lib64/libmp3dec_mtk.so
 vendor/lib64/vendor.mediatek.hardware.mms@1.0.so
 vendor/lib64/vendor.mediatek.hardware.mms@1.1.so
