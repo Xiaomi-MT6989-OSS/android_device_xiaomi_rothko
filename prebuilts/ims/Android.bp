@@ -319,6 +319,7 @@ cc_prebuilt_library_shared {
         none: true,
     },
     shared_libs: [
+        "libaudioclient_shim",
         "libbinder",
         "libcutils",
         "libgui",
