@@ -21,6 +21,7 @@ $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 PRODUCT_PACKAGE_OVERLAYS := $(LOCAL_PATH)/overlay $(PRODUCT_PACKAGE_OVERLAYS)
 
 PRODUCT_NAME := lineage_rothko
+PRODUCT_SYSTEM_NAME := rothko
 PRODUCT_DEVICE := rothko
 PRODUCT_MANUFACTURER := Xiaomi
 PRODUCT_BRAND := Redmi
@@ -29,6 +30,7 @@ PRODUCT_MODEL := 2407FRK8EC
 PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
+    DeviceProduct=rothko \
     BuildDesc="rothko-user 16 BP2A.250605.031.A3 OS3.0.307.0.WNNCNXM release-keys" \
     BuildFingerprint=Redmi/rothko/rothko:16/BP2A.250605.031.A3/OS3.0.307.0.WNNCNXM:user/release-keys
 
