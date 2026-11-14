@@ -1078,6 +1078,117 @@
         "libm.so",
         "libdl.so"
       ]
+    },
+    {
+      "old_soname": "vendor.mediatek.hardware.netdagent@1.0.so",
+      "new_soname": "vendor.mediatek.hardware.netdagent@1.0-rothko.so",
+      "module": "vendor.mediatek.hardware.netdagent@1.0_vendorcompat",
+      "old_destination": "vendor/lib64/vendor.mediatek.hardware.netdagent@1.0.so",
+      "destination": "vendor/lib64/vendor.mediatek.hardware.netdagent@1.0-rothko.so",
+      "source": "vendor/lib64/vendor.mediatek.hardware.netdagent@1.0.so",
+      "stock_sha256": "c86a66ed2ef414359cdb170d1390017e7f9f522c287eac5706947bd1d15a9c0c",
+      "new_selection": "vendor/lib64/vendor.mediatek.hardware.netdagent@1.0.so:vendor/lib64/vendor.mediatek.hardware.netdagent@1.0-rothko.so;MODULE=vendor.mediatek.hardware.netdagent@1.0_vendorcompat;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "preserve_section_order": true,
+      "needed": [
+        "libhidlbase.so",
+        "liblog.so",
+        "libutils.so",
+        "libcutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so",
+      "new_soname": "vendor.mediatek.hardware.bluetooth.audio-V1-ndk-rothko.so",
+      "module": "vendor.mediatek.hardware.bluetooth.audio-V1-ndk_vendorcompat",
+      "old_destination": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so",
+      "destination": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk-rothko.so",
+      "source": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so",
+      "stock_sha256": "24c3bc1225255c2165e27a059d02b40e025d249f4c00f9f4b2cd0fe6cf4371f7",
+      "new_selection": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so:vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk-rothko.so;MODULE=vendor.mediatek.hardware.bluetooth.audio-V1-ndk_vendorcompat;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "preserve_section_order": true,
+      "needed": [
+        "libbinder_ndk.so",
+        "android.hardware.common-V2-ndk.so",
+        "android.hardware.common.fmq-V1-ndk.so",
+        "android.hardware.audio.common-V1-ndk.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "vendor.mediatek.hardware.bluetooth.audio@2.1.so",
+      "new_soname": "vendor.mediatek.hardware.bluetooth.audio@2.1-rothko.so",
+      "module": "vendor.mediatek.hardware.bluetooth.audio@2.1_vendorcompat",
+      "old_destination": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1.so",
+      "destination": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1-rothko.so",
+      "source": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1.so",
+      "stock_sha256": "fe2ab599e1effb23307f338b800e5d796d9f11251a0fd73c919b37ec77c21c8a",
+      "new_selection": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1.so:vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1-rothko.so;MODULE=vendor.mediatek.hardware.bluetooth.audio@2.1_vendorcompat;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "preserve_section_order": true,
+      "needed": [
+        "android.hardware.audio.common@5.0.so",
+        "android.hidl.safe_union@1.0.so",
+        "libhidlbase.so",
+        "liblog.so",
+        "libutils.so",
+        "libcutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "vendor.mediatek.hardware.bluetooth.audio@2.2.so",
+      "new_soname": "vendor.mediatek.hardware.bluetooth.audio@2.2-rothko.so",
+      "module": "vendor.mediatek.hardware.bluetooth.audio@2.2_vendorcompat",
+      "old_destination": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2.so",
+      "destination": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2-rothko.so",
+      "source": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2.so",
+      "stock_sha256": "3c38ee0a5d9344d0512f5e176302f63ae3512976e4576bf8928b9cdbd84bbccd",
+      "new_selection": "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2.so:vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2-rothko.so;MODULE=vendor.mediatek.hardware.bluetooth.audio@2.2_vendorcompat;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "preserve_section_order": true,
+      "needed": [
+        "android.hardware.audio.common@5.0.so",
+        "vendor.mediatek.hardware.bluetooth.audio@2.1.so",
+        "android.hidl.safe_union@1.0.so",
+        "libhidlbase.so",
+        "liblog.so",
+        "libutils.so",
+        "libcutils.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "old_soname": "libmnl.so",
+      "new_soname": "libmnl-rothko.so",
+      "module": "libmnl_vendorcompat",
+      "old_destination": "vendor/lib64/mt6989/libmnl.so",
+      "destination": "vendor/lib64/mt6989/libmnl-rothko.so",
+      "source": "vendor/lib64/mt6989/libmnl.so",
+      "stock_sha256": "f90159048dce2a7b580e018a2886bc85b01046fbcc435636367341d2cec74576",
+      "new_selection": "vendor/lib64/mt6989/libmnl.so:vendor/lib64/mt6989/libmnl-rothko.so;MODULE=libmnl_vendorcompat;TRYSRCFIRST;SYMLINK=vendor/lib64/libmnl-rothko.so",
+      "from_stock_apex": false,
+      "preserve_section_order": true,
+      "needed": [
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
     }
   ],
   "consumers": {
@@ -1116,10 +1227,14 @@
       "android.hardware.camera.provider-V2-ndk.so": "android.hardware.camera.provider-V2-ndk-rothko.so"
     },
     "vendor/bin/mnld": {
-      "libsensorndkbridge.so": "libsensorndkbridge-rothko.so"
+      "libsensorndkbridge.so": "libsensorndkbridge-rothko.so",
+      "libmnl.so": "libmnl-rothko.so"
     },
     "vendor/lib64/android.hardware.bluetooth.audio-impl-mediatek.so": {
-      "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so"
+      "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so",
+      "vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so": "vendor.mediatek.hardware.bluetooth.audio-V1-ndk-rothko.so",
+      "vendor.mediatek.hardware.bluetooth.audio@2.1.so": "vendor.mediatek.hardware.bluetooth.audio@2.1-rothko.so",
+      "vendor.mediatek.hardware.bluetooth.audio@2.2.so": "vendor.mediatek.hardware.bluetooth.audio@2.2-rothko.so"
     },
     "vendor/lib64/android.hardware.camera.provider-V2-ndk-rothko.so": {
       "android.hardware.camera.device-V2-ndk.so": "android.hardware.camera.device-V2-ndk-rothko.so"
@@ -1137,7 +1252,10 @@
     },
     "vendor/lib64/hw/audio.primary.mediatek.so": {
       "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so",
-      "libtinyxml2.so": "libtinyxml2-rothko.so"
+      "libtinyxml2.so": "libtinyxml2-rothko.so",
+      "vendor.mediatek.hardware.bluetooth.audio@2.1.so": "vendor.mediatek.hardware.bluetooth.audio@2.1-rothko.so",
+      "vendor.mediatek.hardware.bluetooth.audio@2.2.so": "vendor.mediatek.hardware.bluetooth.audio@2.2-rothko.so",
+      "vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so": "vendor.mediatek.hardware.bluetooth.audio-V1-ndk-rothko.so"
     },
     "vendor/lib64/hw/hwcomposer.mtk_common.so": {
       "libgralloctypes.so": "libgralloctypes-v34.so",
@@ -1174,7 +1292,8 @@
       "libaudioclient_aidl_conversion.so": "libaudioclient_aidl_conversion-rothko.so"
     },
     "vendor/lib64/libbluetooth_audio_session_aidl_mtk.so": {
-      "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so"
+      "android.hardware.bluetooth.audio-V3-ndk.so": "android.hardware.bluetooth.audio-V3-ndk-rothko.so",
+      "vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so": "vendor.mediatek.hardware.bluetooth.audio-V1-ndk-rothko.so"
     },
     "vendor/lib64/libcodec2_fsr.so": {
       "libgralloctypes.so": "libgralloctypes-v34.so",
@@ -1455,6 +1574,15 @@
     },
     "vendor/lib64/libssl-rothko-wifi.so": {
       "libcrypto.so": "libcrypto-rothko-wifi.so"
+    },
+    "vendor/lib64/libmtk-ril.so": {
+      "vendor.mediatek.hardware.netdagent@1.0.so": "vendor.mediatek.hardware.netdagent@1.0-rothko.so"
+    },
+    "vendor/lib64/libmtkmipc-ril.so": {
+      "vendor.mediatek.hardware.netdagent@1.0.so": "vendor.mediatek.hardware.netdagent@1.0-rothko.so"
+    },
+    "vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2-rothko.so": {
+      "vendor.mediatek.hardware.bluetooth.audio@2.1.so": "vendor.mediatek.hardware.bluetooth.audio@2.1-rothko.so"
     }
   },
   "limits": [

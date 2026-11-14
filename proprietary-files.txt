@@ -233,9 +233,9 @@ vendor/lib64/libbt-vendor.so
 
 
 # Bluetooth (A2DP)
-vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so;MODULE=vendor.mediatek.hardware.bluetooth.audio-V1-ndk_vendorcompat
-vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1.so;MODULE=vendor.mediatek.hardware.bluetooth.audio@2.1_vendorcompat
-vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2.so;MODULE=vendor.mediatek.hardware.bluetooth.audio@2.2_vendorcompat
+vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so:vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk-rothko.so;MODULE=vendor.mediatek.hardware.bluetooth.audio-V1-ndk_vendorcompat;TRYSRCFIRST
+vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1.so:vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1-rothko.so;MODULE=vendor.mediatek.hardware.bluetooth.audio@2.1_vendorcompat;TRYSRCFIRST
+vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2.so:vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2-rothko.so;MODULE=vendor.mediatek.hardware.bluetooth.audio@2.2_vendorcompat;TRYSRCFIRST
 
 # Camera
 odm/lib64/libarcsoft_bokeh_high_dynamic_range.so
@@ -2373,7 +2373,7 @@ vendor/lib64/hw/android.hardware.gnss-impl-mediatek.so
 vendor/lib64/hw/gps.default.so
 vendor/lib64/hw/mtkgeofence.default.so
 vendor/lib64/mt6989/libDR.so;SYMLINK=vendor/lib64/libDR.so
-vendor/lib64/mt6989/libmnl.so;SYMLINK=vendor/lib64/libmnl.so;MODULE=libmnl_vendorcompat
+vendor/lib64/mt6989/libmnl.so:vendor/lib64/mt6989/libmnl-rothko.so;MODULE=libmnl_vendorcompat;TRYSRCFIRST;SYMLINK=vendor/lib64/libmnl-rothko.so
 vendor/lib64/mt6989/libispfeature_mtkcam.v4l2.so;SYMLINK=vendor/lib64/libispfeature_mtkcam.v4l2.so
 vendor/lib64/mt6989/libispinterpreter_mtkcam.so;SYMLINK=vendor/lib64/libispinterpreter_mtkcam.so
 vendor/lib64/mt6989/liblpnr.so;SYMLINK=vendor/lib64/liblpnr.so
@@ -2656,7 +2656,7 @@ vendor/bin/hw/tetheroffloadservice
 vendor/bin/netdagent
 vendor/etc/init/android.hardware.tetheroffload-V1-service.rc
 vendor/etc/init/netdagent.rc
-vendor/lib64/vendor.mediatek.hardware.netdagent@1.0.so;MODULE=vendor.mediatek.hardware.netdagent@1.0_vendorcompat
+vendor/lib64/vendor.mediatek.hardware.netdagent@1.0.so:vendor/lib64/vendor.mediatek.hardware.netdagent@1.0-rothko.so;MODULE=vendor.mediatek.hardware.netdagent@1.0_vendorcompat;TRYSRCFIRST
 vendor/lib64/libifcutils_mtk.so
 vendor/lib64/libforkexecwrap.so
 

@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+from runtime_alias_fixup import blob_fixup_runtime_alias
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -140,10 +141,31 @@ separate_fixups = {}
 for paths, fixup in blob_fixups.items():
     for target in (paths if isinstance(paths, tuple) else (paths,)):
         separate_fixups[runtime_destinations.get(target, target)] = deepcopy(fixup)
+section_order_aliases = {
+    row['old_soname']: row
+    for row in runtime_compat['libraries']
+    if row.get('preserve_section_order', False)
+}
+section_order_targets = {
+    row['destination']: row['new_soname']
+    for row in section_order_aliases.values()
+}
 for target, replacements in runtime_compat['consumers'].items():
     fixup = separate_fixups.setdefault(target, blob_fixup())
     for old, new in replacements.items():
-        fixup.replace_needed(old, new)
+        if old not in section_order_aliases:
+            fixup.replace_needed(old, new)
+    if any(old in section_order_aliases for old in replacements):
+        section_order_targets.setdefault(target, None)
+for target, soname in section_order_targets.items():
+    replacements = {
+        old: new
+        for old, new in runtime_compat['consumers'].get(target, {}).items()
+        if old in section_order_aliases
+    }
+    separate_fixups.setdefault(target, blob_fixup()).call(
+        blob_fixup_runtime_alias, soname, replacements, need_tmp_dir=False,
+    )
 for target in runtime_compat.get('symbol_namespace_isolation', {}).get('targets', []):
     separate_fixups.setdefault(target, blob_fixup()).call(
         blob_fixup_tinyxml2_isolation, need_tmp_dir=False,
