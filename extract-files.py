@@ -37,6 +37,9 @@ def lib_fixup_stock_compat(lib, partition, *args, **kwargs):
 lib_fixups = {
     **default_lib_fixups,
     ('libmnl', 'vendor.mediatek.hardware.bluetooth.audio-V1-ndk',
+     'vendor.mediatek.hardware.bluetooth.audio@2.1',
+     'vendor.mediatek.hardware.bluetooth.audio@2.2',
+     'vendor.mediatek.hardware.netdagent@1.0',
      'android.frameworks.sensorservice-V1-ndk', 'libsensorndkbridge',
      'android.hardware.bluetooth.audio-V3-ndk',
      'android.hardware.graphics.composer3-V2-ndk',

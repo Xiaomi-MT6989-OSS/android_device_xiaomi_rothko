@@ -234,8 +234,8 @@ vendor/lib64/libbt-vendor.so
 
 # Bluetooth (A2DP)
 vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so;MODULE=vendor.mediatek.hardware.bluetooth.audio-V1-ndk_vendorcompat
-vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1.so
-vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2.so
+vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1.so;MODULE=vendor.mediatek.hardware.bluetooth.audio@2.1_vendorcompat
+vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2.so;MODULE=vendor.mediatek.hardware.bluetooth.audio@2.2_vendorcompat
 
 # Camera
 odm/lib64/libarcsoft_bokeh_high_dynamic_range.so
@@ -2656,7 +2656,7 @@ vendor/bin/hw/tetheroffloadservice
 vendor/bin/netdagent
 vendor/etc/init/android.hardware.tetheroffload-V1-service.rc
 vendor/etc/init/netdagent.rc
-vendor/lib64/vendor.mediatek.hardware.netdagent@1.0.so
+vendor/lib64/vendor.mediatek.hardware.netdagent@1.0.so;MODULE=vendor.mediatek.hardware.netdagent@1.0_vendorcompat
 vendor/lib64/libifcutils_mtk.so
 vendor/lib64/libforkexecwrap.so
 
