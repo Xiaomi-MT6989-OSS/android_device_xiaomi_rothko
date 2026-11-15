@@ -3,3 +3,11 @@ runtime_resource_overlay {
     name: "RothkoNetworkStackOverlay",
     product_specific: true,
 }
+
+prebuilt_etc {
+    name: "RothkoApnsConf",
+    src: "apns-conf.xml",
+    filename: "apns-conf.xml",
+    product_specific: true,
+    overrides: ["apns-conf.xml"],
+}

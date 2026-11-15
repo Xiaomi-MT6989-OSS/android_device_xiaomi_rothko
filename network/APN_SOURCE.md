@@ -8,12 +8,19 @@ The XML retains its original copyright and Apache 2.0 notice.
 - XML version: 8 (matches the current framework's internal APN XML version)
 - APN entries: 4749, including 52 with MCC 460
 
-The table installs unchanged at `/odm/telephony/apns-conf.xml`. Current
-TelephonyProvider checks `/system/etc/apns-conf.xml`, then the OEM path
-`/odm/telephony/apns-conf.xml`, then `/product/etc/apns-conf.xml`, and chooses
-the last file that exists. The ODM table therefore replaces the common Product
-table without introducing a second Product module or changing vendor/lineage.
-A data-side OTA APN file, if present, still has higher priority.
+`RothkoApnsConf` installs the table at `/product/etc/apns-conf.xml` and uses the
+standard module `overrides` property to replace the common `apns-conf.xml`
+installation. The stock table bytes and XML version are preserved.
+
+The former `/odm/telephony/apns-conf.xml` installation did not feed the current
+TelephonyProvider. `getApnConfFile()` checks the system file, the OEM directory
+(`/oem` unless `OEM_ROOT` overrides it), Product, and the data-side OTA file in
+that order. Each existing later file takes precedence. Product therefore also
+wins over an OEM file. The OTA APN file retains the highest priority.
+
+The stock table includes Telecom data, MMS and IMS APNs for 46003/46011, and
+Broadnet data and IMS APNs for 46013/46015. The 46015 data APN is `cbnet`; the
+stock 46013 profile uses `cmnet`. These are separate SIM identities.
 
 The separate `/vendor/etc/vendor-apns-conf.xml` is already byte-identical to
 stock (SHA-256 `60aeb604d2977913ba2681a3422faa262149cc581e9f62d1ddefc83044abcfe8`)

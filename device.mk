@@ -335,12 +335,10 @@ PRODUCT_COPY_FILES += \
 $(call inherit-product, $(LOCAL_PATH)/network-location.mk)
 
 # Domestic network validation and time services, also when no SIM is inserted.
-PRODUCT_PACKAGES += RothkoNetworkStackOverlay
-
-# TelephonyProvider prefers the ODM OEM table over the common product table.
-# This is the unchanged OS3.0.307.0 product APN data, repackaged as ODM data.
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/network/apns-conf.xml:$(TARGET_COPY_OUT_ODM)/telephony/apns-conf.xml
+# TelephonyProvider reads the stock table from Product. Override the common APN module.
+PRODUCT_PACKAGES += \
+    RothkoApnsConf \
+    RothkoNetworkStackOverlay
 
 # Stock camera candidate; retain Aperture until full device acceptance.
 $(call inherit-product, $(LOCAL_PATH)/camera/camera.mk)
