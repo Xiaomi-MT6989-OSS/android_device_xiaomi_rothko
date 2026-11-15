@@ -205,6 +205,8 @@ ro.vendor.mtk_log_hide_gps=1
 
 # IMS
 persist.vendor.ims_support=1
+# Stock OS3.0.307 enables IMS on both SIMs. The OEM service defaults to one.
+persist.vendor.mims_support=2
 persist.vendor.mtk.volte.enable=1
 persist.vendor.mtk_ct_volte_support=3
 persist.vendor.mtk_dynamic_ims_switch=1
