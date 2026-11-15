@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="security_settings_face_enroll_education_message">请在光线充足处，将手机举至与眼睛齐平，让面部位于圆圈中央并保持无遮挡。请按屏幕提示调整手机位置。</string>
+    <string name="security_settings_face_enroll_education_message_accessibility" product="default">请保持手机稳定，让面部位于圆圈中央。您可以请他人协助调整手机位置，并按屏幕提示完成设置。</string>
+    <string name="security_settings_face_enroll_introduction_accessibility_expanded" product="default">您可以请他人协助调整手机位置，并按屏幕提示完成设置。</string>
     <string name="security_settings_face_enroll_introduction_message" product="default">使用面孔解锁手机。应用要求身份验证时，请使用指纹、PIN 码、图案或密码。</string>
     <string name="security_settings_face_enroll_introduction_message_setup" product="default">设置人脸解锁，使用面孔解锁手机。</string>
     <string name="security_settings_face_enroll_introduction_message_unlock_disabled" product="default">您所在的组织已停用人脸解锁。如需了解详情，请联系管理员。</string>

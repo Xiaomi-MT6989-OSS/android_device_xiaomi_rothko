@@ -3,6 +3,9 @@
     <!-- AOSP leaves the device-specific face introduction text empty.
          The stock face sensor reports CONVENIENCE, not app/payment authentication. -->
     <bool name="config_face_intro_show_less_secure">true</bool>
+    <string name="security_settings_face_enroll_education_message">In good lighting, hold your phone at eye level and center your uncovered face in the circle. Follow the on-screen guidance to adjust the phone position.</string>
+    <string name="security_settings_face_enroll_education_message_accessibility" product="default">Keep the phone steady and your face centered in the circle. Someone can help you position the phone and follow the on-screen guidance.</string>
+    <string name="security_settings_face_enroll_introduction_accessibility_expanded" product="default">You can ask someone to help position the phone while you follow the on-screen guidance.</string>
     <string name="security_settings_face_enroll_introduction_message" product="default">Use your face to unlock your phone. Use your fingerprint, PIN, pattern, or password when an app requires authentication.</string>
     <string name="security_settings_face_enroll_introduction_message_setup" product="default">Set up Face Unlock to unlock your phone.</string>
     <string name="security_settings_face_enroll_introduction_message_unlock_disabled" product="default">Your organization has disabled Face Unlock. Contact your administrator for more information.</string>
