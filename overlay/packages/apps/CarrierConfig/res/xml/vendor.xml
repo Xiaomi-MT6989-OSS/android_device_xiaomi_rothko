@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<carrier_config_list>
+    <!-- Stock MIUI translates these generic SIM SPNs to the mainland operator names.
+         Match the SPN as well as carrier ID to preserve branded/MVNO names. -->
+    <carrier_config cid="1435" spn="CMCC|China Mobile|中国移动">
+        <boolean name="carrier_name_override_bool" value="true" />
+        <string name="carrier_name_string">中国移动</string>
+    </carrier_config>
+    <carrier_config cid="1436" spn="China Unicom|中国联通">
+        <boolean name="carrier_name_override_bool" value="true" />
+        <string name="carrier_name_string">中国联通</string>
+    </carrier_config>
+</carrier_config_list>
