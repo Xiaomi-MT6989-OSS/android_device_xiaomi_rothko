@@ -8,6 +8,11 @@
  services add their paired fragments; unrelated HyperOS services are omitted.
 -->
 <manifest version="8.0" type="device" target-level="8">
+    <hal format="aidl">
+        <name>android.hardware.bluetooth.audio</name>
+        <version>3</version>
+        <fqname>IBluetoothAudioProviderFactory/default</fqname>
+    </hal>
     <hal format="hidl">
         <name>android.hardware.audio</name>
         <transport>hwbinder</transport>

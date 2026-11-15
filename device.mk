@@ -95,8 +95,9 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/init/init.rothko.audio.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.rothko.audio.rc
 
 # Bluetooth
+# The stock audio HAL reads the MTK session library. The generic provider
+# registers the same Binder instance later and publishes to a different library.
 PRODUCT_PACKAGES += \
-    android.hardware.bluetooth.audio-impl \
     android.hardware.bluetooth-service.mediatek
 
 # NFC: the stock TMS AIDL HAL implements the frozen android.hardware.nfc V1
