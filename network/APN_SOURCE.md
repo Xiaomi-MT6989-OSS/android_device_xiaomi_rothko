@@ -8,9 +8,13 @@ The XML retains its original copyright and Apache 2.0 notice.
 - XML version: 8 (matches the current framework's internal APN XML version)
 - APN entries: 4749, including 52 with MCC 460
 
-`RothkoApnsConf` installs the table at `/product/etc/apns-conf.xml` and uses the
-standard module `overrides` property to replace the common `apns-conf.xml`
-installation. The stock table bytes and XML version are preserved.
+`RothkoApnsConf` installs the table at `/product/etc/apns-conf.xml`. The device
+sets `lineage_apn.use_device_apns=true` to disable the common APN prebuilt before
+Soong generates its install rules. This requires the companion `vendor/apn`
+patch on base `2842825e44b5ad6e247467bd7a16c1d8bf80407f`. The module's standard
+`overrides` property also removes the inherited common name from Make's package
+selection. That property alone cannot prevent duplicate Soong install recipes.
+The stock table bytes and XML version are preserved.
 
 The former `/odm/telephony/apns-conf.xml` installation did not feed the current
 TelephonyProvider. `getApnConfFile()` checks the system file, the OEM directory

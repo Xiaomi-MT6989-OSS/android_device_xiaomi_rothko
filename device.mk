@@ -336,6 +336,7 @@ $(call inherit-product, $(LOCAL_PATH)/network-location.mk)
 
 # Domestic network validation and time services, also when no SIM is inserted.
 # TelephonyProvider reads the stock table from Product. Override the common APN module.
+$(call soong_config_set_bool,lineage_apn,use_device_apns,true)
 PRODUCT_PACKAGES += \
     RothkoApnsConf \
     RothkoNetworkStackOverlay
