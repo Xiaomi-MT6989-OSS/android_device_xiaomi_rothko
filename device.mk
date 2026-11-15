@@ -335,11 +335,9 @@ PRODUCT_COPY_FILES += \
 $(call inherit-product, $(LOCAL_PATH)/network-location.mk)
 
 # Domestic network validation and time services, also when no SIM is inserted.
-# TelephonyProvider reads the stock table from Product. Override the common APN module.
-$(call soong_config_set_bool,lineage_apn,use_device_apns,true)
-PRODUCT_PACKAGES += \
-    RothkoApnsConf \
-    RothkoNetworkStackOverlay
+# Feed the stock table into the common Product APN installation module.
+$(call soong_config_set,lineage_apn,custom_apns,//device/xiaomi/rothko:RothkoApnsConf)
+PRODUCT_PACKAGES += RothkoNetworkStackOverlay
 
 # Stock camera candidate; retain Aperture until full device acceptance.
 $(call inherit-product, $(LOCAL_PATH)/camera/camera.mk)

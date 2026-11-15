@@ -8,12 +8,17 @@ The XML retains its original copyright and Apache 2.0 notice.
 - XML version: 8 (matches the current framework's internal APN XML version)
 - APN entries: 4749, including 52 with MCC 460
 
-`RothkoApnsConf` installs the table at `/product/etc/apns-conf.xml`. The device
-sets `lineage_apn.use_device_apns=true` to disable the common APN prebuilt before
-Soong generates its install rules. This requires the companion `vendor/apn`
-patch on base `2842825e44b5ad6e247467bd7a16c1d8bf80407f`. The module's standard
-`overrides` property also removes the inherited common name from Make's package
-selection. That property alone cannot prevent duplicate Soong install recipes.
+`RothkoApnsConf` checks the XML with xmllint and copies it byte-for-byte as a
+generated source. The device selects that source through
+`lineage_apn.custom_apns=//device/xiaomi/rothko:RothkoApnsConf`. The existing common
+`apns-conf.xml` module is the sole installer at `/product/etc/apns-conf.xml`.
+This requires the companion `vendor/apn` source-selection patch on base
+`2842825e44b5ad6e247467bd7a16c1d8bf80407f`. Devices using the default source keep
+the existing merge generator and its mandatory schema checks.
+
+The earlier separate device installation with `overrides` produced duplicate
+Soong install recipes. Disabling the inherited common module then failed Make's
+package-existence check. Selecting one installer's input satisfies both stages.
 The stock table bytes and XML version are preserved.
 
 The former `/odm/telephony/apns-conf.xml` installation did not feed the current

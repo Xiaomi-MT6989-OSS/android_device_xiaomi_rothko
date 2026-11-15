@@ -4,10 +4,10 @@ runtime_resource_overlay {
     product_specific: true,
 }
 
-prebuilt_etc {
+genrule {
     name: "RothkoApnsConf",
-    src: "apns-conf.xml",
-    filename: "apns-conf.xml",
-    product_specific: true,
-    overrides: ["apns-conf.xml"],
+    srcs: ["apns-conf.xml"],
+    out: ["apns-conf.xml"],
+    tools: ["xmllint"],
+    cmd: "$(location xmllint) --nonet --noout $(in) && cp $(in) $(out)",
 }
