@@ -26,4 +26,26 @@
         <boolean name="carrier_name_override_bool" value="true" />
         <string name="carrier_name_string">中国联通</string>
     </carrier_config>
+    <carrier_config cid="2237" spn="China Telecom|CT|CHN-CT|中国电信">
+        <boolean name="carrier_name_override_bool" value="true" />
+        <string name="carrier_name_string">中国电信</string>
+    </carrier_config>
+    <!-- These stock Telecom PLMNs have no entry in the current carrier ID database. -->
+    <carrier_config mcc="460" mnc="05" spn="China Telecom|CT|CHN-CT|中国电信">
+        <boolean name="carrier_name_override_bool" value="true" />
+        <string name="carrier_name_string">中国电信</string>
+    </carrier_config>
+    <carrier_config mcc="460" mnc="59" spn="China Telecom|CT|CHN-CT|中国电信">
+        <boolean name="carrier_name_override_bool" value="true" />
+        <string name="carrier_name_string">中国电信</string>
+    </carrier_config>
+    <!-- Stock Broadnet identities use SIM MCC/MNC because no carrier ID is defined. -->
+    <carrier_config mcc="460" mnc="13" spn="China Broadnet|CBN|中国广电">
+        <boolean name="carrier_name_override_bool" value="true" />
+        <string name="carrier_name_string">中国广电</string>
+    </carrier_config>
+    <carrier_config mcc="460" mnc="15" spn="China Broadnet|CBN|中国广电">
+        <boolean name="carrier_name_override_bool" value="true" />
+        <string name="carrier_name_string">中国广电</string>
+    </carrier_config>
 </carrier_config_list>
