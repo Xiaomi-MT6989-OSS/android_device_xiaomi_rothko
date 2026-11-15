@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <carrier_config_list>
+    <!-- OS3.0.307 cust_features.xml uses these four-bar RSRP display thresholds.
+         Keep the platform measurement, validity checks and level calculation. -->
+    <carrier_config>
+        <int-array name="lte_rsrp_thresholds_int_array" num="4">
+            <item value="-140" />
+            <item value="-120" />
+            <item value="-115" />
+            <item value="-105" />
+        </int-array>
+        <int-array name="5g_nr_ssrsrp_thresholds_int_array" num="4">
+            <item value="-140" />
+            <item value="-120" />
+            <item value="-115" />
+            <item value="-105" />
+        </int-array>
+    </carrier_config>
     <!-- Stock MIUI translates these generic SIM SPNs to the mainland operator names.
          Match the SPN as well as carrier ID to preserve branded/MVNO names. -->
     <carrier_config cid="1435" spn="CMCC|China Mobile|中国移动">
