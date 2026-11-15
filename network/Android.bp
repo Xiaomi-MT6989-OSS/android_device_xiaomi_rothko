@@ -7,7 +7,7 @@ runtime_resource_overlay {
 genrule {
     name: "RothkoApnsConf",
     srcs: ["apns-conf.xml"],
-    out: ["apns-conf.xml"],
+    out: ["rothko-apns-conf.xml"],
     tools: ["xmllint"],
     cmd: "$(location xmllint) --nonet --noout $(in) && cp $(in) $(out)",
 }
