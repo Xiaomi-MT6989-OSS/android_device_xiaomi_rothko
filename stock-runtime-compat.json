@@ -1189,6 +1189,34 @@
         "libm.so",
         "libdl.so"
       ]
+    },
+    {
+      "old_soname": "android.hardware.audio@7.1-util.so",
+      "new_soname": "android.hardware.audio@7.1-util-rothko.so",
+      "module": "android.hardware.audio@7.1-util_vendorcompat",
+      "old_destination": "vendor/lib64/android.hardware.audio@7.1-util.so",
+      "destination": "vendor/lib64/android.hardware.audio@7.1-util-rothko.so",
+      "source": "vendor/lib64/android.hardware.audio@7.1-util.so",
+      "old_selection": "vendor/lib64/android.hardware.audio@7.1-util.so",
+      "new_selection": "vendor/lib64/android.hardware.audio@7.1-util.so:vendor/lib64/android.hardware.audio@7.1-util-rothko.so;MODULE=android.hardware.audio@7.1-util_vendorcompat;TRYSRCFIRST",
+      "from_stock_apex": false,
+      "preserve_section_order": true,
+      "needed": [
+        "liblog.so",
+        "libutils.so",
+        "libhidlbase.so",
+        "android.hardware.audio.common-util.so",
+        "android.hardware.audio.common@7.0.so",
+        "android.hardware.audio.common@7.1-enums.so",
+        "android.hardware.audio.common@7.1-util.so",
+        "android.hardware.audio@7.1.so",
+        "libbase.so",
+        "libc++.so",
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ],
+      "reason": "A17 system/media 79fde087 expands playback metadata from 272 to 336 bytes. Preserve original CoreUtils vector element ABI for the OEM audio implementation."
     }
   ],
   "consumers": {
@@ -1245,7 +1273,8 @@
     },
     "vendor/lib64/hw/android.hardware.audio@7.1-impl-mediatek.so": {
       "libaudiofoundation.so": "libaudiofoundation-rothko.so",
-      "libmediautils_vendor.so": "libmediautils_vendor-rothko.so"
+      "libmediautils_vendor.so": "libmediautils_vendor-rothko.so",
+      "android.hardware.audio@7.1-util.so": "android.hardware.audio@7.1-util-rothko.so"
     },
     "vendor/lib64/hw/android.hardware.soundtrigger3-impl.so": {
       "libaudio_aidl_conversion_common_ndk.so": "libaudio_aidl_conversion_common_ndk-rothko.so"
