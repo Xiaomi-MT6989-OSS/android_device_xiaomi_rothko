@@ -3,6 +3,8 @@ type rothko_displayservice_exec, exec_type, system_file_type, file_type;
 init_daemon_domain(rothko_displayservice)
 binder_use(rothko_displayservice)
 hwbinder_use(rothko_displayservice)
+# libhwbinder waits for hwservicemanager.ready before HIDL registration.
+get_prop(rothko_displayservice, hwservicemanager_prop)
 typeattribute rothko_displayservice display_service_server;
 allow rothko_displayservice surfaceflinger_service:service_manager find;
 binder_call(rothko_displayservice, surfaceflinger)
