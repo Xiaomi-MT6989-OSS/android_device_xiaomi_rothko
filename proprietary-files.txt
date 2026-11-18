@@ -3200,3 +3200,9 @@ odm/etc/camera/146_TactileGreen.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-
 odm/etc/camera/147_Neutral.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-147_Neutral-stock
 odm/etc/camera/167_CC.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-167_CC-stock
 odm/etc/camera/168_NC.png;EXTRACT_ONLY;FILEGROUP=rothko-camera-filter-168_NC-stock
+
+# Google base services (stock CN)
+product/etc/permissions/cn.google.services.xml|24846cf1189eeadc9906b0977f2519b5842f0e81
+product/priv-app/GmsCore/GmsCore.apk;PRESIGNED|07384231cc6a857ff2ba9ad5f3362f41c5a22b11
+product/priv-app/GooglePlayServicesUpdater/GooglePlayServicesUpdater.apk;PRESIGNED|f5bfd508946a83bc6c61f7791795d1fee81147f3
+system_ext/priv-app/GoogleServicesFramework/GoogleServicesFramework.apk;PRESIGNED|3fc3fa256d81de971b08d71bf7928d6435eddfce

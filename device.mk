@@ -301,6 +301,11 @@ PRODUCT_COPY_FILES += \
 # Inherit the proprietary files
 $(call inherit-product, vendor/xiaomi/rothko/rothko-vendor.mk)
 
+# The stock Google packages keep their original partitions and signing lineages.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/gms/privapp-permissions-rothko-gms-product.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/privapp-permissions-rothko-gms-product.xml \
+    $(LOCAL_PATH)/configs/gms/privapp-permissions-rothko-gms-system-ext.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-rothko-gms-system-ext.xml
+
 # Goodix requests firmware before logical ODM is mounted in Recovery.
 # Keep stock files for kernel lookup and the /odm/firmware runtime symlink.
 # Copy to its physical destination: host cp must not follow an absolute symlink.
