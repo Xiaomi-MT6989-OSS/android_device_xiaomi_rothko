@@ -4,6 +4,12 @@
     <bool name="config_displayWhiteBalanceAvailable">true</bool>
     <string name="config_displayWhiteBalanceColorTemperatureSensorName" translatable="false">xiaomi.sensor.front_cct</string>
 
+    <!-- Initialize Android's managed color transform for white balance.
+         Lineage LiveDisplay owns the user-facing panel profiles. -->
+    <integer-array name="config_availableColorModes">
+        <item>0</item> <!-- COLOR_MODE_NATURAL -->
+    </integer-array>
+
     <!-- Stock TrueTone limits, rounded to whole kelvins for the tint controller. -->
     <integer name="config_displayWhiteBalanceColorTemperatureMin">4713</integer>
     <integer name="config_displayWhiteBalanceColorTemperatureMax">7045</integer>
