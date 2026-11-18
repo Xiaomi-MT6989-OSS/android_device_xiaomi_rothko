@@ -13,6 +13,16 @@
     <!-- Stock MIUIAod subscribes to wake-up sensor type 33171029. Its values
          are OEM AOD states, not the generic NIGHT/LOW/HIGH/SUN buckets. -->
     <string name="doze_brightness_sensor_type" translatable="false">xiaomi.sensor.aod</string>
+    <!-- Stock AOD uses a 10-second dimming confirmation. Apply it only to ordinary low light
+         (5), which can appear briefly on relight. Sustained darkness (3) is already confirmed. -->
+    <integer-array name="config_doze_brightness_sensor_to_dimming_delay">
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>10000</item>
+    </integer-array>
     <integer-array name="config_doze_brightness_sensor_to_scrim_opacity">
         <item>-1</item>
         <item>-1</item>
