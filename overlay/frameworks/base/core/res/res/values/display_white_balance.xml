@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <bool name="config_displayWhiteBalanceAvailable">true</bool>
+    <string name="config_displayWhiteBalanceColorTemperatureSensorName" translatable="false">xiaomi.sensor.front_cct</string>
+
+    <!-- Stock TrueTone limits, rounded to whole kelvins for the tint controller. -->
+    <integer name="config_displayWhiteBalanceColorTemperatureMin">4713</integer>
+    <integer name="config_displayWhiteBalanceColorTemperatureMax">7045</integer>
+
+    <!-- Both stock N12 panel configs share these CCT knots. Android uses a
+         one-dimensional spline, so use the midpoint of each stock target row's
+         range across the calibrated lux columns. -->
+    <array name="config_displayWhiteBalanceAmbientColorTemperatures">
+        <item>2500.0</item>
+        <item>2700.0</item>
+        <item>3200.0</item>
+        <item>4000.0</item>
+        <item>5000.0</item>
+        <item>6500.0</item>
+        <item>8000.0</item>
+        <item>15000.0</item>
+    </array>
+    <array name="config_displayWhiteBalanceDisplayColorTemperatures">
+        <item>5125.0</item>
+        <item>5288.0</item>
+        <item>5392.0</item>
+        <item>5593.0</item>
+        <item>5796.0</item>
+        <item>5996.0</item>
+        <item>6214.0</item>
+        <item>6723.0</item>
+    </array>
+
+    <!-- Hold the stock 5700 K low-light target below 50 lux. Blend back into
+         the sensor-driven curve by the next stock lux knot (100 lux). -->
+    <item name="config_displayWhiteBalanceLowLightAmbientColorTemperature" type="dimen" format="float">5700.0</item>
+    <array name="config_displayWhiteBalanceLowLightAmbientBrightnesses">
+        <item>50.0</item>
+        <item>100.0</item>
+    </array>
+    <array name="config_displayWhiteBalanceLowLightAmbientBiases">
+        <item>0.0</item>
+        <item>1.0</item>
+    </array>
+
+    <!-- Use the same calibration in idle brightness mode. -->
+    <item name="config_displayWhiteBalanceStrongAmbientColorTemperatures" type="array">@array/config_displayWhiteBalanceAmbientColorTemperatures</item>
+    <item name="config_displayWhiteBalanceStrongDisplayColorTemperatures" type="array">@array/config_displayWhiteBalanceDisplayColorTemperatures</item>
+    <item name="config_displayWhiteBalanceLowLightAmbientBrightnessesStrong" type="array">@array/config_displayWhiteBalanceLowLightAmbientBrightnesses</item>
+    <item name="config_displayWhiteBalanceLowLightAmbientBiasesStrong" type="array">@array/config_displayWhiteBalanceLowLightAmbientBiases</item>
+    <item name="config_displayWhiteBalanceLowLightAmbientColorTemperatureStrong" type="dimen">@dimen/config_displayWhiteBalanceLowLightAmbientColorTemperature</item>
+</resources>
