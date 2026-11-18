@@ -50,10 +50,35 @@
         <item>1.0</item>
     </array>
 
-    <!-- Use the same calibration in idle brightness mode. -->
-    <item name="config_displayWhiteBalanceStrongAmbientColorTemperatures" type="array">@array/config_displayWhiteBalanceAmbientColorTemperatures</item>
-    <item name="config_displayWhiteBalanceStrongDisplayColorTemperatures" type="array">@array/config_displayWhiteBalanceDisplayColorTemperatures</item>
-    <item name="config_displayWhiteBalanceLowLightAmbientBrightnessesStrong" type="array">@array/config_displayWhiteBalanceLowLightAmbientBrightnesses</item>
-    <item name="config_displayWhiteBalanceLowLightAmbientBiasesStrong" type="array">@array/config_displayWhiteBalanceLowLightAmbientBiases</item>
+    <!-- Use the same calibration in idle brightness mode. The controller reads these
+         with Resources.obtainTypedArray(), which requires a concrete array. -->
+    <array name="config_displayWhiteBalanceStrongAmbientColorTemperatures">
+        <item>2500.0</item>
+        <item>2700.0</item>
+        <item>3200.0</item>
+        <item>4000.0</item>
+        <item>5000.0</item>
+        <item>6500.0</item>
+        <item>8000.0</item>
+        <item>15000.0</item>
+    </array>
+    <array name="config_displayWhiteBalanceStrongDisplayColorTemperatures">
+        <item>5125.0</item>
+        <item>5288.0</item>
+        <item>5392.0</item>
+        <item>5593.0</item>
+        <item>5796.0</item>
+        <item>5996.0</item>
+        <item>6214.0</item>
+        <item>6723.0</item>
+    </array>
+    <array name="config_displayWhiteBalanceLowLightAmbientBrightnessesStrong">
+        <item>50.0</item>
+        <item>100.0</item>
+    </array>
+    <array name="config_displayWhiteBalanceLowLightAmbientBiasesStrong">
+        <item>0.0</item>
+        <item>1.0</item>
+    </array>
     <item name="config_displayWhiteBalanceLowLightAmbientColorTemperatureStrong" type="dimen">@dimen/config_displayWhiteBalanceLowLightAmbientColorTemperature</item>
 </resources>
