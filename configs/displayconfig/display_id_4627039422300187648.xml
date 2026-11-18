@@ -54,6 +54,16 @@
             </point>
         </sdrHdrRatioMap>
     </highBrightnessMode>
+    <!-- Approximate the stock automatic ramp over 50-100 nits (stock darkening
+         curve knots) in upstream HLG units. Use the stock 4 s brightening window
+         and 265-to-50-nit darkening estimate to bound longer ramps. The two
+         fast entries preserve the framework defaults (all four are required). -->
+    <screenBrightnessRampFastDecrease>0.7047244</screenBrightnessRampFastDecrease>
+    <screenBrightnessRampFastIncrease>0.7047244</screenBrightnessRampFastIncrease>
+    <screenBrightnessRampSlowDecrease>0.01694</screenBrightnessRampSlowDecrease>
+    <screenBrightnessRampSlowIncrease>0.04</screenBrightnessRampSlowIncrease>
+    <screenBrightnessRampIncreaseMaxMillis>4000</screenBrightnessRampIncreaseMaxMillis>
+    <screenBrightnessRampDecreaseMaxMillis>15700</screenBrightnessRampDecreaseMaxMillis>
     <ambientLightHorizonLong>1500</ambientLightHorizonLong>
     <ambientLightHorizonShort>1000</ambientLightHorizonShort>
     <!-- Stock DozeBrightnessStrategyImpl uses calibrated 5/60 nit targets.
