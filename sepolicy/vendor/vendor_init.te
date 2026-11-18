@@ -26,3 +26,6 @@ allow vendor_init nvt_device:chr_file setattr;
 allow vendor_init secure_element_vendor_data_file:dir create_dir_perms;
 set_prop(vendor_init, vendor_nfc_prop)
 set_prop(vendor_init, vendor_tms_nfc_prop)
+
+# The ODM build properties select the stock vibrator's calibrated RTP bank.
+set_prop(vendor_init, vendor_rothko_vibrator_prop)
