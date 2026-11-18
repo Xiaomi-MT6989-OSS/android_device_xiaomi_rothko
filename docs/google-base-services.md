@@ -29,4 +29,12 @@ PYTHONPATH=../../../tools/extract-utils python3 extract-files.py --no-cleanup \
 
 离线已通过三份签名、Soong 预签名 APK 检查、必需 uses-library、原始字节、安装路径及 Android 17 核心特权权限声明检查。用于对照的 [Android 17 MindTheGapps](https://github.com/MindTheGapps/17.0.0-arm64/releases/tag/MindTheGapps-17.0.0-arm64-20261022_132445) 中 `Phonesky.apk` SHA-256 为 `259bdd44ebaed8a0378b9773d5b838e9cb45383ae084458b3ec44e06a88c1039`。其包名与占位包相同，版本代码为 85180920，高于占位包的 82275402，签名证书 SHA-256 均为 `f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83`。对照 APK 的 Android 17 核心特权权限声明也已由原厂条目覆盖。这项比较用于验证 Android 更新的安装前提。
 
-本次未构建、刷机或实测应用更新。验收时需确认首次启动、系统包扫描、完整版覆盖安装、Google 账号登录及下载，以及卸载商店更新后恢复到无界面占位包。APK 保存在本地配套 vendor 仓库。
+APK 保存在本地配套 vendor 仓库。
+
+## 统一构建的下载验证
+
+`24.0-20261118-UNOFFICIAL-rothko` 上，Play 商店 50.2.11 已作为系统更新覆盖占位包，持有 `INSTALL_PACKAGES` 和 `FOREGROUND_SERVICE_SYSTEM_EXEMPTED`。实际下载时，`DownloadService` 使用 `systemExempted` 类型，因缺少该类型需要的额外资格而触发 `SecurityException`，使下载后台进程反复退出。
+
+HyperOS OS3.0.307.0.WNNCNXM 的 `/product/etc/sysconfig/google.xml`（SHA-256 `dfa7953b6b41ee4bae85d888859ca580e562b401dbfdfd00ba03e96556008395`）为 `com.android.vending` 声明 `allow-in-power-save-except-idle`。固定 Android 源码由 `SystemConfig` 读取 Product 声明，`DeviceIdleController` 将它交给 ActivityManager，后者可将其用于 `systemExempted` 前台服务校验。设备复制同一条声明到 Product 的独立 sysconfig。
+
+在已装构建上，临时用用户电源名单验证同一前台服务校验分支，作用范围比镜像候选条目更广。加名单后，Google 相册完成下载并由 `com.android.vending` 安装，Google Play 服务也由商店完成更新，复测时段未出现该前台服务异常。测试后只撤销自加的用户白名单，保留商店、账户与测试安装。候选镜像仍待构建，验收应确认 Product 声明在启动后加载、未使用用户白名单也能下载，以及卸载商店更新后能恢复无界面占位包。

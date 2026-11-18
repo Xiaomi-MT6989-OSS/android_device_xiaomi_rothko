@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<config>
+    <!-- HyperOS OS3.0.307.0.WNNCNXM uses this entry for Play Store downloads. -->
+    <allow-in-power-save-except-idle package="com.android.vending" />
+</config>
