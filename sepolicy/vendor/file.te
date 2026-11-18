@@ -30,3 +30,6 @@ type sysfs_rothko_antiaging_control, fs_type, sysfs_type;
 
 # Generated Dolby state, isolated from other vendor runtime data.
 type vendor_dolby_data_file, file_type, data_file_type;
+
+# Resonance readback for the stock vibrator firmware selector.
+type sysfs_rothko_vibrator_f0, fs_type, sysfs_type;

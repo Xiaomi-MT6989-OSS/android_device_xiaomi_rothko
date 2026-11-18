@@ -34,3 +34,7 @@ ro.vendor.se. u:object_r:vendor_nfc_prop:s0 prefix
 vendor.tms.nfc. u:object_r:vendor_tms_nfc_prop:s0 prefix
 
 persist.vendor.batteryantiaging u:object_r:vendor_batteryantiaging_prop:s0 exact string
+
+ro.odm.mm.vibrator.sys_path u:object_r:vendor_rothko_vibrator_prop:s0 exact string
+ro.odm.mm.vibrator.diff_f0 u:object_r:vendor_rothko_vibrator_prop:s0 exact int
+ro.odm.mm.vibrator.si_sys_path u:object_r:vendor_rothko_vibrator_prop:s0 exact string

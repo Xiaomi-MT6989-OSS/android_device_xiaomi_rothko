@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
+# Select the stock RTP firmware bank from the driver's resonance readback.
+get_prop(hal_vibrator_default, vendor_rothko_vibrator_prop)
+allow hal_vibrator_default sysfs_rothko_vibrator_f0:file r_file_perms;
