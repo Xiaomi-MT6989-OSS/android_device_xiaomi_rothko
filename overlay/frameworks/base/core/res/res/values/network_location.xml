@@ -2,8 +2,14 @@
 <!-- Copyright (C) 2026 The LineageOS Project
      SPDX-License-Identifier: Apache-2.0 -->
 <resources>
-    <!-- Let the standard permission policy initialize the shipped providers.
-         Do not pin/disable provider overlays: system provider selection is native. -->
+    <!-- These framework providers supply location to system features before Google
+         setup and when Google network positioning is unavailable. -->
+    <bool name="config_enableNetworkLocationOverlay" translatable="false">false</bool>
+    <string name="config_networkLocationProviderPackageName" translatable="false">com.xiaomi.metoknlp</string>
+    <bool name="config_enableFusedLocationOverlay" translatable="false">false</bool>
+    <string name="config_fusedLocationProviderPackageName" translatable="false">com.android.location.fused</string>
+
+    <!-- Let the standard permission policy initialize the shipped providers. -->
     <string-array name="config_locationProviderPackageNames" translatable="false">
         <item>com.android.location.fused</item>
         <item>com.xiaomi.metoknlp</item>
