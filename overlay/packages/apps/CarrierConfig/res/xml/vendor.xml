@@ -26,6 +26,11 @@
         <boolean name="carrier_name_override_bool" value="true" />
         <string name="carrier_name_string">中国联通</string>
     </carrier_config>
+    <!-- A 46001 Unicom SIM can load and cache its config before a SIM name is available. -->
+    <carrier_config cid="1436" mcc="460" mnc="01" spn="null">
+        <boolean name="carrier_name_override_bool" value="true" />
+        <string name="carrier_name_string">中国联通</string>
+    </carrier_config>
     <carrier_config cid="2237" spn="China Telecom|CT|CHN-CT|中国电信">
         <boolean name="carrier_name_override_bool" value="true" />
         <string name="carrier_name_string">中国电信</string>
