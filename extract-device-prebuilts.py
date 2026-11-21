@@ -78,6 +78,9 @@ def main():
             if (len(step) == 2 and step[0] == '--set-soname') or (
                     len(step) == 3 and step[0] == '--replace-needed'):
                 continue
+            if (str(rel) == 'prebuilts/ims/lib64/libsink.so' and
+                    step == ['--no-sort', '--add-needed', 'libaudioclient_shim.so']):
+                continue
             raise ValueError('Unsupported ELF transformation')
         digest = sha(source)
         expected = row['source_sha256'] if args.input_kind == 'stock' else row['output_sha256']

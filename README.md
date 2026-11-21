@@ -1,6 +1,6 @@
-# Redmi K70 Ultra / rothko — LineageOS 23.2
+# Redmi K70 Ultra / rothko — LineageOS 24.0
 
-Unofficial source-only collaboration tree. Android 16 framework with stock
+Unofficial source-only collaboration tree. Android 17 framework with stock
 Android 14/API 34 vendor from OS3.0.307.0.WNNCNXM. This is a development
 candidate, not an official or newly runtime-approved release.
 

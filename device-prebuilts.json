@@ -113,9 +113,15 @@
       "source": "system_ext/lib64/libsink.so",
       "destination": "prebuilts/ims/lib64/libsink.so",
       "source_sha256": "bb3d2bf5af3195bae8e4ffa64a60326fa284b187af4ee3c0769b18f47b2550f4",
-      "output_sha256": "bb3d2bf5af3195bae8e4ffa64a60326fa284b187af4ee3c0769b18f47b2550f4",
+      "output_sha256": "b6c58b8594cfd2e2985e81e990e8afa8f3d2ea5cc05764953c8669e873902e92",
       "mode": "0644",
-      "patchelf_steps": [],
+      "patchelf_steps": [
+        [
+          "--no-sort",
+          "--add-needed",
+          "libaudioclient_shim.so"
+        ]
+      ],
       "lineage_build_path": "system_ext/lib64/libsink.so"
     },
     {
